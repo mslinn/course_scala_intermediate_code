@@ -10,6 +10,8 @@ class Thang(val i: Int, val s: String) extends Ordering[Thang] {
   }
 
   override def hashCode = super.hashCode
+
+  override def toString() = s"Thang $i: $s"
 }
 
 object Thang {
@@ -18,13 +20,16 @@ object Thang {
   }
 }
 
-class Thung(override val i: Int, override val s: String) extends Thang(i, s)
+class Thung(override val i: Int, override val s: String) extends Thang(i, s) {
+  override def toString() = s"Thung $i: $s"
+}
+
 
 class Th_ngMunger[A <: Thang](th_ng: A) {
   def doYourThing(count: Int) = s"${th_ng.i * count}: ${th_ng.s * count}"
 }
 
-object Main extends App {
+object Main1 extends App {
   val thang = new Thang(4, "a")
   val thung = new Thung(5, "b")
 
@@ -34,8 +39,19 @@ object Main extends App {
 
 import collection.mutable
 
-trait Bag[+T <: Thang] { self: Thang =>
+class Bag[+T <: Thang] {
   val ml = mutable.MutableList.empty[Thang]
-
-  def put[U <: T](item: U) =
+  def put[U >: T <: Thang](item: U): Unit = ml += item
+  def findByI(i: Int): List[Thang] = ml.filter(_.i==i).toList
+  def findByS(s: String): List[Thang] = ml.filter(_.s==s).toList
 }
+
+object Main2 extends App {
+  val bag = new Bag[Thung] // bag can hold Thungs and Thangs
+  bag.put(new Thang(2, "abc"))
+  bag.put(new Thung(3, "def"))
+  bag.put(new Thang(4, "xyz"))
+  println(bag.findByI(4))
+  println(bag.findByS("def"))
+}
+
