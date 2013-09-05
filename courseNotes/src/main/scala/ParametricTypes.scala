@@ -20,7 +20,9 @@ object Thang {
   }
 }
 
-class Thung(override val i: Int, override val s: String) extends Thang(i, s)
+class Thung(override val i: Int, override val s: String) extends Thang(i, s) {
+  override def toString() = s"Thung $i: $s"
+}
 
 class Th_ngMunger[A <: Thang](th_ng: A) {
   def doYourThing(count: Int) = s"${th_ng.i * count}: ${th_ng.s * count}"
@@ -44,9 +46,9 @@ class Bag[+T <: Thang] {
 }
 
 object Main2 extends App {
-  val bag = new Bag[Thung]
+  val bag = new Bag[Thung] // bag can hold Thungs and Thangs
   bag.put(new Thang(2, "abc"))
-  bag.put(new Thang(3, "def"))
+  bag.put(new Thung(3, "def"))
   bag.put(new Thang(4, "xyz"))
   println(bag.findByI(4))
   println(bag.findByS("def"))
