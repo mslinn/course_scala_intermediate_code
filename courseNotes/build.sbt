@@ -24,8 +24,9 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 scalacOptions in Test ++= Seq("-Yrangepos")
 
 libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2" % "2.1.1" % "test",
-  "junit"      % "junit"   % "4.8.1" % "test" // Scala IDE requires this; IntelliJ IDEA does not
+  "com.typesafe" %  "config" % "1.0.2",
+  "org.specs2"   %% "specs2" % "2.1.1" % "test",
+  "junit"        %  "junit"   % "4.8.1" % "test" // Scala IDE requires this; IntelliJ IDEA does not
 )
 
 resolvers ++= Seq(
