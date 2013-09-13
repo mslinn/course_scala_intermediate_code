@@ -3,7 +3,7 @@ import collection.JavaConverters._
 
 object ConfigDemo extends App {
   def showValues(msg: String, config: Config): Unit = {
-    val keys = config.entrySet.asScala.map(_.getKey)
+    val keys: Set[String] = config.entrySet.asScala.map(_.getKey).toSet // mutable by default
 
     if (keys.contains("aws.accessKey")) {
       val accessKey = config.getString("aws.accessKey")

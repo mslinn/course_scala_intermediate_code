@@ -21,6 +21,10 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
   )
 }
 
+libraryDependencies ++= Seq(
+  "com.typesafe" %  "config" % "1.0.2"
+)
+
 logLevel := Level.Error
 
 initialCommands := """
