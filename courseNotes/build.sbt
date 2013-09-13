@@ -1,8 +1,8 @@
 organization := "com.micronautics"
 
-name := "Advanced Scala Course"
+name := "IntermediateScala Course"
 
-description := "Advanced Scala Course Notes"
+description := "Intermediate Scala Course Notes"
 
 version := "0.1.0"
 
@@ -17,7 +17,7 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 	 "-target:jvm-1.6",
      "-sourcepath", bd.getAbsolutePath,
 	 "-Ywarn-adapted-args",
-     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_advanced_code/src/master/coursenotes€{FILE_PATH}.scala"
+     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/coursenotes€{FILE_PATH}.scala"
   )
 }
 
@@ -41,3 +41,4 @@ initialCommands := """
 // Only show warnings and errors on the screen for compilations.
 // This applies to both test:compile and compile and is Info by default
 logLevel in compile := Level.Warn
+
