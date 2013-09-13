@@ -1,6 +1,5 @@
 import com.typesafe.config.{Config, ConfigFactory}
 import collection.JavaConverters._
-import java.lang
 
 object ConfigDemo extends App {
   implicit class ConfigHelper(config: Config) {
