@@ -1,8 +1,8 @@
 organization := "com.micronautics"
 
-name := "Advanced Scala Course Assignment"
+name := "Intermediate Scala Course Assignment"
 
-description := "Advanced Scala Assignment"
+description := "Intermediate Scala Assignment"
 
 version := "0.1.0"
 
@@ -17,13 +17,16 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 	 "-target:jvm-1.6", 
      "-sourcepath", bd.getAbsolutePath,
 	 "-Ywarn-adapted-args",
-     "-doc-source-url", "https://bitbucket.org/mslinn/udemy_scalaintro_couse1_code/src/master/assignment€{FILE_PATH}.scala"
+     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/assignment€{FILE_PATH}.scala"
   )
 }
 
+libraryDependencies ++= Seq(
+  "com.typesafe" %  "config" % "1.0.2"
+)
+
 logLevel := Level.Error
 
-// Optional settings from https://github.com/harrah/xsbt/wiki/Quick-Configuration-Examples follow
 initialCommands := """
 """
 
