@@ -1,5 +1,5 @@
 import akka.actor.{PoisonPill, Actor, ActorRef, ActorSystem, Props}
-import akka.pattern.{ ask, pipe }
+import akka.pattern.ask
 import akka.util.Timeout
 import java.util.concurrent.{ExecutorService, Executors}
 import scala.concurrent.duration._
@@ -90,7 +90,7 @@ class Persistence extends Actor {
 }
 
 object ActorFun extends App {
-  val pool: ExecutorService = Executors.newFixedThreadPool(8)
+  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
   implicit val timeout = Timeout(30 seconds)

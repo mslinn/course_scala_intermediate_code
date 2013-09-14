@@ -10,7 +10,7 @@ import scala.concurrent.forkjoin.{ForkJoinWorkerThread, ForkJoinPool}
  * import concurrent.ExecutionContext.Implicits.global */
 
 object FutureFun extends App {
-  val pool: ExecutorService = Executors.newFixedThreadPool(8)
+  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
   val urls2 = List("http://www.scalacourses.com", "http://www.not_really_here.com", "http://www.micronauticsresearch.com")

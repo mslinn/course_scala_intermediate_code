@@ -3,7 +3,7 @@ import scala.concurrent.{ExecutionContext, Promise}
 import java.util.concurrent.{Executors, ExecutorService}
 
 object DataflowFun extends App {
-  val pool: ExecutorService = Executors.newFixedThreadPool(8)
+  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
   val x, y, z = Promise[Int]()
