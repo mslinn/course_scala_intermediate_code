@@ -2,6 +2,7 @@ import concurrent.{ExecutionContext, Await, Future}
 import concurrent.duration._
 import io.Source
 import java.util.concurrent.{ExecutorService, Executors}
+import scala.concurrent.forkjoin.ForkJoinPool
 
 // WARNING: if you use concurrent.ExecutionContext.Implicits.global, daemon threads are used
 // once the program has reached the end of the main program, any other threads still executing
@@ -9,7 +10,7 @@ import java.util.concurrent.{ExecutorService, Executors}
 //import concurrent.ExecutionContext.Implicits.global
 
 object FutureFun extends App {
-  val pool: ExecutorService = Executors.newFixedThreadPool(8)
+  val pool: ExecutorService = new ForkJoinPool// Executors.newFixedThreadPool(8)
   // If you have Java 7+ you should use:
   //val pool: ExecutorService = new java.util.concurrent.ForkJoinPool()
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
