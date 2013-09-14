@@ -1,18 +1,16 @@
 import concurrent.{ExecutionContext, Await, Future}
 import concurrent.duration._
 import io.Source
-import java.util.concurrent.{ExecutorService, Executors}
-import scala.concurrent.forkjoin.ForkJoinPool
+import java.util.concurrent.{Executors, ExecutorService}
+import scala.concurrent.forkjoin.{ForkJoinWorkerThread, ForkJoinPool}
 
-// WARNING: if you use concurrent.ExecutionContext.Implicits.global, daemon threads are used
-// once the program has reached the end of the main program, any other threads still executing
-// are terminated
-//import concurrent.ExecutionContext.Implicits.global
+/** WARNING: if you use concurrent.ExecutionContext.Implicits.global, daemon threads are used
+ * once the program has reached the end of the main program, any other threads still executing
+ * are terminated
+ * import concurrent.ExecutionContext.Implicits.global */
 
 object FutureFun extends App {
-  val pool: ExecutorService = new ForkJoinPool// Executors.newFixedThreadPool(8)
-  // If you have Java 7+ you should use:
-  //val pool: ExecutorService = new java.util.concurrent.ForkJoinPool()
+  val pool: ExecutorService = Executors.newFixedThreadPool(8)
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
   val urls2 = List("http://www.scalacourses.com", "http://www.not_really_here.com", "http://www.micronauticsresearch.com")
