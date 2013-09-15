@@ -7,15 +7,12 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 
 @RunWith(classOf[JUnitRunner])
-class ActorPathTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
+class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
     with ShouldMatchers with WordSpecLike with BeforeAndAfterAll  {
 
-  val actorPath1 = system / "path1"
-  val actorPath2 = system / "path2"
-  val actorPath3 = system / "path3"
-  val chunkerMsg1 = ChunkerMsg(1, 1, "Hi")
-  val workerMsg1 = WorkerMsg(1, 1)
-  val persistenceMsg = PersistenceMsg(1, "")
+  val chunkerMsg1 = ChunkerMsg(10, 10, "Ain't this grand?")
+  val workerMsg1 = WorkerMsg(10, 10)
+  val persistenceMsg = PersistenceMsg(10, "Bloop")
 
   val chunker1ActorRef = TestActorRef[Chunker]("chunker1")
   val chunker1Actor = chunker1ActorRef.underlyingActor
@@ -27,9 +24,9 @@ class ActorPathTest(_system: ActorSystem) extends TestKit(_system) with Implicit
   val persistenceActor = persistenceActorRef.underlyingActor
 
   def this() = this {
-    val logLevelStr = """
+    val confStr = """
                         |""".stripMargin
-    val stringConf: Config = ConfigFactory.parseString(logLevelStr)
+    val stringConf: Config = ConfigFactory.parseString(confStr)
     val configApplication  = ConfigFactory.load("application.conf")
     val configDefault      = ConfigFactory.load
     val config: Config     = ConfigFactory.load(stringConf.withFallback(configApplication).withFallback(configDefault))
