@@ -93,7 +93,7 @@ object ActorFun extends App {
   val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
-  implicit val timeout = Timeout(30 seconds)
+  implicit val timeout = Timeout(60 seconds)
 
   val system = ActorSystem("monkeyCage")
   val chunker = system.actorOf(Props[Chunker], name = "chunker")
