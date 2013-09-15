@@ -1,10 +1,11 @@
 import akka.actor.{PoisonPill, Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
+import concurrent.duration._
+import concurrent.ExecutionContext
+import concurrent.ExecutionContext.Implicits.global
 import java.util.concurrent.{ExecutorService, Executors}
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
-import scala.util.{Success, Failure, Random}
+import util.{Success, Failure, Random}
 
 case class ChunkerMsg(numWorkers: Int, tries: Int, text: String)
 
@@ -90,8 +91,8 @@ object ActorFun extends App {
   def matchSubstring(str1: String, str2: String): String =
     str1.view.zip(str2).takeWhile(Function.tupled(_ == _)).map(_._1).mkString
 
-  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
-  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
+//  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
+//  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
   implicit val timeout = Timeout(60 seconds)
 
@@ -109,4 +110,5 @@ object ActorFun extends App {
       system.shutdown()
       System.exit(0)
   }
+  synchronized { wait() } // let daemon threads continue
 }

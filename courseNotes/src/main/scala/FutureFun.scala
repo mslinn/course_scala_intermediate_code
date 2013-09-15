@@ -1,17 +1,17 @@
 import concurrent.{ExecutionContext, Await, Future}
 import concurrent.duration._
+import concurrent.forkjoin.{ForkJoinWorkerThread, ForkJoinPool}
+import concurrent.ExecutionContext.Implicits.global
+import util.{Success, Failure}
 import io.Source
-import java.util.concurrent.{Executors, ExecutorService}
-import scala.concurrent.forkjoin.{ForkJoinWorkerThread, ForkJoinPool}
 
 /** WARNING: if you use concurrent.ExecutionContext.Implicits.global, daemon threads are used
  * once the program has reached the end of the main program, any other threads still executing
- * are terminated
- * import concurrent.ExecutionContext.Implicits.global */
+ * are terminated */
 
 object FutureFun extends App {
-  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
-  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
+//  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
+//  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
   val urls2 = List("http://www.scalacourses.com", "http://www.not_really_here.com", "http://www.micronauticsresearch.com")
 
@@ -43,4 +43,87 @@ object FutureFun extends App {
   }
 
   urlSearch("scala", urls2)
+  synchronized { wait() } // let daemon threads continue
+}
+
+object ForComp1 extends App {
+  val future4: Future[Int] = for {
+    x <- Future(1+2)
+    y <- Future(2+3)
+    z <- Future(4+5)
+  } yield x + y + z
+  future4 onComplete {
+    case Success(r) =>
+      println(s"Success: $r")
+      System.exit(0)
+    case Failure(ex) =>
+      println(s"Failure: ${ex.getMessage}")
+      System.exit(0)
+  }
+  synchronized { wait() }
+}
+
+object ForComp2 extends App {
+  (for {
+    x <- Future(1+2)
+    y <- Future(2+3)
+    z <- Future(4+5)
+  } yield x + y + z) onComplete {
+    case Success(r) =>
+      println(s"Success: $r")
+      System.exit(0)
+    case Failure(ex) =>
+      println(s"Failure: ${ex.getMessage}")
+      System.exit(0)
+  }
+  synchronized { wait() }
+}
+
+object ForComp3 extends App {
+  Future(1+2).flatMap { x =>
+    Future(2+3).flatMap { y =>
+      Future(4+5).map { z => x + y + z }
+    }
+  } onComplete {
+    case Success(r) =>
+      println(s"Success: $r")
+      System.exit(0)
+    case Failure(ex) =>
+      println(s"Failure: ${ex.getMessage}")
+      System.exit(0)
+  }
+  synchronized { wait() }
+}
+
+object ForComp4 extends App {
+  print("What color is the sky? ")
+  val sky = Console.readLine().toLowerCase
+  val future4 = for {
+    x <- Future(1+2)
+    y <- Future(2+3)
+    z <- Future(4+5)
+    if sky == "blue"
+  } yield x + y + z
+  future4 onComplete {
+    case Success(r) =>
+      println(s"Success: $r")
+      System.exit(0)
+    case Failure(ex) =>
+      println(s"Failure: $ex")
+      System.exit(0)
+  }
+  synchronized { wait() }
+}
+
+object ForComp5 extends App {
+  print("What color is the sky? ")
+  val sky = Console.readLine().toLowerCase
+  val future4 = Future(1+2).withFilter {
+    x => sky=="blue"
+  }.flatMap { x =>
+    Future(2+3).flatMap{ y =>
+      Future(3+4).map { z => x + y + z }
+    }
+  }
+  synchronized { wait() }
 }
