@@ -96,8 +96,7 @@ object ForComp3 extends App {
 }
 
 object ForComp4 extends App {
-  print("What color is the sky? ")
-  val sky = Console.readLine().toLowerCase
+  val sky = Console.readLine("What color is the sky? ").toLowerCase
   val future4 = for {
     x <- Future(1+2)
     y <- Future(2+3)
