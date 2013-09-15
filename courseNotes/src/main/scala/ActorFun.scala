@@ -20,7 +20,7 @@ class Chunker extends Actor {
 
   def receive = {
     case msg: ChunkerMsg =>
-      println(s"Chunker actor got $msg")
+      //println(s"Chunker actor got $msg")
       rootActor = sender
       context.actorOf(Props[Persistence], name = "persistence") ! msg
       1 to msg.numWorkers foreach { i =>
@@ -28,7 +28,7 @@ class Chunker extends Actor {
       }
 
     case msg: ResultMsg =>
-      println(s"Chunker actor got $msg")
+      //println(s"Chunker actor got $msg")
       sender ! PoisonPill
       rootActor ! msg
 
@@ -69,19 +69,16 @@ class Persistence extends Actor {
 
     case msg: PersistenceMsg =>
       //println(s"Persistence actor got $msg")
-      val x = msg.text.view.zip(targetString)
-      val matching = msg.text.view.zip(targetString).takeWhile(Function.tupled(_ == _)).map(_._1).mkString
-      if (matching.length>targetString.length) {
-        targetString = matching
-        println(s"Matched $matching")
+      val matching = ActorFun.matchSubstring(msg.text, targetString)
+      if (matching.length>bestMatchString.length) {
+        bestMatchString = matching
+        //println(s"Matched $matching")
       }
       if (msg.attemptCount==0) {
         sender ! PoisonPill
         workers = workers - 1
-        if (workers==0) {
-          println(context.parent.path)
+        if (workers==0)
           context.parent ! ResultMsg(bestMatchString)
-        }
       }
 
     case msg =>
@@ -90,6 +87,9 @@ class Persistence extends Actor {
 }
 
 object ActorFun extends App {
+  def matchSubstring(str1: String, str2: String): String =
+    str1.view.zip(str2).takeWhile(Function.tupled(_ == _)).map(_._1).mkString
+
   val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
   implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
@@ -97,7 +97,7 @@ object ActorFun extends App {
 
   val system = ActorSystem("monkeyCage")
   val chunker = system.actorOf(Props[Chunker], name = "chunker")
-  val future = chunker ? ChunkerMsg(50, 10000, "One upon a time, there was a little girl who dreamed she could fly.")
+  val future = chunker ? ChunkerMsg(50, 30000, "One upon a time, there was a little girl who dreamed she could fly.")
   future.mapTo[ResultMsg] onComplete {
     case Success(result) =>
       println(s"Best match is '${result.text}' (${result.text.length} characters})")
