@@ -6,6 +6,10 @@ object ImplicitFun extends App {
 
   /** Enhance java.io.File */
   implicit class RichFile(file: File) {
+    val bis = new java.io.BufferedInputStream(new java.io.FileInputStream(fileName))
+    val bArray = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
+    bis.close()
+
     /** If file does not exist, return None.
       * Else if file is a directory, return Option[List[File]], else return contents as Option[Array[Byte]] */
     def contents: Option[Either[Array[Byte], List[File]]] = ???
