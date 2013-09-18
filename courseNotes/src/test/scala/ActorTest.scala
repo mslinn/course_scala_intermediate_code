@@ -1,7 +1,7 @@
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
-import akka.actor.ActorSystem
+import akka.actor.{Props, ActorSystem}
 import org.specs2.matcher.ShouldMatchers
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
@@ -17,15 +17,15 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
   val chunker1ActorRef = TestActorRef[Chunker]("chunker1")
   val chunker1Actor = chunker1ActorRef.underlyingActor
 
-  val worker1ActorRef = TestActorRef[Worker]("worker1")
+  val worker1ActorRef: TestActorRef[Worker] = TestActorRef(Props[Worker], chunker1ActorRef, "worker1")
   val worker1Actor = worker1ActorRef.underlyingActor
 
-  val persistenceActorRef = TestActorRef[Persistence]("persistence")
+  val persistenceActorRef: TestActorRef[Persistence] = TestActorRef(Props[Persistence], chunker1ActorRef, "persistence")
   val persistenceActor = persistenceActorRef.underlyingActor
 
   def this() = this {
     val confStr = """
-                        |""".stripMargin
+                    |""".stripMargin
     val stringConf: Config = ConfigFactory.parseString(confStr)
     val configApplication  = ConfigFactory.load("application.conf")
     val configDefault      = ConfigFactory.load
@@ -36,8 +36,8 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
   "ActorPaths" should {
     "behave" in {
       assertResult("akka://myApp/user/chunker1",    "chunker1 path")(chunker1ActorRef.path.toString)
-      assertResult("akka://myApp/user/worker1",     "worker1 path")(worker1ActorRef.path.toString)
-      assertResult("akka://myApp/user/persistence", "persistence path")(persistenceActorRef.path.toString)
+      assertResult("akka://myApp/user/chunker1/worker1",     "worker1 path")(worker1ActorRef.path.toString)
+      assertResult("akka://myApp/user/chunker1/persistence", "persistence path")(persistenceActorRef.path.toString)
     }
   }
 
