@@ -4,14 +4,14 @@ name := "IntermediateScala Course"
 
 description := "Intermediate Scala Course Notes"
 
-version := "0.1.0"
+version := "0.1.1"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.3"
 
 autoCompilerPlugins := true
 
 libraryDependencies <+= scalaVersion {
-  v => compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.10.2")
+  v => compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.10.3")
 }
 
 scalacOptions += "-P:continuations:enable"
