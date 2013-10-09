@@ -102,13 +102,12 @@ object ActorFun extends App {
   future.mapTo[ResultMsg] onComplete {
     case Success(result) =>
       println(s"Best match is '${result.text}' (${result.text.length} characters})")
-      system.shutdown()
-      System.exit(0)
+      system.notifyAll()
 
     case Failure(msg) =>
       println(msg)
-      system.shutdown()
-      System.exit(0)
+      system.notifyAll()
   }
-  synchronized { wait() } // let daemon threads continue
+  system.synchronized { system.wait() } // let daemon threads continue
+  println("All done")
 }
