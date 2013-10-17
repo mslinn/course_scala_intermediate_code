@@ -6,7 +6,7 @@ description := "Intermediate Scala Assignment"
 
 version := "0.1.0"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.3"
 
 scalacOptions in (Compile, doc) <++= baseDirectory.map {
   (bd: File) => Seq[String](
@@ -14,7 +14,7 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 	 "-encoding", "UTF-8", 
 	 "-unchecked",
      "-feature", 
-	 "-target:jvm-1.6", 
+	 "-target:jvm-1.7", 
      "-sourcepath", bd.getAbsolutePath,
 	 "-Ywarn-adapted-args",
      "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/assignment€{FILE_PATH}.scala"

@@ -11,8 +11,8 @@ object RichFile {
 
   implicit class EnrichedFile(underlying: File)(implicit charset: Charset=Charset.forName("UTF-8")) {
 
-    private def withCloseable[C <: Closeable, T](factory: () => C)(operation: C => T): Try[T] = {
-      val closeable = factory()
+    private def withCloseable[C <: Closeable, T](factory: => C)(operation: C => T): Try[T] = {
+      val closeable = factory
       try {
         val result: T = operation(closeable)
         closeable.close()
@@ -50,11 +50,11 @@ object RichFile {
 
     /** Partially applied function; the `withCloseable` `functor` that returns Try[T] is unbound */
     def withBufferedInputStream[T]: (BufferedInputStream => T) => Try[T] =
-      withCloseable(() => new BufferedInputStream(new FileInputStream(underlying))) _
+      withCloseable(new BufferedInputStream(new FileInputStream(underlying))) _
 
     /** Partially applied function; the `withCloseable` `functor` that returns Try[T] is unbound */
     def withBufferedOutputStream[T]: (BufferedOutputStream => T) => Try[T] =
-      withCloseable(() => new BufferedOutputStream(new FileOutputStream(underlying))) _
+      withCloseable(new BufferedOutputStream(new FileOutputStream(underlying))) _
 
     /** @return list of files in the underlying directory, or the empty list of the underlying File is not a directory */
     def listFiles: List[File] =
@@ -71,7 +71,7 @@ object RichFile {
       } else {
         withBufferedInputStream { inputStream =>
           EnrichedFile(newFile).withBufferedOutputStream { outputStream =>
-            read(inputStream) foreach outputStream.write
+            read(inputStream).foreach(outputStream.write)
             true
           }.get
         } match {
@@ -103,10 +103,10 @@ object RichFileApp extends App {
   file.deleteOnExit()
 
   private def createFile: File = {
-    val file = new File(homeDirName, "test.txt")
-    val writer = new PrintWriter(file)
+    val newFile = new File(homeDirName, "test.txt")
+    val writer = new PrintWriter(newFile)
     writer.write("May the fleas of a thousand camels...")
     writer.close()
-    file
+    newFile
   }
 }
