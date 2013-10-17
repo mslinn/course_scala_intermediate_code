@@ -30,7 +30,7 @@ object RichFile {
     private def readAsByteArray(input: InputStream): Array[Byte] =
       read(input).map(_.toByte).toArray
 
-    /** Not required, only provided for discussion */
+    /** Not required, only provided for discussion purposes */
     private def readAsString(input: InputStream): String =
       read(input).map(_.toChar).mkString
 
