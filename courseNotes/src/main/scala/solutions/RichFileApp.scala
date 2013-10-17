@@ -11,8 +11,8 @@ object RichFile {
 
   implicit class EnrichedFile(underlying: File)(implicit charset: Charset=Charset.forName("UTF-8")) {
 
-    private def withCloseable[C <: Closeable, T](factory: () => C)(operation: C => T): Try[T] = {
-      val closeable = factory()
+    private def withCloseable[C <: Closeable, T](factory: => C)(operation: C => T): Try[T] = {
+      val closeable = factory
       try {
         val result: T = operation(closeable)
         closeable.close()
@@ -50,11 +50,11 @@ object RichFile {
 
     /** Partially applied function; the `withCloseable` `functor` that returns Try[T] is unbound */
     def withBufferedInputStream[T]: (BufferedInputStream => T) => Try[T] =
-      withCloseable(() => new BufferedInputStream(new FileInputStream(underlying))) _
+      withCloseable(new BufferedInputStream(new FileInputStream(underlying))) _
 
     /** Partially applied function; the `withCloseable` `functor` that returns Try[T] is unbound */
     def withBufferedOutputStream[T]: (BufferedOutputStream => T) => Try[T] =
-      withCloseable(() => new BufferedOutputStream(new FileOutputStream(underlying))) _
+      withCloseable(new BufferedOutputStream(new FileOutputStream(underlying))) _
 
     /** @return list of files in the underlying directory, or the empty list of the underlying File is not a directory */
     def listFiles: List[File] =
