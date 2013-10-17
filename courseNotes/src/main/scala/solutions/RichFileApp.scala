@@ -71,7 +71,7 @@ object RichFile {
       } else {
         withBufferedInputStream { inputStream =>
           EnrichedFile(newFile).withBufferedOutputStream { outputStream =>
-            read(inputStream) foreach outputStream.write
+            read(inputStream).foreach(outputStream.write)
             true
           }.get
         } match {
@@ -103,10 +103,10 @@ object RichFileApp extends App {
   file.deleteOnExit()
 
   private def createFile: File = {
-    val file = new File(homeDirName, "test.txt")
-    val writer = new PrintWriter(file)
+    val newFile = new File(homeDirName, "test.txt")
+    val writer = new PrintWriter(newFile)
     writer.write("May the fleas of a thousand camels...")
     writer.close()
-    file
+    newFile
   }
 }
