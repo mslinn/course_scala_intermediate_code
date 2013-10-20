@@ -11,7 +11,7 @@ object TimedTask {
   }
 }
 
-object HigherFun extends App {
+object TimedFun extends App {
   var i = 0
 
   TimedTask(1) {
