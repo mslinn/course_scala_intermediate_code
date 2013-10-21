@@ -67,9 +67,10 @@ object RichFile {
           }
           if (outStream!=null) outStream.close()
           is
-        } finally {
-          inStream.close()
+        } catch { case _: Throwable =>
+          null
         }
+        if (inStream!=null) inStream.close()
         true
       } catch {
         case _ : Throwable => false
