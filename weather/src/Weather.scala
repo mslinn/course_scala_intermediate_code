@@ -1,5 +1,6 @@
 case class Weather(var status: String)
 
+/** Solution to http://www.scalacourses.com/lectures/admin/showLecture/18/72 */
 object Main extends App {
   implicit class RichWeather(weather: Weather) {
     def genericOp(newStatus: String): Weather = {
