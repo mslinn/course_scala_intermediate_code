@@ -4,7 +4,8 @@ import java.io._
 import java.nio.charset.Charset
 import scala.util.{Failure, Success, Try}
 
-object RichFile {
+/** Elegant solution to http://www.scalacourses.com/lectures/admin/showLecture/16/111 */
+object RichFile2 {
   import language.implicitConversions
 
   implicit def stringToFile(fileName: String) = new File(fileName)
@@ -50,11 +51,11 @@ object RichFile {
 
     /** Partially applied function; the `withCloseable` `functor` that returns Try[T] is unbound */
     def withBufferedInputStream[T]: (BufferedInputStream => T) => Try[T] =
-      withCloseable(new BufferedInputStream(new FileInputStream(underlying))) _
+      withCloseable(new BufferedInputStream(new FileInputStream(underlying)))
 
     /** Partially applied function; the `withCloseable` `functor` that returns Try[T] is unbound */
     def withBufferedOutputStream[T]: (BufferedOutputStream => T) => Try[T] =
-      withCloseable(new BufferedOutputStream(new FileOutputStream(underlying))) _
+      withCloseable(new BufferedOutputStream(new FileOutputStream(underlying)))
 
     /** @return list of files in the underlying directory, or the empty list of the underlying File is not a directory */
     def listFiles: List[File] =
@@ -89,8 +90,8 @@ object RichFile {
   }
 }
 
-object RichFileApp extends App {
-  import RichFile._
+object RichFileApp2 extends App {
+  import RichFile2._
 
   val homeDirName = System.getProperty("user.home")
   val file = createFile
@@ -105,7 +106,7 @@ object RichFileApp extends App {
   private def createFile: File = {
     val newFile = new File(homeDirName, "test.txt")
     val writer = new PrintWriter(newFile)
-    writer.write("May the fleas of a thousand camels...")
+    writer.write("May the fleas of a thousand camels...\n")
     writer.close()
     newFile
   }

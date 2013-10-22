@@ -15,7 +15,8 @@ trait Timeable[T] {
   }
 }
 
-/** This program uses more memory as the number of iterations increases.
+/** Solution to http://www.scalacourses.com/lectures/admin/showLecture/17/90
+  * This program uses more memory as the number of iterations increases.
   * For 13000000L iterations, specify -Xmx2g.
   * For that many iterations, you should only expect 3 characters to match in about a minute on a fast machine.
   * This naive implementation' computational effort increases geometrically with the number of iterations. */
