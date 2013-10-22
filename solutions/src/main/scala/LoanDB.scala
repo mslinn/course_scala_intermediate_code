@@ -41,6 +41,18 @@ trait DBOps {
     statement.executeUpdate(s"create table $tableName ($creationStatement)")
     connection
   }
+
+  def insert(conn: Connection, tableName: String, nameValueMap: Map[String, Any]) = {
+    val keys = nameValueMap.keys.toList // nameValueMap.keys is an iterable, which can only be traversed once
+    val names = keys.mkString(", ")
+    val placeholders = keys.map { _ => "?" }.mkString(", ")
+    val stmtString = s"insert into $tableName ($names) values ($placeholders)"
+    val stmt = conn.prepareStatement(stmtString)
+    nameValueMap.values.zipWithIndex foreach { case (value, i) =>
+      stmt.setObject(i+1, value)
+    }
+    stmt.executeUpdate()
+  }
 }
 
 trait AdvancedDBOps extends DBOps {
@@ -63,27 +75,10 @@ trait AdvancedDBOps extends DBOps {
 /** Mix in AdvancedDBOps instead of DBOps to alternate the implementation */
 object LoanDB extends App with Closeable with DBOps {
   withCloseable(connectTable("jdbc:sqlite:person.db")) { conn: Connection =>
-    val stmt = conn.prepareStatement("insert into person (id, name, age) values (?, ?, ?)")
-    stmt.setInt(1, 1)
-    stmt.setString(2, "Fred Flintstone")
-    stmt.setInt(3, 400001) // Cromagnon man!
-    stmt.executeUpdate()
-
-    stmt.setInt(1, 2)
-    stmt.setString(2, "Wilma Flintstone")
-    stmt.setInt(3, 400000) // Cromagnon woman!
-    stmt.executeUpdate()
-
-
-    stmt.setInt(1, 3)
-    stmt.setString(2, "Barney Rubble")
-    stmt.setInt(3, 400003) // Cromagnon man!
-    stmt.executeUpdate()
-
-    stmt.setInt(1, 4)
-    stmt.setString(2, "Betty Rubble")
-    stmt.setInt(3, 400002) // Cromagnon woman!
-    stmt.executeUpdate()
+    insert(conn, "person", Map("id" -> 1, "name" -> "Fred Flintsone",  "age" -> 400002))
+    insert(conn, "person", Map("id" -> 2, "name" -> "Wilma Flintsone", "age" -> 400001))
+    insert(conn, "person", Map("id" -> 3, "name" -> "Barney Rubble",   "age" -> 400004))
+    insert(conn, "person", Map("id" -> 4, "name" -> "Betty Rubble",    "age" -> 400003))
 
     val stmt2 = conn.prepareStatement("select * from person")
     withCloseable(stmt2.executeQuery) { resultSet =>
