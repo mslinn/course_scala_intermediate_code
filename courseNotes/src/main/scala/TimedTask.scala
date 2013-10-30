@@ -1,6 +1,5 @@
 object TimedTask {
-  import java.util.Timer
-  import java.util.TimerTask
+  import java.util.{Timer, TimerTask}
 
   def apply(intervalSeconds: Int=1)(op: => Unit) {
     val task = new TimerTask {
