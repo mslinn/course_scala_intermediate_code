@@ -25,12 +25,12 @@ object TypesafeEquality extends App {
 
     override def hashCode = name.hashCode
 
-    def canEqual(that: Any) : Boolean = that.isInstanceOf[Dog2]
+    def canEqual(that: Any) : Boolean = that.isInstanceOf[Dog3]
 
     def ===[D <% Dog3](that: D): Boolean = this==that
   }
 
   val dog3 = new Dog3("Fido3")
   val maybeDog3 = Some(dog3)
-  println(s"Comparing dog3 with maybeDog3: ${dog3===maybeDog3}")
+  //println(s"Comparing dog3 with maybeDog3: ${dog3===maybeDog3}")
 }

@@ -35,9 +35,10 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-dataflow"  % "2.2.1" withSources,
   "com.typesafe.akka" %% "akka-actor"     % "2.2.1" withSources,
   "com.typesafe"      %  "config"         % "1.0.2" withSources,
+  "org.scalautils"    %% "scalautils"     % "2.0"   withSources,
   "com.typesafe.akka" %% "akka-testkit"   % "2.2.1"  % "test" withSources,
   "org.specs2"        %% "specs2"         % "2.1.1"  % "test" withSources,
-  "org.scalatest"     %  "scalatest_2.10" % "2.0.M7" % "test" withSources,
+  "org.scalatest"     %  "scalatest_2.10" % "2.0"    % "test" withSources,
   "junit"             %  "junit"          % "4.8.1"  % "test" // Scala IDE requires this; IntelliJ IDEA does not
 )
 
