@@ -30,7 +30,18 @@ object TypesafeEquality extends App {
     def ===[D <% Dog3](that: D): Boolean = this==that
   }
 
-  val dog3 = new Dog3("Fido3")
-  val maybeDog3 = Some(dog3)
-  //println(s"Comparing dog3 with maybeDog3: ${dog3===maybeDog3}")
+  val dog3a = new Dog3("Fido3a")
+  val dog3b = new Dog3("Fido3b")
+  val maybeDog3a = Some(dog3a)
+  println(s"Comparing dog3 with itself: ${dog3a===dog3b}")
+  //\println(s"Comparing dog3 with maybeDog3: ${dog3a===maybeDog3a}")
+}
+
+object AllEquality extends App {
+  implicit class AnyEquality[T](thiz: T) {
+    def ===[U <% T](that: U): Boolean = thiz==that
+  }
+
+  println(s"Comparing 3 with 4: ${3===4}")
+  //println(s"Comparing 3 with Some(3): ${3===Some(3)}")
 }
