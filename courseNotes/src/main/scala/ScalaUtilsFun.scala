@@ -42,5 +42,9 @@ object OrUnapply extends App {
     implicit def unapply(input: String): Option[Person] = parsePerson(input).toOption
   }
 
-  val maybePerson: Option[Person] = "Fred Flintstone 36"
+  val maybeFred: Option[Person] = "Fred Flintstone 36"
+  println(maybeFred)
+
+  val maybeWilma: Option[Person] = "WilmaFlintstone36"
+  println(maybeWilma)
 }

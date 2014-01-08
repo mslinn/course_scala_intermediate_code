@@ -1,3 +1,32 @@
+object ExtendJavaSet extends App {
+
+  trait IgnoredCaseSet[T] extends java.util.Set[T] {
+    abstract override def add(t: T): Boolean =
+      t match {
+        case string: String => super.add(string.toLowerCase.asInstanceOf[T])
+
+        case obj => super.add(obj)
+      }
+
+    abstract override def contains(obj: Object) =
+      obj match {
+        case s: String =>
+          super.contains(s.toLowerCase)
+
+        case o =>
+          super.contains(o)
+      }
+  }
+
+  class MySet extends java.util.HashSet[String] with IgnoredCaseSet[String]
+
+  val mySet = new MySet() // Java sets are mutable, only the reference is immutable
+  mySet.add("One")
+  mySet.add("Two")
+  mySet.add("Three")
+  println(s"mySet=$mySet")
+}
+
 class Thang(val i: Int, val s: String) extends Ordering[Thang] {
   def compare(a: Thang, b: Thang) =  {
     val primaryKey = a.i - b.i
