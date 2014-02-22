@@ -17,6 +17,26 @@ object ImplicitOps extends App {
   println(s"divide(9)=${divide(9)}")
 }
 
+object With2 extends App {
+  case class Blarg(i: Int, s: String)
+
+  def withBlarg(blarg: Blarg)(operation: Blarg => Unit):  Unit = operation(blarg)
+
+  def double(implicit blarg: Blarg): Blarg = blarg.copy(i=blarg.i*2, s=blarg.s*2)
+
+  def triple(implicit blarg: Blarg): Blarg = blarg.copy(i=blarg.i*3, s=blarg.s*3)
+
+   withBlarg(Blarg(1, "asdf ")) { blarg =>
+    println(double(blarg))
+    println(triple(blarg))
+  }
+
+  withBlarg(Blarg(1, "qwer ")) { implicit blarg =>
+    println(double)
+    println(triple)
+  }
+}
+
 object ImplicitOps2 extends App {
   implicit val defaultMultiplier = Multiplier(2)
 
