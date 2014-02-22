@@ -15,9 +15,8 @@ package foopkg {
     }
   }
 
-  /** Equivalent to a package object except `package object foopkg` would require a separate file */
   object `package` {
-    def foo[A : CanFoo](x: A): String = implicitly[CanFoo[A]].foos(x)
+    def foo[A: CanFoo](x: A): String = implicitly[CanFoo[A]].foos(x)
   }
 
   object CompanionMain extends App {
@@ -29,27 +28,3 @@ package foopkg {
   }
 }
 
-package yeller {
-  case class YellerString(s: String) {
-    def yell: String = s.toUpperCase + "!!"
-  }
-
-  trait Implicit {
-    implicit def stringToYellerString(s: String): YellerString = YellerString(s)
-  }
-
-  object `package` extends Implicit
-}
-
-object YellerMain extends App {
-  import yeller._
-  println("banana".yell)
-}
-
-package userpkg {
-  object `package` extends yeller.Implicit
-
-  object Yeller2Main extends App {
-    println("banana".yell)
-  }
-}

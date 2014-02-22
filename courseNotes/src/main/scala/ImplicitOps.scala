@@ -36,12 +36,29 @@ object ImplicitOps2 extends App {
   println(s"divide(9)=${divide(9)}")
 }
 
+package yeller {
+  case class Yeller(s: String) {
+    def yell: String = s.toUpperCase + "!!"
+  }
+
+  object `package` {
+    implicit def stringToYeller(s: String): Yeller = Yeller(s)
+  }
+}
+
+object YellerMain extends App {
+  import yeller._
+
+  println("Look out".yell)
+}
+
 object AppleFanBoi extends App {
   implicit class IosInt(i: Int) { def s: Int = i + 1 }
 
   println(s"I have an iPhone ${4.s}")
 }
 
+/** @see https://issues.scala-lang.org/browse/SI-4975?jql=text%20~%20%22implicit%20class%22 */
 object ImplicitOps3 extends App {
   implicit val defaultMultiplier = Multiplier(2)
 
