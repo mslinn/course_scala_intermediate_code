@@ -1,3 +1,5 @@
+import annotation.implicitNotFound
+
 case class Multiplier(value: Int)
 
 case class Divider(value: Int)
@@ -17,8 +19,10 @@ object ImplicitOps extends App {
   println(s"divide(9)=${divide(9)}")
 }
 
+@implicitNotFound("Cannot find implicit of type Multiplier2 in scope")
 case class Multiplier2(value: Int) extends AnyVal
 
+@implicitNotFound("Cannot find implicit of type Divider2 in scope")
 case class Divider2(value: Int) extends AnyVal
 
 object ImplicitOps2 extends App {
@@ -30,13 +34,9 @@ object ImplicitOps2 extends App {
 
   def divide(value: Int)(implicit divider: Divider2): Int = value / divider.value
 
-  implicit def intToMultiplier(int: Int): Multiplier2 = Multiplier2(int)
-
-  implicit def intToDivider(int: Int): Divider2 = Divider2(int)
-
-  println(s"multiply(2)(3)=${multiply(2)(3)}")
+  println(s"multiply(2)(3)=${multiply(2)(Multiplier2(3))}")
   println(s"multiply(5)=${multiply(5)}")
-  println(s"divide(12)(4)=${divide(12)(4)}")
+  println(s"divide(12)(4)=${divide(12)(Divider2(4))}")
   println(s"divide(9)=${divide(9)}")
 }
 
