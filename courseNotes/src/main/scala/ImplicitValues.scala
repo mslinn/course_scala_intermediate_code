@@ -1,6 +1,6 @@
 import annotation.implicitNotFound
 
-object ImplicitValue extends App {
+object ImplicitValues extends App {
   implicit val defaultMultiplier = 2
 
   def multiply(value: Int)(implicit multiplier: Int): Int = value * multiplier
@@ -13,7 +13,7 @@ case class Multiplier(value: Int)
 
 case class Divider(value: Int)
 
-object ImplicitOps extends App {
+object ImplicitValues2 extends App {
   implicit val defaultMultiplier = Multiplier(2)
 
   implicit val defaultDivider = Divider(3)
@@ -34,7 +34,7 @@ case class Multiplier3(value: Int) extends AnyVal
 @implicitNotFound("Cannot find implicit of type Divider2 in scope")
 case class Divider3(value: Int) extends AnyVal
 
-object ImplicitOps2 extends App {
+object ImplicitValues3 extends App {
   implicit val defaultMultiplier = Multiplier3(2)
 
   implicit val defaultDivider = Divider3(3)
