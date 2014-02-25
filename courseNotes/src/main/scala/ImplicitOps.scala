@@ -95,12 +95,6 @@ object YellerMain extends App {
   println("Look out".yell)
 }
 
-object AppleFanBoi extends App {
-  implicit class IosInt(i: Int) { def s: Int = i + 1 }
-
-  println(s"I have an iPhone ${4.s}")
-}
-
 package efficientYeller {
   /** This value class does not require new object allocations */
   case class Yeller(val s: String) extends AnyVal {
