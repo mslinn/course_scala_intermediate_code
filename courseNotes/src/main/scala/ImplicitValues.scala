@@ -28,10 +28,10 @@ object ImplicitValues2 extends App {
   println(s"divide(9)=${divide(9)}")
 }
 
-@implicitNotFound("Cannot find implicit of type Multiplier2 in scope")
+@implicitNotFound("Cannot find implicit of type Multiplier3 in scope")
 case class Multiplier3(value: Int) extends AnyVal
 
-@implicitNotFound("Cannot find implicit of type Divider2 in scope")
+@implicitNotFound("Cannot find implicit of type Divider3 in scope")
 case class Divider3(value: Int) extends AnyVal
 
 object ImplicitValues3 extends App {
@@ -46,6 +46,27 @@ object ImplicitValues3 extends App {
   println(s"multiply(2)(3)=${multiply(2)(Multiplier3(3))}")
   println(s"multiply(5)=${multiply(5)}")
   println(s"divide(12)(4)=${divide(12)(Divider3(4))}")
+  println(s"divide(9)=${divide(9)}")
+}
+
+@implicitNotFound("Cannot find implicit of type Multiplier4 in scope")
+class Multiplier4(value: Int) extends AnyVal
+
+@implicitNotFound("Cannot find implicit of type Divider4 in scope")
+class Divider4(value: Int) extends AnyVal
+
+object ImplicitValues4 extends App {
+  implicit val defaultMultiplier = Multiplier4(2)
+
+  implicit val defaultDivider = Divider4(3)
+
+  def multiply(value: Int)(implicit multiplier: Multiplier4): Int = value * multiplier.value
+
+  def divide(value: Int)(implicit divider: Divider4): Int = value / divider.value
+
+  println(s"multiply(2)(3)=${multiply(2)(Multiplier4(3))}")
+  println(s"multiply(5)=${multiply(5)}")
+  println(s"divide(12)(4)=${divide(12)(Divider4(4))}")
   println(s"divide(9)=${divide(9)}")
 }
 
