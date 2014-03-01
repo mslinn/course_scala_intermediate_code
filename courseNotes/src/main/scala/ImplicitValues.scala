@@ -49,24 +49,24 @@ object ImplicitValues3 extends App {
   println(s"divide(9)=${divide(9)}")
 }
 
-@implicitNotFound("Cannot find implicit of type Multiplier4 in scope")
-class Multiplier4(value: Int) extends AnyVal
-
-@implicitNotFound("Cannot find implicit of type Divider4 in scope")
-class Divider4(value: Int) extends AnyVal
-
 object ImplicitValues4 extends App {
-  implicit val defaultMultiplier = Multiplier4(2)
+  @implicitNotFound("Cannot find implicit of type Multiplier4 in scope")
+  class Multiplier4(val value: Int) extends AnyVal
 
-  implicit val defaultDivider = Divider4(3)
+  @implicitNotFound("Cannot find implicit of type Divider4 in scope")
+  class Divider4(val value: Int) extends AnyVal
+
+  implicit val defaultMultiplier = new Multiplier4(2)
+
+  implicit val defaultDivider = new Divider4(3)
 
   def multiply(value: Int)(implicit multiplier: Multiplier4): Int = value * multiplier.value
 
   def divide(value: Int)(implicit divider: Divider4): Int = value / divider.value
 
-  println(s"multiply(2)(3)=${multiply(2)(Multiplier4(3))}")
+  println(s"multiply(2)(3)=${multiply(2)(new Multiplier4(3))}")
   println(s"multiply(5)=${multiply(5)}")
-  println(s"divide(12)(4)=${divide(12)(Divider4(4))}")
+  println(s"divide(12)(4)=${divide(12)(new Divider4(4))}")
   println(s"divide(9)=${divide(9)}")
 }
 
@@ -88,37 +88,4 @@ object With2 extends App {
     println(double)
     println(triple)
   }
-}
-
-package yeller {
-  case class Yeller(s: String) {
-    def yell: String = s.toUpperCase + "!!"
-  }
-
-  object `package` {
-    implicit def stringToYeller(s: String): Yeller = Yeller(s)
-  }
-}
-
-object YellerMain extends App {
-  import yeller._
-
-  println("Look out".yell)
-}
-
-package efficientYeller {
-  /** This value class does not require new object allocations */
-  case class Yeller(val s: String) extends AnyVal {
-    def yell: String = s.toUpperCase + "!!"
-  }
-
-  object `package` {
-    implicit def stringToYeller(s: String): Yeller = Yeller(s)
-  }
-}
-
-object EfficientYellerMain extends App {
-  import efficientYeller._
-
-  println("Look out".yell)
 }

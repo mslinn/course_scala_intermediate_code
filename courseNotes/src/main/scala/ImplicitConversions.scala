@@ -17,6 +17,22 @@ object ImplicitConversions extends App {
   println(s"divide(9)=${divide(9)}")
 }
 
+package yeller {
+  case class Yeller(s: String) {
+    def yell: String = s.toUpperCase + "!!"
+  }
+
+  object `package` {
+    implicit def stringToYeller(s: String): Yeller = Yeller(s)
+  }
+}
+
+object YellerMain extends App {
+  import yeller._
+
+  println("Look out".yell)
+}
+
 object ImplicitDefaultValues extends App {
   def asdf(implicit x: Int=3): Unit = println(x)
 
