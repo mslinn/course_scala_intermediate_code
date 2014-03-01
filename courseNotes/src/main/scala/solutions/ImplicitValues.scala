@@ -22,12 +22,12 @@ object ImplicitValues extends App {
 
   def divide(value: Int)(implicit divider: Divider4): Int = value / divider.value
 
-  def square()(implicit squarer: Squarer): Int = squarer.value * squarer.value
+  def square(implicit squarer: Squarer): Int = squarer.value * squarer.value
 
   println(s"multiply(2)(3)=${multiply(2)(new Multiplier4(3))}")
   println(s"multiply(5)=${multiply(5)}")
   println(s"divide(12)(4)=${divide(12)(new Divider4(4))}")
   println(s"divide(9)=${divide(9)}")
-  println(s"square(5)=${square()(new Squarer(5))}")
-  println(s"square()=${square()}")
+  println(s"square(5)=${square(new Squarer(5))}")
+  println(s"square=${square}")
 }
