@@ -1,4 +1,4 @@
-package solutions.yeller
+package solutions
 
 case class Yeller(s: String) extends AnyVal {
   def yell: String = s.toUpperCase + "!!"
