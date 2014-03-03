@@ -36,9 +36,43 @@ object YellerMain extends App {
 object ImplicitDefaultValues extends App {
   def asdf(implicit x: Int=3): Unit = println(x)
 
-  implicit val y=2
+  implicit val y = 2
 
-  println(s"""asdf()=${asdf()}""")
+  println(s"""asdf=$asdf""")
+}
+
+object InnerScope {
+  implicit val list2 = List(1, 2, 3)
+
+  def res(implicit list: List[Int]): List[Int] = list
+}
+
+object OuterScope extends App {
+  implicit val list = List(1, 2)
+
+  println(InnerScope.res)
+}
+
+object ImportedImplicit extends App {
+  import InnerScope._
+
+  println(res)
+}
+
+object CompanionScope extends App {
+  class A(val n: Int) {
+    def +(other: A) = new A(n + other.n)
+  }
+
+  object A {
+    implicit def fromInt(n: Int) = new A(n)
+  }
+
+  val x = 1 + new A(1) // is converted into:
+  val y = A.fromInt(1) + new A(1)
+
+  println(s"x.n=${x.n}")
+  println(s"y.n=${y.n}")
 }
 
 object ImplicitCoercion extends App {
