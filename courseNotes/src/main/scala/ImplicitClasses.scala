@@ -10,12 +10,6 @@ object ImplicitValueClass extends App {
   println(s"5L.length=${5L.length}")
 }
 
-object AppleFanBoi extends App {
-  implicit class IosInt(val i: Int) extends AnyVal { def s: Int = i + 1 }
-
-  println(s"I have an iPhone ${4.s}")
-}
-
 object EnhanceMyLibrary extends App {
   case class Dog(name: String) {
     override def equals(that: Any): Boolean = canEqual(that) && hashCode==that.hashCode
