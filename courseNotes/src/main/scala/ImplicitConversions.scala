@@ -77,8 +77,11 @@ object CompanionScope extends App {
 
 object ImplicitCoercion extends App {
   case class Complex(re: Double, im: Double) {
-    def + (another: Complex) =
-      new Complex(re + another.re, im + another.im)
+    def + (that: Complex) = new Complex(re + that.re, im + that.im)
+
+    def -(that: Complex) =  new Complex(this.re - that.re, this.im - that.im)
+
+    override def toString = s"$re + ${im}i"
   }
 
   implicit def doubleToComplex(d: Double) = Complex(d, 0)
