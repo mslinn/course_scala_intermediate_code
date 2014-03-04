@@ -24,14 +24,15 @@ object ImplicitCoercion extends App {
   println(s"""Complex(2, 5) + 5.0 = ${Complex(2, 5) + 5.0}""")
   println(s"""5.0 + Complex(1, -2) = ${5.0 + Complex(1, -2)}""")
 
-  println(s"""Complex(2.0f, 5) + 5.0 = ${Complex(2.0f, 5) + 5.0}""")
-  println(s"""Complex(2, 5.0f) + 5.0 = ${Complex(2, 5.0f) + 5.0}""")
-  println(s"""Complex(2.0f, 5.0f) + 5.0 = ${Complex(2.0f, 5.0f) + 5.0}""")
+  println(s"""Complex(2, 5) + (2f, 5) = ${Complex(2, 5) + (2f, 5)}""")
+  println(s"""Complex(2, 5) + (2, 5f) = ${Complex(2, 5) + (2, 5f)}""")
+  println(s"""Complex(2, 5) + (2f, 5f) = ${Complex(2, 5) + (2f, 5f)}""")
 
-  println(s"""Complex(2.0d, 5) + 5.0 = ${Complex(2.0d, 5) + 5.0}""")
-  println(s"""Complex(2, 5.0d) + 5.0 = ${Complex(2, 5.0d) + 5.0}""")
+  println(s"""Complex(2, 5) + (2d, 5) = ${Complex(2, 5) + (2d, 5)}""")
+  println(s"""Complex(2, 5) + (2, 5d) = ${Complex(2, 5) + (2, 5d)}""")
+  println(s"""Complex(2, 5) + (2d, 5d) = ${Complex(2, 5) + (2d, 5d)}""")
 
-  println(s"""Complex(2.0f, 5.0d) + 5.0 = ${Complex(2.0f, 5.0d) + 5.0}""")
-  println(s"""Complex(2.0d, 5.0f) + 5.0 = ${Complex(2.0d, 5.0f) + 5.0}""")
-  println(s"""Complex(2.0d, 5.0d) + 5.0 = ${Complex(2.0d, 5.0d) + 5.0}""")
+  println(s"""Complex(2, 5) + (2f, 5d) = ${Complex(2, 5) + (2f, 5d)}""")
+  println(s"""Complex(2, 5) + (2d, 5f) = ${Complex(2, 5) + (2d, 5f)}""")
+  println(s"""Complex(2, 5) + (2d, 5d) = ${Complex(2, 5) + (2d, 5d)}""")
 }
