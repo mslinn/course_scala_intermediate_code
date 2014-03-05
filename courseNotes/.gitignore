@@ -1,4 +1,6 @@
 .classpath
+dirContents.txt
+scalaCourses.html
 *-
 bin/
 .worksheet/
