@@ -16,14 +16,14 @@ object URLBuilderDemo extends App {
   import java.net.URL
 
   new URL("http://scalacourses.com") #> new File("scalaCourses.html") !;
-  println("cat scalaCourses.html" !)
+  println("cat scalaCourses.html" !!)
 }
 
 object FileBuilderDemo extends App {
   import java.io.File
 
   "ls" #> new File("dirContents.txt") !;
-  println("cat dirContents.txt" !)
+  println("cat dirContents.txt" !!)
 }
 
 object ComposedPBuilders extends App {
