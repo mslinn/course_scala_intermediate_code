@@ -7,9 +7,8 @@ object ProcessIO extends App {
   val fileNames = "ls" !!;
   println(s"fileNames=$fileNames")
 
-  val grepX = "printf %s xray\\nyankee\\nzulu" #> "grep x" !!;
+  val grepX = "printf xray\\nyankee\\nzulu" #> "grep x" !!;
   println(s"grepX=$grepX")
-
 }
 
 object URLBuilderDemo extends App {
