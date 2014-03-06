@@ -13,6 +13,14 @@ object IoSource extends App {
   println(s"${rootLines2.length} lines printed from /etc/passwd:\n  " + rootLines2.mkString("\n  "))
 }
 
+object Writing extends App {
+  import java.io.{File, PrintWriter}
+
+  val writer = new PrintWriter(new File("test.txt"))
+  writer.write("Hello Scala")
+  writer.close()
+}
+
 object BinaryIO extends App {
   val scalaCompilerPath: String = {
     import sys.process._
