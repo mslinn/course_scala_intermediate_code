@@ -6,7 +6,7 @@ import java.net.URL
 object MemoryProcess extends App {
   val p = Process(new URL("https://raw.github.com/mslinn/ExecutorBenchmark/master/README.md"))
   val os = new java.io.ByteArrayOutputStream
-  p #> os !!;
+  p #> os !;
   os.toString.split(" ") foreach { w =>
     val word = w.length match {
       case 0 => ""
