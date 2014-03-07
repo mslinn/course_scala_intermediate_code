@@ -39,3 +39,22 @@ object TimedFun extends App {
     i = i + 1
   }
 }
+
+object TimedPi extends App {
+  def time(block: => Any): Any = {
+    val t0 = System.nanoTime()
+    val result: Any = block
+    val elapsedMs = (System.nanoTime() - t0) / 1000000
+    println("Elapsed time: " + elapsedMs + "ms")
+    result
+  }
+
+  def calculatePiFor(decimalPlaces: Int): Double = {
+    var acc = 0.0
+    for (i <- 0 until decimalPlaces)
+      acc += 4.0 * (1 - (i % 2) * 2) / (2 * i + 1)
+    acc
+  }
+
+  time(calculatePiFor(100000))
+}
