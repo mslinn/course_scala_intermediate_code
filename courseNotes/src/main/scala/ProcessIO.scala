@@ -14,6 +14,7 @@ object ProcessIO extends App {
 object URLBuilderDemo extends App {
   import java.io.File
   import java.net.URL
+  import sys.process._
 
   new URL("http://scalacourses.com") #> new File("scalaCourses.html") !;
   println("cat scalaCourses.html" !!)
@@ -21,6 +22,7 @@ object URLBuilderDemo extends App {
 
 object FileBuilderDemo extends App {
   import java.io.File
+  import sys.process._
 
   "ls" #> new File("dirContents.txt") !;
   println("cat dirContents.txt" !!)
