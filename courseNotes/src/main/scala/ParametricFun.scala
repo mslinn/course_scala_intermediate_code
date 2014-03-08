@@ -78,15 +78,15 @@ package parametricSimulation {
 }
 
 object Ternary1 extends App {
-  class IfTrue[A](b: => Boolean, t: => A) {
-    def |(f: => A): A = if (b) t else f
+  class TernaryThen(predicate: => Boolean) {
+    def ?[A](thenClause: => A) = new TernaryEval(thenClause)
+
+    class TernaryEval[A](thenClause: => A) {
+      def |(elseClause: => A): A = if (predicate) thenClause else elseClause
+    }
   }
 
-  class MakeIfTrue(b: => Boolean) {
-    def ?[A](t: => A) = new IfTrue[A](b, t)
-  }
-
-  implicit def autoMakeIfTrue(b: => Boolean) = new MakeIfTrue(b)
+  implicit def toTernaryThen(predicate: => Boolean) = new TernaryThen(predicate)
 
   println(s"""(4*4 > 14) ? "Yes" | "No" = ${(4*4 > 14) ? "Yes" | "No"}""")
 
@@ -95,25 +95,26 @@ object Ternary1 extends App {
 }
 
 object Ternary2 extends App {
-  implicit def boolToOperator(c: Boolean) = new {
-    def ?[A](t: => A) = new {
-      def |(f: => A) = if(c) t else f
+  implicit def boolToOperator(predicate: Boolean) = new {
+    def ?[A](trueClause: => A) = new {
+      def |(falseClause: => A) = if (predicate) trueClause else falseClause
     }
   }
 
   println(s"""(4*4 > 14) ? "Yes" | "No" = ${(4*4 > 14) ? "Yes" | "No"}""")
+  val result = (4*4 > 14).?("Yes").|("No")
 }
 
 object RichInterface extends App {
   trait RichIterable[A] {
     def iterator: java.util.Iterator[A]           // contract method
 
-    def foreach(f: A => Unit) = {
+    def foreach(f: A => Unit): Unit = {
       val iter = iterator
       while (iter.hasNext) f(iter.next)
     }
 
-    def foldLeft[B](seed: B)(f: (B, A) => B) = {
+    def foldLeft[B](seed: B)(f: (B, A) => B): B = {
       var result = seed
       foreach(e => result = f(result, e))
       result
