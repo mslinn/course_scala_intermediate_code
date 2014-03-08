@@ -1,6 +1,6 @@
 import scala.collection.parallel.ParSeq
 
-object ParFun extends App {
+object ParallelFun extends App {
   def calculatePiFor(decimals: Int): Double = {
     var acc = 0.0
     for (i <- 0 until decimals)
