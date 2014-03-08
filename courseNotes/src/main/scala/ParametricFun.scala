@@ -107,16 +107,18 @@ object Ternary2 extends App {
 
 object RichInterface extends App {
   trait RichIterable[A] {
-    def iterator: java.util.Iterator[A]           // contract method
+    def iterator: java.util.Iterator[A]
 
     def foreach(f: A => Unit): Unit = {
       val iter = iterator
       while (iter.hasNext) f(iter.next)
     }
 
-    def foldLeft[B](seed: B)(f: (B, A) => B): B = {
-      var result = seed
-      foreach(e => result = f(result, e))
+    def reduceLeft(seed: A)(f: (A, A) => A): A = {
+      var result: A = seed
+      foreach { item =>
+        result = f(result, item)
+      }
       result
     }
   }
@@ -126,6 +128,6 @@ object RichInterface extends App {
   richSet.add(2)
   richSet.add(6)
   richSet.add(13)
-  val total = richSet.foldLeft(0)((x, y) => x + y)
+  val total = richSet.reduceLeft(0)(_ + _)
   println(s"richSet = ${richSet.toArray.mkString(", ")}; total = $total")
 }
