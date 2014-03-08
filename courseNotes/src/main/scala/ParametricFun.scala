@@ -35,3 +35,34 @@ object TimeableT extends App {
   println("Pi=" + new Timeable[Double].time { calculatePiFor(100000) })
   println("page=" + new Timeable[String].time { io.Source.fromURL("http://scalacourses.com").mkString.trim })
 }
+
+package parametricSimulation {
+  abstract class AbstractSimulation[X, Y, Z] {
+    def simulate(x: X, y: Y, z: Z): String
+  }
+
+  object AbstractSimulation {
+    implicit lazy val defaultSimulation = new AbstractSimulation[Int, Double, String] {
+      def simulate(x: Int, y: Double, z: String) = s"Companion simulation: $x, $y, $z"
+    }
+  }
+
+  trait Implicit {
+    implicit lazy val defaultSimulation = new AbstractSimulation[Int, Double, String] {
+      def simulate(x: Int, y: Double, z: String) = s"Implicit simulation: $x, $y, $z"
+    }
+  }
+
+  object ParametricSimulation extends App {
+    object CompanionSimulation {
+      println(implicitly[AbstractSimulation[Int, Double, String]].simulate(1, 2, "three"))
+    }
+
+    object TraitSimulation extends Implicit {
+      println(implicitly[AbstractSimulation[Int, Double, String]].simulate(10, 20, "thirty"))
+    }
+
+    CompanionSimulation
+    TraitSimulation
+  }
+}
