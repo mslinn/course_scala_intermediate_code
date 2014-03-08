@@ -58,3 +58,22 @@ object TimedPi extends App {
 
   println(time(calculatePiFor(100000)))
 }
+
+object BinaryIO extends App {
+  val scalaCompilerPath: String = {
+    import sys.process._
+    ("which scalac" !!).trim
+  }
+
+  val compilerObject1 = io.Source.fromFile(scalaCompilerPath, "ISO-8859-1").map(_.toByte).toArray
+
+  val compilerObject2 = scala.io.Source.fromFile(scalaCompilerPath, "ISO-8859-1")
+  val compilerAsByteArray = compilerObject2.map(_.toByte).toArray
+  compilerObject2.close()
+
+  val compilerAsByteArray2 = try { compilerObject2.map(_.toByte).toArray } finally { compilerObject2.close() }
+
+  val bis = new java.io.BufferedInputStream(new java.io.FileInputStream(scalaCompilerPath))
+  val compilerAsByteArray3 = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
+  bis.close()
+}
