@@ -103,3 +103,28 @@ object Ternary2 extends App {
 
   println(s"""(4*4 > 14) ? "Yes" | "No" = ${(4*4 > 14) ? "Yes" | "No"}""")
 }
+
+object RichInterface extends App {
+  trait RichIterable[A] {
+    def iterator: java.util.Iterator[A]           // contract method
+
+    def foreach(f: A => Unit) = {
+      val iter = iterator
+      while (iter.hasNext) f(iter.next)
+    }
+
+    def foldLeft[B](seed: B)(f: (B, A) => B) = {
+      var result = seed
+      foreach(e => result = f(result, e))
+      result
+    }
+  }
+
+  val richSet = new java.util.HashSet[Int] with RichIterable[Int]
+  richSet.add(1)
+  richSet.add(2)
+  richSet.add(6)
+  richSet.add(13)
+  val total = richSet.foldLeft(0)((x, y) => x + y)
+  println(s"richSet = ${richSet.toArray.mkString(", ")}; total = $total")
+}
