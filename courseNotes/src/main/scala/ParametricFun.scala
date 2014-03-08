@@ -36,6 +36,16 @@ object TimeableT extends App {
   println("page=" + new Timeable[String].time { io.Source.fromURL("http://scalacourses.com").mkString.trim })
 }
 
+object ParametricWith extends App {
+  def withT[T](t: T)(operation: T => Unit):  Unit = { operation(t) }
+
+  withT(6) { i => println( i * 2) }
+  withT(new java.util.Date) { println }
+  withT(Blarg(1, "hi")) { blarg => println(blarg) }
+
+  case class Blarg(i: Int, s: String)
+}
+
 package parametricSimulation {
   abstract class AbstractSimulation[X, Y, Z] {
     def simulate(x: X, y: Y, z: Z): String
@@ -65,4 +75,31 @@ package parametricSimulation {
     CompanionSimulation
     TraitSimulation
   }
+}
+
+object Ternary1 extends App {
+  class IfTrue[A](b: => Boolean, t: => A) {
+    def |(f: => A): A = if (b) t else f
+  }
+
+  class MakeIfTrue(b: => Boolean) {
+    def ?[A](t: => A) = new IfTrue[A](b, t)
+  }
+
+  implicit def autoMakeIfTrue(b: => Boolean) = new MakeIfTrue(b)
+
+  println(s"""(4*4 > 14) ? "Yes" | "No" = ${(4*4 > 14) ? "Yes" | "No"}""")
+
+  val x = (4*4 > 14) ? "Yup"
+  println(s"""(4*4 > 14) ? "Yup" | "Nope" = ${x | "Nope"}""")
+}
+
+object Ternary2 extends App {
+  implicit def boolToOperator(c: Boolean) = new {
+    def ?[A](t: => A) = new {
+      def |(f: => A) = if(c) t else f
+    }
+  }
+
+  println(s"""(4*4 > 14) ? "Yes" | "No" = ${(4*4 > 14) ? "Yes" | "No"}""")
 }
