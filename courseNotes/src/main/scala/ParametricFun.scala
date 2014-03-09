@@ -114,7 +114,7 @@ object RichInterface extends App {
       while (iter.hasNext) f(iter.next)
     }
 
-    def reduceLeft(seed: A)(f: (A, A) => A): A = {
+    def foldLeft(seed: A)(f: (A, A) => A): A = {
       var result: A = seed
       foreach { item =>
         result = f(result, item)
@@ -128,6 +128,6 @@ object RichInterface extends App {
   richSet.add(2)
   richSet.add(6)
   richSet.add(13)
-  val total = richSet.reduceLeft(0)(_ + _)
+  val total = richSet.foldLeft(0)(_ + _)
   println(s"richSet = ${richSet.toArray.mkString(", ")}; total = $total")
 }
