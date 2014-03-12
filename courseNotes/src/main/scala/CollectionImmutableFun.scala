@@ -67,5 +67,11 @@ object CollectionImmutableFun extends App {
   println(s"""ids.take(5).toVector = ${ids.take(5).toVector}""")
   println(s"""ids.head = ${ids.head}""")
 
-  val stream = Stream.continually(System.nanoTime).takeWhile(_ => !Console.readLine("\nMore? <Y/n>: ").toLowerCase.startsWith("n"))
+  def gotMore: Boolean = {
+    val line = Console.readLine("\nMore? <Y/n>: ")
+    val result = line.toLowerCase.startsWith("n")
+    !result
+  }
+
+  Iterator.continually(System.nanoTime).takeWhile { time => gotMore }.foreach(println)
 }
