@@ -43,6 +43,9 @@ object CollectionFun extends App {
   println(s"""mutable.HashSet(1, 1, 2) = ${mutable.HashSet(1, 1, 2)}""")
   println(s"""mutable.LinkedHashSet(4, 4, 4) = ${mutable.LinkedHashSet(4, 4, 4)}""")
 
+  val mapFruit = Map(1 -> "apricot", 2 -> "banana", 3 -> "clementine", 4 -> "durian", 5 -> "fig", 6 -> "guava", 7 -> "jackfruit", 8 -> "kiwi", 9 -> "lime", 10 -> "mango")
+  println(s"""mapFruit.mapValues(_ capitalize) = ${mapFruit.mapValues(_ capitalize)}""")
+
   val set2 = mutable.HashSet.empty[String]
   set2 += "Buy a dog"
   set2 += "Sell the cat"
