@@ -26,17 +26,18 @@ object ParMonkeys extends App {
 
   /** find the longest common substring where the target is matched against each segment of monkeyString */
   def simMonkeys (numSims: Int, simStrLen: Int, target: String): String = {
-    val matchLimit = simStrLen-target.length
+    val matchLimit = simStrLen - target.length
 
-    // find the longest common substring where the target is
-    // matched against each segment of monkeyString
-    def longestCommonSubstring(monkeyString: String) =
-    (0 to matchLimit).par
-      .map(j=>matchSubstring(monkeyString.drop(j), target))
-      .foldLeft("")(longestStr)
+    /** find the longest common substring where the target is matched against each segment of monkeyString */
+    def longestCommonSubstring(monkeyString: String): String = {
+      (0 until matchLimit).par
+        .map(j => matchSubstring(monkeyString.drop(j), target))
+        .foldLeft("")(longestStr)
+    }
+
     (1 to numSims).par
-    .map(_=>longestCommonSubstring(randomString2(simStrLen)))
-    .foldLeft("")(longestStr)
+      .map(_ => longestCommonSubstring(randomString2(simStrLen)))
+      .foldLeft("")(longestStr)
   }
-  println("longest common monkey substring: '" + simMonkeys(50000, 1000, target) + "'")
+  println("Longest common substring: '" + simMonkeys(50000, 100, target) + "'")
 }
