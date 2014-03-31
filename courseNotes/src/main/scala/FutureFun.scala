@@ -13,7 +13,8 @@ object FutureFun extends App {
 //  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
 //  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
-  val urls2 = List("http://www.scalacourses.com", "http://www.not_really_here.com", "http://www.micronauticsresearch.com")
+  //val urls2 = List("http://www.scalacourses.com", "http://www.not_really_here.com", "http://www.micronauticsresearch.com")
+  val urls2 = List("http://www.scalacourses.com", "http://www.micronauticsresearch.com")
 
   def readUrl(url: String): String = Source.fromURL(url).mkString
 
@@ -42,20 +43,43 @@ object FutureFun extends App {
     println()
   }
 
+  val futures = urls2.map(u => Future(io.Source.fromURL(u).mkString))
+  val fs = Future.sequence(futures)
+
+  for {
+    allDone <- fs
+    (url, content) <- urls2 zip allDone if content.toLowerCase.contains("scala")
+  } println(url)
+
   urlSearch("scala", urls2)
   synchronized { wait() } // let daemon threads continue
 }
 
 object ForComp1 extends App {
+  val list: List[Int] = for {
+    x <- List(1+2)
+    y <- List(2+3)
+    z <- List(4+5, 7)
+  } yield x + y + z
+
+  val option: Option[Int] = for {
+    x <- Option(1+2)
+    y <- Option(2+3) if y==x
+    z <- Option(4+5) if z>y
+  } yield x + y + z
+
+  val f1 = Future(1+2)
+  val f2 = Future(3+4)
+  val f3 = Future(4+5)
   val future4: Future[Int] = for {
-    x <- Future(1+2)
-    y <- Future(2+3)
-    z <- Future(4+5)
+    x <- f1
+    y <- f2
+    z <- f3
   } yield x + y + z
   future4 onComplete {
     case Success(r) =>
-      println(s"Success: $r")
-      System.exit(0)
+            println(s"Success: $r")
+            System.exit(0)
     case Failure(ex) =>
       println(s"Failure: ${ex.getMessage}")
       System.exit(0)
