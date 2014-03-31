@@ -1,14 +1,18 @@
 package solutions
 
 import java.security.MessageDigest
-import java.io.FileInputStream
+import java.io.{FileInputStream, InputStream}
 
 object SHA1 extends App {
-  def digest(fileName: String, algorithm: String="SHA-256"): Array[Byte] = {
+  def digest(fileName: String, algorithm: String): Array[Byte] = {
+    val inStream = new FileInputStream(fileName)
+    digest(inStream, algorithm)
+  }
+
+  def digest(inStream: InputStream, algorithm: String="SHA-256"): Array[Byte] = {
     val md = MessageDigest.getInstance(algorithm)
-    val input = new FileInputStream(fileName)
     val buffer = new Array[Byte](1024)
-    Iterator.continually { input.read(buffer) }
+    Iterator.continually { inStream.read(buffer) }
       .takeWhile(_ != -1)
       .foreach { md.update(buffer, 0, _) }
     md.digest
