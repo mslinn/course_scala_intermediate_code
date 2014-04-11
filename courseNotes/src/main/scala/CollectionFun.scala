@@ -23,7 +23,7 @@ object CollectionFun extends App {
   println(s"map.get(1) = ${map.get(1)}")
   println(s"map(1) = ${map(1)}")
   println(s"map.get(0) = ${map.get(0)}")
-  println(s"map(0) = ${map(0)}")
+  //println(s"map(0) = ${map(0)}")  // java.util.NoSuchElementException: key not found: 0
 
   val map2 = mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea").withDefaultValue("eh")
   println(s"map2(0) = ${map2(0)}")
@@ -50,6 +50,26 @@ object CollectionFun extends App {
   set2 += "Buy a dog"
   set2 += "Sell the cat"
   println(s"set2 = $set2")
+
+  val emptyImmutableBits = immutable.BitSet.empty
+  val emptyMutableBits = mutable.BitSet.empty
+
+  val primebits = immutable.BitSet(2, 3, 5, 7, 11)
+  val evenBits =  immutable.BitSet(0, 2, 4, 6, 8, 10)
+
+  val evenSet = Set(0, 2, 4, 6, 8, 10)
+  val primeList = List(19, 23, 29)
+
+  println(s"""primebits & evenBits = ${primebits & evenBits}""")
+  println(s"""primebits & evenSet = ${primebits & evenSet}""")
+  println(s"""primebits &~ evenBits = ${primebits &~ evenBits}""")
+  println(s"""primebits &~ evenSet = ${primebits &~ evenSet}""")
+
+  val morePrimes = primebits + 13 + 17
+  println(s"""morePrimes = $morePrimes""")
+  println(s"""morePrimes ++ primeList = ${morePrimes ++ primeList}""")
+  println(s"""morePrimes - 11 = ${morePrimes - 11}""")
+  println(s"""morePrimes -- evenBits = ${morePrimes -- evenBits}""")
 
   def doSomething(set: Set[Int]): Unit = println(set.mkString(", "))
 
