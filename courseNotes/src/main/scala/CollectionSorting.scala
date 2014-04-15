@@ -29,7 +29,12 @@ object CollectionSorting extends App {
   println(s"""thing1>=thing2 = ${thing1>=thing2}""")
 
   val things = Array(thing2, thing1, thing3)
-  println(s"""things.sorted = ${things.sorted}""")
+  println(s"""things.sorted = ${things.sorted.mkString(", ")}""")
+  println(s"""things before quicksort = ${things.mkString(", ")}""")
+  util.Sorting.quickSort(things) // modifies things Array
+  println(s"""things after quicksort = ${things.mkString(", ")}""")
+  println(s"""things.sortWith((x, y) => x.i > y.i)=${things.sortWith((x, y) => x.i > y.i).mkString(", ")}""")
+  println(s"""things.sortWith((x, y) => x.s > y.s)=${things.sortWith((x, y) => x.s > y.s).mkString(", ")}""")
 
   class Thang(val i: Int, val s: String) extends Ordering[Thang] {
     def compare(a: Thang, b: Thang) =  {
@@ -57,11 +62,26 @@ object CollectionSorting extends App {
   val orderByS = Ordering.by { thang: Thang => thang.s }
   val thangs = Array(new Thang(1, "x"), new Thang (33, "b"), new Thang(4, "m"))
 
-  println(s"""thangs.sorted(orderByI) = ${thangs.sorted(orderByI)}""")
-  println(s"""thangs.sorted(orderByS) = ${thangs.sorted(orderByS)}""")
+  println(s"""thangs = ${thangs.mkString(", ")}""")
+  println(s"""thangs.sorted(orderByI) = ${thangs.sorted(orderByI).mkString(", ")}""")
+  println(s"""thangs.sorted(orderByS) = ${thangs.sorted(orderByS).mkString(", ")}""")
 
   val ordering = implicitly[Ordering[(Int, String)]]
   println(s"""ordering.compare( (1, "b"), (1, "a") ) = ${ordering.compare( (1, "b"), (1, "a") )}""")
   println(s"""ordering.compare( (1, "b"), (1, "b") ) = ${ordering.compare( (1, "b"), (1, "b") )}""")
   println(s"""ordering.compare( (1, "b"), (1, "c") ) = ${ordering.compare( (1, "b"), (1, "c") )}""")
+}
+
+object PersonSorting extends App {
+  case class Person(name: String)
+
+  val array = Array(Person("Chloe"), Person("Andrea"), Person("BeeKay"))
+
+  class OrderedPerson(val person: Person) extends AnyVal with Ordered[Person] {
+    def compare(that: Person) = person.name.compare(that.name)
+  }
+
+  implicit def personToOrdered(p: Person) = new OrderedPerson(p)
+
+  util.Sorting.quickSort(array)
 }
