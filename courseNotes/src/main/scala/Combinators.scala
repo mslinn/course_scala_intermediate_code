@@ -1,3 +1,38 @@
+object BoundAndGagged extends App {
+  import akka.actor.ActorSystem
+  import concurrent.duration._
+  import concurrent.ExecutionContext.Implicits.global
+
+  case class Blarg(i: Int, s: String)
+
+  object OtherContext {
+    var externallyBoundVar = Blarg(0, "")
+  }
+
+  import OtherContext.externallyBoundVar
+
+  case class BadContainer(blarg: Blarg) {
+    /** This function is not a combinator because it accesses boundVar, which is external state. BAD! */
+    def unpredictable(f: Blarg => Blarg): Blarg = f(blarg.copy(i=blarg.i + externallyBoundVar.i))
+  }
+
+  val system = ActorSystem()
+  // Continuously modify externallyBoundVar on another thread
+  system.scheduler.schedule(0 milliseconds, 50 milliseconds) {
+    externallyBoundVar =  if (System.currentTimeMillis % 2 == 0) externallyBoundVar else externallyBoundVar.copy(i=externallyBoundVar.i + 1)
+  }
+
+  val blarg = Blarg(1, "hello")
+  do {
+    val badContainer = BadContainer(blarg).unpredictable { blarg => blarg.copy(i=blarg.i*2) }
+    println(s"badContainer returned ${badContainer.i}")
+    if ( badContainer.i>=3) {
+      system.shutdown()
+      sys.exit(0)
+    }
+  } while (true)
+}
+
 object Combinators extends App {
   val vector = Vector(0, 1, 2, 3)
   println(s"""vector.map( _/2 ) = ${vector.map( _/2 )}""")
