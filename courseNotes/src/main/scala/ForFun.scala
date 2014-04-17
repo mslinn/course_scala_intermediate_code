@@ -1,4 +1,4 @@
-object MonadicFun extends App {
+object ForFun extends App {
   println(s"""List(1, 2, 3).map(x => x.toString) = ${List(1, 2, 3).map(x => x.toString)}""")
   println(s"""List(1, 2, 3).map(_.toString) = ${List(1, 2, 3).map(_.toString)}""")
   println(s"""Vector(Some(1), None, Some(3), Some(4)).flatten = ${Vector(Some(1), None, Some(3), Some(4)).flatten}""")
