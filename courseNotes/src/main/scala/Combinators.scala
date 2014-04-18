@@ -36,6 +36,7 @@ object BoundAndGagged extends App {
 object Combinators extends App {
   val vector = Vector(0, 1, 2, 3)
   println(s"""vector.map( _/2 ) = ${vector.map( _/2 )}""")
+  println(s"""vector.map { i => "abcdefg".substring(0, 1 + i) } = ${vector.map { i => "abcdefg".substring(0, 1 + i) }}""")
   println(s"""vector.filter( _%2==0 ) = ${vector.filter( _%2==0 )}""")
   println(s"""vector.filterNot( _%2==0 ) = ${vector.filterNot( _%2==0 )}""")
   println(s"""vector.partition( _%2==0 ) = ${vector.partition( _%2==0 )}""")
@@ -51,6 +52,14 @@ object Combinators extends App {
   println(s"""vector.exists(_%2==0) = ${vector.exists(_%2==0)}""")
   println(s"""vector.find(_%2==0) = ${vector.find(_%2==0)}""")
   println(s"""vector.forall(_%2==0) = ${vector.forall(_%2==0)}""")
+
+  val vector2 = Vector(Some(1), None, Some(3), Some(4))
+  println(s"""vector2.flatten = ${Vector(Some(1), None, Some(3), Some(4)).flatten}""")
+  println(s"""vector2.filter(_.isDefined).flatMap(x => Some(x.get*2)) = ${vector2.filter(_.isDefined).flatMap(x => Some(x.get*2))}""")
+  println(s"""vector2.filter(_.isDefined).map(x => Some(x.get*2)) = ${vector2.filter(_.isDefined).map(x => Some(x.get*2))}""")
+  //println(s"""vector2.flatMap(x => Some(x.get*2)) = ${vector2.flatMap(x => Some(x.get*2))}""")
+  //println(s"""vector2.filter(_.isDefined).flatMap(Some(_.get*2)) = ${vector2.filter(_.isDefined).flatMap(Some(_.get*2))}""")
+
 
   val map = Map(1 -> "eh", 2 -> "bee", 3 -> "sea", 4 -> "d")
   println(s"""map.filter(_._1%2==0) = ${map.filter(_._1%2==0)}""")
