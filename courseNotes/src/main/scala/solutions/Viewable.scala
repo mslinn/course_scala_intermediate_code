@@ -38,7 +38,7 @@ object Viewable extends App {
   implicit def vegetableToMatter[X <% Vegetable](vegetable: X) = Matter(vegetable.name, vegetable.weight)
   implicit def mineralToMatter[X <% Mineral](mineral: X)       = Matter(mineral.name,   mineral.weight)
 
-  println(Animal("Poodle", 1.0, 8.0).megaJouleMsg)
-  println(AppleTree("Spartan", 2.3, 26.2, 12).megaJouleMsg)
-  println(Rock("Quartz crystal", "white", 2.3).megaJouleMsg)
+  //println(Animal("Poodle", 1.0, 8.0).megaJouleMsg)
+  //println(AppleTree("Spartan", 2.3, 26.2, 12).megaJouleMsg)
+  //println(Rock("Quartz crystal", "white", 2.3).megaJouleMsg)
 }
