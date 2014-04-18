@@ -9,7 +9,8 @@ object BoundAndGagged extends App {
 
   case class BadContainer(blarg: Blarg) {
     /** This function is not a combinator because it accesses boundVar, which is external state. BAD! */
-    def unpredictable(f: Blarg => Blarg): Blarg = f(blarg.copy(i=blarg.i + externallyBoundVar.i))
+    def unpredictable(f: Blarg => Blarg): Blarg =
+      f(blarg.copy(i=blarg.i + externallyBoundVar.i))
   }
 
   // start of black box
@@ -18,8 +19,10 @@ object BoundAndGagged extends App {
   import concurrent.ExecutionContext.Implicits.global
 
   val system = ActorSystem()
-  system.scheduler.schedule(0 milliseconds, 50 milliseconds) { // Continuously modify externallyBoundVar on another thread
-    externallyBoundVar =  if (System.currentTimeMillis % 2 == 0) externallyBoundVar else externallyBoundVar.copy(i=externallyBoundVar.i + 1)
+  system.scheduler.schedule(0 milliseconds, 50 milliseconds) {
+    // Continuously modify externallyBoundVar on another thread
+    externallyBoundVar =  if (System.currentTimeMillis % 2 == 0) externallyBoundVar
+      else externallyBoundVar.copy(i=externallyBoundVar.i + 1)
   }
   // end of black box
 
