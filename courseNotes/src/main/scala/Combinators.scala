@@ -1,8 +1,4 @@
 object BoundAndGagged extends App {
-  import akka.actor.ActorSystem
-  import concurrent.duration._
-  import concurrent.ExecutionContext.Implicits.global
-
   case class Blarg(i: Int, s: String)
 
   object OtherContext {
@@ -16,11 +12,16 @@ object BoundAndGagged extends App {
     def unpredictable(f: Blarg => Blarg): Blarg = f(blarg.copy(i=blarg.i + externallyBoundVar.i))
   }
 
+  // start of black box
+  import akka.actor.ActorSystem
+  import concurrent.duration._
+  import concurrent.ExecutionContext.Implicits.global
+
   val system = ActorSystem()
-  // Continuously modify externallyBoundVar on another thread
-  system.scheduler.schedule(0 milliseconds, 50 milliseconds) {
+  system.scheduler.schedule(0 milliseconds, 50 milliseconds) { // Continuously modify externallyBoundVar on another thread
     externallyBoundVar =  if (System.currentTimeMillis % 2 == 0) externallyBoundVar else externallyBoundVar.copy(i=externallyBoundVar.i + 1)
   }
+  // end of black box
 
   val blarg = Blarg(1, "hello")
   do {
