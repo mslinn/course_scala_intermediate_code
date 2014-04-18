@@ -70,8 +70,8 @@ object ResourceAuthorization extends App {
   case class Resource(name: String, id: Long)
   case class AuthorizationToken(user: User, resource: Resource, expires: Date=new Date(System.currentTimeMillis))
 
-  val users = mutable.HashMap.empty[String, User]
-  val resources = mutable.HashMap.empty[Long, Resource]
+  val users          = mutable.HashMap.empty[String, User]
+  val resources      = mutable.HashMap.empty[Long, Resource]
   val resourceAccess = mutable.HashMap.empty[User, List[Resource]]
 
   def add(user: User) = {
@@ -97,8 +97,6 @@ object ResourceAuthorization extends App {
   def findResourceById(resourceId: Long): Option[Resource] = resources.get(resourceId)
 
   def findUserById(userId: String): Option[User] = users.get(userId)
-
-  def isUserAuthorized(user: User, resource: Resource): Boolean = resourceAccess.get(user).isDefined
 
   /** @return Option[authorizationToken] */
   def isUserAuthorized(userId: String, password: String, resourceId: Long): Option[AuthorizationToken] = {
