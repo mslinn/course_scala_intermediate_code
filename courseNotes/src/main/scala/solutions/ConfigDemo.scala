@@ -1,3 +1,5 @@
+package solutions
+
 import com.typesafe.config.{Config, ConfigFactory}
 import collection.JavaConverters._
 
