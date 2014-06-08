@@ -90,7 +90,7 @@ object ForFun3Option2 extends App {
 
   def maybeBBQ: Option[BBQ] = for {
     (wallet2, charcoalBag: CharcoalBag) <- charcoalBagInventory.maybeBuy(wallet).orElse {
-        println("Too poor to buy charcoal.")
+        println("Too poor to buy charcoal and the next door neighbor has none.")
         None
       }
     (wallet3, lighterFluid: LighterFluid) <- lighterFluidInventory.maybeBuy(wallet2).orElse {
