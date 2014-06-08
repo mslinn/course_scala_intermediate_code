@@ -94,14 +94,14 @@ object ForFun3Option2 extends App {
         None
       }
     (wallet3, lighterFluid: LighterFluid) <- lighterFluidInventory.maybeBuy(wallet2).orElse {
-        println("Too poor to buy lighter fluid.")
-        None
+        println("Borrowed some lighter fluid from next door.")
+        Some((wallet2, LighterFluid(3, Money(0)))) // pass back unmodified wallet
       }
     (wallet4, tofu) <- tofuInventory.maybeBuy(wallet3).orElse {
-        println("Too poor to buy tofu.")
-        None
+        println("Borrowed some tofu from next door.")
+        Some((wallet3, Tofu(1, Money(0))))  // pass back unmodified wallet
       }
-    wallet = wallet4 // only reduce wallet contents if all purchases succeed
+    wallet = wallet4 // only  spend money (reduce wallet contents) if all purchases succeed
     bbq = BBQ(charcoalBag, lighterFluid)
     newBBQ <- bbq.maybeLight.orElse {
           println("Not enough BBQ material to light it.")
