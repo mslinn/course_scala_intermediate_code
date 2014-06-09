@@ -15,12 +15,16 @@ object ForFun3Model {
     def ==(other: Money): Boolean = dollars == other.dollars
 
     override def hashCode = dollars.hashCode
+
+    override def toString = s"$dollars dollars"
   }
 
   case class Wallet(money: Money) {
     def -(cost: Money): Wallet = Wallet(money - cost)
 
     def +(extra: Money): Wallet = Wallet(money + extra)
+
+    override def toString = s"$money"
   }
 
   sealed abstract class InventoryItem(val weight: Int, val price: Money)
@@ -75,13 +79,14 @@ object ForFun3Option1 extends App {
     (wallet2, charcoalBag: CharcoalBag) <- charcoalBagInventory.maybeBuy(wallet)
     (wallet3, lighterFluid: LighterFluid) <- lighterFluidInventory.maybeBuy(wallet2)
     (wallet4, tofu) <- tofuInventory.maybeBuy(wallet3)
-    wallet = wallet4 // only reduce wallet contents if all purchases succeed
+    _ <- Some{ wallet = wallet4 } // only reduce wallet contents if all purchases succeed
     bbq = BBQ(charcoalBag, lighterFluid)
     newBBQ <- bbq.maybeLight
   } yield newBBQ
 
   val result = maybeBBQ.fold(orderPizza)(_.grill)
   println(result)
+  println(s"wallet has ${wallet.money} remaining")
 }
 
 object ForFun3Option2 extends App {
@@ -101,7 +106,7 @@ object ForFun3Option2 extends App {
         println("Borrowed some tofu from next door.")
         Some((wallet3, Tofu(1, Money(0))))  // return default value and pass back unmodified wallet
       }
-    wallet = wallet4 // only  spend money (reduce wallet contents) if all purchases succeed
+    _ <- Some{ wallet = wallet4 } // only reduce wallet contents if all purchases succeed
     bbq = BBQ(charcoalBag, lighterFluid)
     newBBQ <- bbq.maybeLight.orElse {
         println("Not enough BBQ material to light it.")
@@ -111,6 +116,7 @@ object ForFun3Option2 extends App {
 
   val result = maybeBBQ.fold(orderPizza)(_.grill)
   println(result)
+  println(s"wallet has ${wallet.money} remaining")
 }
 
 object ForFun3Try extends App {
@@ -143,7 +149,7 @@ object ForFun3Try extends App {
     (wallet2, charcoalBag: CharcoalBag) <- charcoalBagInventory.tryBuy(wallet)
     (wallet3, lighterFluid: LighterFluid) <- lighterFluidInventory.tryBuy(wallet2)
     (wallet4, tofu) <- tofuInventory.tryBuy(wallet3)
-    wallet = wallet4 // only reduce wallet contents if all purchases succeed
+    _ <- Try{ wallet = wallet4 } // only reduce wallet contents if all purchases succeed
     bbq = BBQ(charcoalBag, lighterFluid)
     newBBQ <- bbq.tryLight
   } yield newBBQ
@@ -154,4 +160,5 @@ object ForFun3Try extends App {
       x
   }.getOrElse(orderPizza)
   println(result)
+  println(s"wallet has ${wallet.money} remaining")
 }
