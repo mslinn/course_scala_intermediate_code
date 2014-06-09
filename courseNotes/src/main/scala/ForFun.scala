@@ -18,6 +18,21 @@ object ForFun extends App {
     string <- List("a", "b", "c")
   } println(string * i)
 
+  for {
+    i <- List(1, 2, 3)
+  } {
+    println(s"i=$i")
+    for {
+      string <- List("a", "b", "c")
+    } println(string * i)
+  }
+
+  for {
+    i <- List(1, 2, 3)
+    _ <- List(println(s"i=$i"))
+    string <- List("a", "b", "c")
+  } println(string * i)
+
   for (i <- 1 to 10 if i % 2 == 0) println(i)
   1 to 10 filter( _ % 2 == 0) foreach { i => println(i) }
 
