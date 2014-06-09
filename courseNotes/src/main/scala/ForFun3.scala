@@ -23,7 +23,7 @@ object ForFun3Model {
     def +(extra: Money): Wallet = Wallet(money + extra)
   }
 
-  abstract class InventoryItem(val weight: Int, val price: Money)
+  sealed abstract class InventoryItem(val weight: Int, val price: Money)
 
   case class CharcoalBag(override val weight: Int, override val price: Money) extends InventoryItem(weight, price)
 
@@ -31,7 +31,7 @@ object ForFun3Model {
 
   case class Tofu(override val weight: Int, override val price: Money) extends InventoryItem(weight, price)
 
-  abstract class Inventory(val quantity: Int, val item: InventoryItem) {
+  sealed abstract class Inventory(val quantity: Int, val item: InventoryItem) {
     def isNotEmpty = quantity > 0
   }
 
