@@ -135,9 +135,8 @@ object ForFun3Try extends App {
         Failure(BBQNoCharcoal)
       else if (bbq.lighterFluid.weight <= 1)
         Failure(BBQNoFluid)
-      else {
+      else
         Success(BBQ(bbq.charcoalBag.copy(weight = bbq.charcoalBag.weight - 1), bbq.lighterFluid.copy(weight = bbq.lighterFluid.weight - 1)))
-      }
   }
 
   def tryBBQ: Try[BBQ] = for {
