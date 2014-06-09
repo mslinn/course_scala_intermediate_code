@@ -33,6 +33,22 @@ object ForFun extends App {
     string <- List("a", "b", "c")
   } println(string * i)
 
+  var outerVariable = 0
+  for {
+    i <- List(1, 2, 3)
+    _ <- List(outerVariable = i)
+    string <- List("a", "b", "c") if i % 2 == 0
+  } println(string * i)
+  println(s"outerVariable=$outerVariable")
+
+  outerVariable = 0
+  for {
+    i <- List(1, 2, 3)
+    outerVariable = i  // wrong, defines a shadow variable
+    string <- List("a", "b", "c") if i % 2 == 0
+  } println(string * i)
+  println(s"outerVariable=$outerVariable")
+
   for (i <- 1 to 10 if i % 2 == 0) println(i)
   1 to 10 filter( _ % 2 == 0) foreach { i => println(i) }
 
