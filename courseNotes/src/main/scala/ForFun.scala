@@ -78,27 +78,27 @@ object ForFun1 {
   val selectedKeys = Map("selectedKeys"->Seq("one", "two", "three"))
   val otherKeys = Map("otherKeys"->Seq("four", "five"))
   val list: List[Map[String, Seq[String]]] = List(selectedKeys, otherKeys)
-  val result2: List[String] = for {
+  val result: List[String] = for {
     data <- list
     selectedKeysSeq <- data.get("selectedKeys").toList
     id <- selectedKeysSeq.toList
   } yield id
 
-  val result3: List[String] = for {
+  val result2: List[String] = for {
     data: Map[String, Seq[String]] <- list
     selectedKeysSeq: Seq[String] <- data.get("selectedKeys").toList
     id: String <- selectedKeysSeq.toList
   } yield id
 
-  val result4: List[String] = list.flatMap { data: Map[String, Seq[String]] =>
+  val result3: List[String] = list.flatMap { data: Map[String, Seq[String]] =>
     data.get("selectedKeys").toList.flatMap { selectedKeysSeq: Seq[String] =>
       selectedKeysSeq
     }
   }
 
+  println(s"""result = $result""")
   println(s"""result2 = $result2""")
   println(s"""result3 = $result3""")
-  println(s"""result4 = $result4""")
 }
 
 object ForFun2 extends App {
