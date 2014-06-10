@@ -102,14 +102,14 @@ object ForFun2 extends App {
   val relatives  = List("Barney", "Betty")
   val travellers = List("Wilma", "Fred")
 
-  def writePostCards(locations: List[String], travellers: List[String], relatives: List[String]): List[Postcard] =
+  def writePostCards(locations: List[String], travellers: List[String], relatives: List[String]): List[String] =
     for {
       sender    <- travellers
       recipient <- relatives
       state     <- locations
-    } yield Postcard(state, sender, recipient)
+    } yield Postcard(state, sender, recipient).generate
 
-  val postcards: List[Postcard] = writePostCards(locations, travellers, relatives)
-  val output = postcards.map(_.generate).mkString("\n")
+  val postcards: List[String] = writePostCards(locations, travellers, relatives)
+  val output = postcards.mkString("\n")
   println(output)
 }
