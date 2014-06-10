@@ -1,16 +1,16 @@
 object ForFun extends App {
   val vector = Vector(0, 1, 2, 3)
 
-  println(s"""vector.map(x => x.toString) = ${vector.map(x => x.toString)}""")
-  println(s"""List(1, 2, 3).map(_.toString) = ${List(1, 2, 3).map(_.toString)}""")
+  println( s"""vector.map(x => x.toString) = ${vector.map(x => x.toString)}""")
+  println( s"""List(1, 2, 3).map(_.toString) = ${List(1, 2, 3).map(_.toString)}""")
 
-  for ( i <- 1 to 3 ) println("Hello, world!")
+  for (i <- 1 to 3) println("Hello, world!")
 
   val array = Array.ofDim[Int](4, 4)
   for {
-   i <- 0 until array(0).length
-   j <- 0 until array(1).length
-  } array(i)(j) = (i+1) * 2*(j+1)
+    i <- 0 until array(0).length
+    j <- 0 until array(1).length
+  } array(i)(j) = (i + 1) * 2 * (j + 1)
   array.foreach(row => println(row.mkString(", ")))
 
   for {
@@ -44,32 +44,37 @@ object ForFun extends App {
   outerVariable = 0
   for {
     i <- List(1, 2, 3)
-    outerVariable = i  // wrong, defines a shadow variable
+    outerVariable = i // wrong, defines a shadow variable
     string <- List("a", "b", "c") if i % 2 == 0
   } println(string * i)
   println(s"outerVariable=$outerVariable")
 
   for (i <- 1 to 10 if i % 2 == 0) println(i)
-  1 to 10 filter( _ % 2 == 0) foreach { i => println(i) }
+  1 to 10 filter (_ % 2 == 0) foreach { i => println(i)}
 
   val vector2 = Vector(Some(1), None, Some(3), Some(4))
-  vector2.filter(_.isDefined).flatMap { v => Some(v.get*2) }
-  for { v ← vector2 if v.isDefined } yield v.get*2
+  vector2.filter(_.isDefined).flatMap { v => Some(v.get * 2)}
+  for {v ← vector2 if v.isDefined} yield v.get * 2
 
   val result = for {
     v <- vector2
     x <- v
-  } yield x*2
+  } yield x * 2
+  println(s"""result = $result""")
 
   val sameResult = for {
     v: Option[Int] <- vector2
     x: Int <- v
-  } yield x*2
+  } yield x * 2
 
-  vector2.flatten.map { _*2 }
+  vector2.flatten.map {
+    _ * 2
+  }
 
-  for { v ← vector2.flatten } yield v*2
+  for {v ← vector2.flatten} yield v * 2
+}
 
+object ForFun1 {
   val selectedKeys = Map("selectedKeys"->Seq("one", "two", "three"))
   val otherKeys = Map("otherKeys"->Seq("four", "five"))
   val list: List[Map[String, Seq[String]]] = List(selectedKeys, otherKeys)
@@ -91,7 +96,6 @@ object ForFun extends App {
     }
   }
 
-  println(s"""result = $result""")
   println(s"""result2 = $result2""")
   println(s"""result3 = $result3""")
   println(s"""result4 = $result4""")
