@@ -74,7 +74,7 @@ object ForFun extends App {
   for {v ← vector2.flatten} yield v * 2
 }
 
-object ForFun1 {
+object ForFun1 extends App {
   val selectedKeys = Map("selectedKeys"->Seq("one", "two", "three"))
   val otherKeys = Map("otherKeys"->Seq("four", "five"))
   val list: List[Map[String, Seq[String]]] = List(selectedKeys, otherKeys)
@@ -91,14 +91,17 @@ object ForFun1 {
   } yield id
 
   val result3: List[String] = list.flatMap { data: Map[String, Seq[String]] =>
-    data.get("selectedKeys").toList.flatMap { selectedKeysSeq: Seq[String] =>
-      selectedKeysSeq
-    }
+    data.get("selectedKeys").toList.flatMap { selectedKeysSeq: Seq[String] => selectedKeysSeq }
+  }
+
+  val result4 = list.flatMap { data =>
+    data.get("selectedKeys").toList.flatMap { selectedKeysSeq => selectedKeysSeq }
   }
 
   println(s"""result = $result""")
   println(s"""result2 = $result2""")
   println(s"""result3 = $result3""")
+  println(s"""result4 = $result4""")
 }
 
 object ForFun2 extends App {
