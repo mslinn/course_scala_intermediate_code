@@ -36,8 +36,8 @@ object ForFun extends App {
   var outerVariable = 0
   for {
     i <- List(1, 2, 3)
-    _ <- List(outerVariable = i)
-    string <- List("a", "b", "c") if i % 2 == 0
+    _ <- List(outerVariable = i) if i % 2 == 0
+    string <- List("a", "b", "c")
   } println(string * i)
   println(s"outerVariable=$outerVariable")
 
@@ -54,7 +54,7 @@ object ForFun extends App {
 
   val vector2 = Vector(Some(1), None, Some(3), Some(4))
   vector2.filter(_.isDefined).flatMap { v => Some(v.get*2) }
-  val fc1 = vector2.filter(_.isDefined).flatMap { v => Some(v.get*2) }
+  for { v ← vector2 if v.isDefined } yield v.get*2
 
   val result = for {
     v <- vector2
@@ -65,6 +65,10 @@ object ForFun extends App {
     v: Option[Int] <- vector2
     x: Int <- v
   } yield x*2
+
+  vector2.flatten.map { _*2 }
+
+  for { v ← vector2.flatten } yield v*2
 
   val selectedKeys = Map("selectedKeys"->Seq("one", "two", "three"))
   val otherKeys = Map("otherKeys"->Seq("four", "five"))
