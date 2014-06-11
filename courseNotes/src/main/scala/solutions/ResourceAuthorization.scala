@@ -33,8 +33,9 @@ object ResourceAuthorization extends App {
 
   /** Add the given resource to the list of resources assigned to the user in resourceAccess */
   def authorize(user: User, resource: Resource): Unit = {
-    val newResources: List[Resource] = resource +: resourceAccess.get(user).getOrElse(Nil)
-    resourceAccess.put(user, newResources)
+    val oldUserResources: List[Resource] = resourceAccess.getOrElse(user, Nil) // preferred to writing get(user).getOrElse(Nil)
+    val updatedUserResources: List[Resource] = resource +: oldUserResources
+    resourceAccess.put(user, updatedUserResources)
   }
 
   /** @return Some[Resource] if an entry for resourceId is found in resources */
