@@ -49,6 +49,11 @@ object ForFun extends App {
   } println(string * i)
   println(s"outerVariable=$outerVariable")
 
+  val maybeName= Some("Chloe")
+  for {
+    x <- maybeName.map(_.toUpperCase).orElse(Some("UNKNOWN NAME"))
+  } println(x)
+
   for (i <- 1 to 10 if i % 2 == 0) println(i)
   1 to 10 filter (_ % 2 == 0) foreach { i => println(i)}
 
