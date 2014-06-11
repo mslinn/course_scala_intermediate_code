@@ -49,7 +49,7 @@ object ForFun extends App {
   } println(string * i)
   println(s"outerVariable=$outerVariable")
 
-  val maybeName= Some("Chloe")
+  val maybeName = Some("Chloe")
   for {
     x <- maybeName.map(_.toUpperCase).orElse(Some("UNKNOWN NAME"))
   } println(x)
