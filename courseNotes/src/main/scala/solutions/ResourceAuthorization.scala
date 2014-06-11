@@ -33,7 +33,8 @@ object ResourceAuthorization extends App {
 
   /** Add the given resource to the list of resources assigned to the user in resourceAccess */
   def authorize(user: User, resource: Resource): Unit = {
-    val oldUserResources: List[Resource] = resourceAccess.getOrElse(user, Nil) // preferred to writing get(user).getOrElse(Nil)
+    // preferred over writing resourceAccess.get(user).getOrElse(Nil)
+    val oldUserResources: List[Resource] = resourceAccess.getOrElse(user, Nil)
     val updatedUserResources: List[Resource] = resource +: oldUserResources
     resourceAccess.put(user, updatedUserResources)
   }

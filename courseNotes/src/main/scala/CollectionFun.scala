@@ -24,6 +24,7 @@ object CollectionFun extends App {
   println(s"map(1) = ${map(1)}")
   println(s"map.get(0) = ${map.get(0)}")
   //println(s"map(0) = ${map(0)}")  // java.util.NoSuchElementException: key not found: 0
+  println(s"""map.getOrElse(0, Some("defaultValue")) = ${map.getOrElse(0, Some("defaultValue"))}""")
 
   val map2 = mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea").withDefaultValue("eh")
   println(s"map2(0) = ${map2(0)}")
