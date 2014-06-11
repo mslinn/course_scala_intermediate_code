@@ -69,14 +69,17 @@ object ResourceAuthorization extends App {
   authorize(betty,  rubbleHome)
   authorize(barney, work)
 
-  /** For-comprehensions would not be as convenient here */
+  /** Format output */
   def report(userId: String, password: String, resourceId: Long): Unit = {
-    val maybeAuthToken: Option[AuthorizationToken] = isUserAuthorized(userId, password, resourceId)
-    val resourceName = findResourceById(resourceId).map(_.name).getOrElse(s"resource with Id $resourceId")
-    val userName = findUserById(userId).map(_.name).getOrElse(s"User with id $userId")
-    val msg = s"$userName and password $password ${ if (maybeAuthToken.isDefined) "can" else "can not" } access resource $resourceName"
-    val msg2 = maybeAuthToken.map { msg + " until " + _.expires.toString }.getOrElse(msg)
-    println(s"$msg2.")
+    for {
+      resourceName <- findResourceById(resourceId).map(_.name).orElse(Some(s"resource with Id $resourceId"))
+      userName     <- findUserById(userId).map(_.name).orElse(Some(s"User with id $userId"))
+      msg          <- isUserAuthorized(userId, password, resourceId).map { authToken =>
+        s"$userName and password $password can access resource $resourceName until ${authToken.expires}."
+      }.orElse {
+        Some(s"$userName and password $password can not access resource $resourceName.")
+      }
+    } println(msg)
   }
 
   report("fflintstone", "Yabbadabbadoo",  1)
