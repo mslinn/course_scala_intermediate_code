@@ -6,10 +6,11 @@ object ForTry extends App {
   def tryFor(w: Int, x: Int, y: Int, z: Int): Try[Int] = for {
     result1 <- tryCompute(w, x)
     result2 <- tryCompute(y, z)
-  } yield result1 + result2
+  } yield result1 / result2
 
-  println(s"""tryFor(1, 2, 3, 4) = ${tryFor(1, 2, 3, 4)}""")
-  println(s"""tryFor(1, 0, 3, 4) = ${tryFor(1, 0, 3, 4)}""")
+  println(s"""tryFor(2, 1, 4, 2) = ${tryFor(2, 1, 4, 2)}""")
+  println(s"""tryFor(1, 0, 4, 2) = ${tryFor(1, 0, 3, 4)}""") // fails in second generator
+  println(s"""tryFor(0, 1, 0, 4) = ${tryFor(0, 1, 0, 4)}""") // fails in yield generator
 }
 
 object ForFun extends App {
