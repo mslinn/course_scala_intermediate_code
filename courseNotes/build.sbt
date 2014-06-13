@@ -1,18 +1,14 @@
 organization := "com.micronautics"
 
-name := "IntermediateScala Course"
+name := "IntermediateScala"
 
 description := "Intermediate Scala Course Notes"
 
-version := "0.1.1"
+version := "2.11.1"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.1"
 
 autoCompilerPlugins := true
-
-libraryDependencies <+= scalaVersion {
-  v => compilerPlugin("org.scala-lang.plugins" % "continuations" % "2.10.4")
-}
 
 scalacOptions += "-P:continuations:enable"
 
@@ -32,14 +28,16 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 scalacOptions in Test ++= Seq("-Yrangepos")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-dataflow"  % "2.2.1"  withSources(),
-  "com.typesafe.akka" %% "akka-actor"     % "2.2.1"  withSources(),
-  "com.typesafe"      %  "config"         % "1.0.2"  withSources(),
-  "org.scalautils"    %% "scalautils"     % "2.0"    withSources(),
-  "com.typesafe.akka" %% "akka-testkit"   % "2.2.1"  % "test" withSources(),
-  "org.specs2"        %% "specs2"         % "2.1.1"  % "test" withSources(),
-  "org.scalatest"     %% "scalatest"      % "2.0"    % "test" withSources(),
-  "junit"             %  "junit"          % "4.8.1"  % "test" // Scala IDE requires this; IntelliJ IDEA does not
+  "org.scala-lang.plugins" % "scala-continuations-library_2.11" % "1.0.2",
+  "com.typesafe.akka"      %% "akka-dataflow"  % "2.3.3"  withSources(),
+  "com.typesafe.akka"      %% "akka-actor"     % "2.3.3"  withSources(),
+  "com.typesafe"           %  "config"         % "1.2.1"  withSources(),
+  "org.scalautils"         %% "scalautils"     % "2.0"    withSources(),
+  //
+  "com.typesafe.akka"      %% "akka-testkit"   % "2.3.3"  % "test" withSources(),
+  "org.specs2"             %% "specs2"         % "2.3.12" % "test" withSources(),
+  "org.scalatest"          %% "scalatest"      % "2.2.0"  % "test" withSources(),
+  "junit"                  %  "junit"          % "4.11"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
 )
 
 resolvers ++= Seq(
