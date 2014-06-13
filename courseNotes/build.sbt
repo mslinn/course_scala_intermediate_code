@@ -10,10 +10,9 @@ scalaVersion := "2.11.1"
 
 autoCompilerPlugins := true
 
-scalacOptions += "-P:continuations:enable"
-
 scalacOptions in (Compile, doc) <++= baseDirectory.map {
   (bd: File) => Seq[String](
+     "-P:continuations:enable",
      "-deprecation",
 	   "-encoding", "UTF-8",
 	   "-unchecked",
@@ -32,7 +31,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"      %% "akka-dataflow"  % "2.3.3"  withSources(),
   "com.typesafe.akka"      %% "akka-actor"     % "2.3.3"  withSources(),
   "com.typesafe"           %  "config"         % "1.2.1"  withSources(),
-  "org.scalautils"         %% "scalautils"     % "2.0"    withSources(),
+  "org.scalautils"         %% "scalautils"     % "2.1.7"    withSources(),
   //
   "com.typesafe.akka"      %% "akka-testkit"   % "2.3.3"  % "test" withSources(),
   "org.specs2"             %% "specs2"         % "2.3.12" % "test" withSources(),
