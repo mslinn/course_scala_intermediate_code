@@ -1,3 +1,17 @@
+object ForTry extends App {
+  import util.Try
+
+  def tryCompute(a: Int, b: Int): Try[Int] = Try { a / b }
+
+  def tryFor(w: Int, x: Int, y: Int, z: Int): Try[Int] = for {
+    result1 <- tryCompute(w, x)
+    result2 <- tryCompute(y, z)
+  } yield result1 + result2
+
+  println(s"""tryFor(1, 2, 3, 4) = ${tryFor(1, 2, 3, 4)}""")
+  println(s"""tryFor(1, 0, 3, 4) = ${tryFor(1, 0, 3, 4)}""")
+}
+
 object ForFun extends App {
   val vector = Vector(0, 1, 2, 3)
 
