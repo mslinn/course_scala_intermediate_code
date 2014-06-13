@@ -9,8 +9,9 @@ object ForTry extends App {
   } yield result1 / result2
 
   println(s"""tryFor(2, 1, 4, 2) = ${tryFor(2, 1, 4, 2)}""")
-  println(s"""tryFor(1, 0, 4, 2) = ${tryFor(1, 0, 3, 4)}""") // fails in second generator
-  println(s"""tryFor(0, 1, 0, 4) = ${tryFor(0, 1, 0, 4)}""") // fails in yield generator
+  println(s"""tryFor(2, 0, 4, 2) = ${tryFor(2, 0, 4, 2)}""") // fails in first generator
+  println(s"""tryFor(2, 1, 4, 0) = ${tryFor(2, 1, 4, 0)}""") // fails in second generator
+  println(s"""tryFor(0, 1, 0, 2) = ${tryFor(0, 1, 0, 2)}""") // fails in yield generator
 }
 
 object ForFun extends App {
