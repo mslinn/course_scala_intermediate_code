@@ -59,7 +59,7 @@ object CMap extends App {
     map
   }
 
-  val cmap2 = ensureKeyIsPresent(new JConcurrentHashMap[String, String].asScala, "key", "value"))
+  val cmap2 = ensureKeyIsPresent(new JConcurrentHashMap[String, String].asScala, "key", "value")
 
   val cmap3 = ensureKeyIsPresent(new TrieMap, "key", "value")
   println(s"cmap3 = $cmap3")
