@@ -1,8 +1,8 @@
 organization := "com.micronautics"
 
-name := "IntermediateScala"
+name := "IntermediateScalaCourse"
 
-description := "Intermediate Scala Course Notes"
+description := "Core Scala - Intermediate Scala Course Notes"
 
 version := "2.11.1"
 
