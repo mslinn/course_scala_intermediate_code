@@ -1,13 +1,24 @@
 import com.typesafe.config.{ConfigObject, ConfigList, ConfigFactory}
+import java.util.concurrent.TimeUnit._
 
 object ConfigFun extends App {
   val confDemo = ConfigFactory.parseResources("demo.properties")
   val string1 = confDemo.getString("string1")
   val int1 = confDemo.getInt("int1")
   val double1 = confDemo.getDouble("double1")
+  val elapsedDays = confDemo.getDuration("elapsedTime", DAYS)
+  val elapsedHours = confDemo.getDuration("elapsedTime", HOURS)
+  val elapsedSeconds = confDemo.getDuration("elapsedTime", SECONDS)
+  val bytes1 = confDemo.getBytes("bytes1")
+  val bytes2 = confDemo.getBytes("bytes2")
   println(s"""string1=$string1""")
   println(s"""int1=$int1""")
   println(s"""double1=$double1""")
+  println(s"""elapsedDays=$elapsedDays""")
+  println(s"""elapsedHours=$elapsedHours""")
+  println(s"""elapsedSeconds=$elapsedSeconds""")
+  println(s"""bytes1=$bytes1""")
+  println(s"""bytes2=$bytes2""")
 
   val confDemo2 = ConfigFactory.parseResources("demo2.properties").withFallback(confDemo)
   val string1b = confDemo2.getString("string1")
