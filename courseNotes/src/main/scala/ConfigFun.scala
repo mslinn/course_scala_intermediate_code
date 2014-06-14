@@ -30,6 +30,10 @@ object ConfigFun extends App {
   println(s"""double1b=$double1b""")
   println(s"""double2=$double2""")
 
+  val confOverride = ConfigFactory.parseResources("override.conf")
+  val blarg = confOverride.getString("blarg")
+  val ick = confOverride.getString("ick")
+
   val confDemo3 = ConfigFactory.parseResources("demo.json").withFallback(confDemo2)
   val string1c = confDemo3.getString("string1")
   val int1c = confDemo3.getInt("int1")
