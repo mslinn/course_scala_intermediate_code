@@ -26,10 +26,10 @@ object ConfigFlatNest extends App {
   val matched = confFlat.entrySet.asScala.forall { kv =>
     val flatKey = kv.getKey
     val flatValue = kv.getValue.render
-    val originalValue = configApp.getAnyRef(flatKey)
+    val originalValue = configApp.getAnyRef(flatKey).toString
     if (originalValue != flatValue)
       println(s"$flatKey: $originalValue (${originalValue.getClass.getName}) != $flatValue  (${flatValue.getClass.getName})")
-    originalValue == flatValue
+    originalValue.toString == flatValue
   }
   if (matched)
     println(s"Flat version in ${file.getAbsolutePath} matches original hierarchical version")
