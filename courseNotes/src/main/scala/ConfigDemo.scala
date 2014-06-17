@@ -1,7 +1,6 @@
-package solutions
-
 import com.typesafe.config.{Config, ConfigFactory}
-import collection.JavaConverters._
+
+import scala.collection.JavaConverters._
 
 object ConfigDemo extends App {
   def showValues(configName: String, config: Config)(implicit keyList: List[String]): Unit = {
@@ -26,14 +25,15 @@ object ConfigDemo extends App {
                      |  accessKey = "stringAccessKey"
                      |  secretKey = "stringSecretKey"
                      |}""".stripMargin
-  val strConf = ConfigFactory.parseString(defaultStr)
-  val appConf = ConfigFactory.parseResources("application.conf")
-  val libConf = ConfigFactory.parseResources("library.conf")
+  val strConf = ConfigFactory.parseString(defaultStr).resolve
+  val appConf = ConfigFactory.parseResources("application.conf").resolve
+  val libConf = ConfigFactory.parseResources("library.conf").resolve
   val defConf = ConfigFactory.load
-  val combined: Config = strConf
-      .withFallback(appConf)
-      .withFallback(libConf)
-      .withFallback(defConf)
+  val combined: Config =
+    strConf                   // highest priority
+      .withFallback(appConf)  // second highest priority
+      .withFallback(libConf)  // priority 3
+      .withFallback(defConf)  // lowest priority
 
   def showAll(implicit keyList: List[String]): Unit = {
     showValues("defaultStr",       strConf)
