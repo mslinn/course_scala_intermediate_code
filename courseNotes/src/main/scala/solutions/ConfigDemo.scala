@@ -4,21 +4,21 @@ import com.typesafe.config.{Config, ConfigFactory}
 import collection.JavaConverters._
 
 object ConfigDemo extends App {
-  def showValues(msg: String, config: Config): Unit = {
-    val keys: Set[String] = config.entrySet.asScala.map(_.getKey).toSet // mutable by default
+  def showValues(configName: String, config: Config)(implicit keyList: List[String]): Unit = {
+    val keySet: Set[String] = config.entrySet.asScala.map(_.getKey).toSet
 
-    if (keys.contains("aws.accessKey")) {
-      val accessKey = config.getString("aws.accessKey")
-      println(s"$msg accessKey=$accessKey")
-    } else
-      println(s"$msg does not define aws.accessKey")
+    def show(key: String): Unit =
+      if (keySet contains key) {
+        val accessKey = config.getString(key)
+        println(s"$configName defines $key=$accessKey")
+      } else
+        println(s"$configName does not define $key as one of its ${keyList.size} keys")
 
-    if (keys.contains("aws.secretKey")) {
-      val secretKey = config.getString("aws.secretKey")
-      println(s"$msg secretKey=$secretKey")
-    } else
-      println(s"$msg does not define aws.secretKey")
-
+    if (keySet.isEmpty) {
+      println(s"$configName is empty")
+    } else {
+      keyList foreach show
+    }
     println()
   }
 
@@ -26,20 +26,22 @@ object ConfigDemo extends App {
                      |  accessKey = "stringAccessKey"
                      |  secretKey = "stringSecretKey"
                      |}""".stripMargin
-  val strConf = ConfigFactory.parseString(defaultStr) // experiment by commenting this line out
-  //val strConf = ConfigFactory.parseString("")       // ... and uncommenting this one
-  val appConf = ConfigFactory.load("application.conf")
-  val libConf = ConfigFactory.load("library.conf")
+  val strConf = ConfigFactory.parseString(defaultStr)
+  val appConf = ConfigFactory.parseResources("application.conf")
+  val libConf = ConfigFactory.parseResources("library.conf")
   val defConf = ConfigFactory.load
-  val config: Config = ConfigFactory.load(
-    strConf
+  val combined: Config = strConf
       .withFallback(appConf)
       .withFallback(libConf)
-      .withFallback(defConf))
+      .withFallback(defConf)
 
-  showValues("defaultStr", strConf)
-  showValues("library.conf", libConf)
-  showValues("application.conf", appConf)
-  showValues("Default", defConf)
-  showValues("Combined", config)
+  def showAll(implicit keyList: List[String]): Unit = {
+    showValues("defaultStr",       strConf)
+    showValues("library.conf",     libConf)
+    showValues("application.conf", appConf)
+    showValues("Default Config",   defConf)
+    showValues("Combined Config",  combined)
+  }
+
+  showAll(List("aws.accessKey", "aws.secretKey", "akka.version", "user.home"))
 }

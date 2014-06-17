@@ -5,11 +5,10 @@ import scala.collection.JavaConverters._
 import java.io.{File, PrintWriter}
 
 object ConfigFlatNest extends App {
-  def flatKeyValueTuples(config: Config): List[(String, Any)] = {
+  def flatKeyValueTuples(config: Config): List[(String, Any)] =
     for {
       entry <- config.entrySet.asScala.toList
     } yield (entry.getKey, entry.getValue.render)
-  }
 
   val renderOptions = ConfigRenderOptions.concise.setComments(false)
   val configApp = ConfigFactory.load
