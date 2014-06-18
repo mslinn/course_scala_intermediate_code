@@ -50,16 +50,16 @@ object ConfigFlatNest extends App {
           value.toString
       }
 
-    val flatKey = kv.getKey
-    val flatValue = kv.getValue match {
+    val flatKey: String = kv.getKey
+    val flatValue: String = kv.getValue match {
       case list: ConfigList =>
         list.unwrapped.asScala.map { renderObject }.mkString("[", ", ", "]")
 
       case value =>
         removeOuterParens(value.render(renderOptions))
     }
-    val originalValue = configApp.getAnyRef(flatKey).toString.replace("\n", "\\n")
-    val comparesEqual = originalValue.toString == flatValue
+    val originalValue: String = configApp.getAnyRef(flatKey).toString.replace("\n", "\\n")
+    val comparesEqual: Boolean = originalValue.toString == flatValue
     if (!comparesEqual)
       println(s"$flatKey: $originalValue (${originalValue.getClass.getName}) != $flatValue (${flatValue.getClass.getName})")
     comparesEqual
