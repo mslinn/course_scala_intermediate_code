@@ -2,7 +2,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConverters._
 
-object ConfigDemo extends App {
+object ConfigAWS extends App {
   def showValues(configName: String, config: Config)(implicit keyList: List[String]): Unit = {
     val keySet: Set[String] = config.entrySet.asScala.map(_.getKey).toSet
 
