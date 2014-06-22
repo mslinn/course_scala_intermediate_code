@@ -31,8 +31,6 @@ object ExtendJavaSet extends App {
 
 object ParametricBounds extends App {
   abstract class Clothing(val size: Int, val manufacturer: String) extends Ordering[Clothing] {
-    def productPrefix: String
-
     def compare(a: Clothing, b: Clothing) =  {
       val primaryKey = a.size - b.size
       if (primaryKey!=0) primaryKey else a.manufacturer compare b.manufacturer
@@ -49,7 +47,9 @@ object ParametricBounds extends App {
 
     override def hashCode = super.hashCode
 
-    override def toString = s"Clothing item by $manufacturer has size $size"
+    override def toString = s"$productPrefix by $manufacturer of size $size"
+
+    def productPrefix: String
   }
 
   object Clothing {
@@ -58,20 +58,14 @@ object ParametricBounds extends App {
     }
   }
 
-  case class Dress(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer) {
-    override def toString = s"Dress $size: $manufacturer"
-  }
+  case class Dress(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer)
 
-  case class Pants(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer) {
-    override def toString = s"Pants $size: $manufacturer"
-  }
+  case class Pants(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer)
 
-  case class Hat(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer) {
-    override def toString = s"Hat $size: $manufacturer"
-  }
+  case class Hat(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer)
 
-  class ShoppingCart[A <: Clothing] {
-    val items = ListBuffer[A]()
+  class ShoppingCart[A <: Clothing] {  // ShoppingCart can hold Clothing and subclasses
+    val items = ListBuffer.empty[A]
 
     def pick(item: A, count: Int): ShoppingCart[A] = {
       1 to count foreach { i =>
@@ -95,19 +89,29 @@ object ParametricBounds extends App {
   println(shoppingCart)
 
 
-  import collection.mutable
+  // Bag can hold Clothing and subclasses
+  class Bag[T <: Clothing] {
 
-  class Bag[+T <: Clothing] {
-    val ml = mutable.MutableList.empty[Clothing]
-    def put[U >: T <: Clothing](item: U): Unit = ml += item
-    def findBySize(i: Int): List[Clothing] = ml.filter(_.size==i).toList
-    def findByManufacturer(s: String): List[Clothing] = ml.filter(_.manufacturer==s).toList
+    import collection.mutable
+
+    val items = mutable.MutableList.empty[Clothing]
+
+    def put[U >: T <: Clothing](item: U, quantity: Int): Bag[T] = {
+      1 to quantity foreach { x => items += item }
+      this
+    }
+
+    def findBySize(i: Int): List[Clothing] = items.filter(_.size == i).toList
+
+    def findByManufacturer(s: String): List[Clothing] = items.filter(_.manufacturer == s).toList
+
+    override def toString = {
+      val strings = items.map(item => s"${item.productPrefix} size ${item.size} by ${item.manufacturer}").mkString("\n  ", "\n  ", "\n")
+      s"Bag has ${items.size} items in it:$strings"
+    }
   }
 
-  val bag = new Bag[Clothing] // bag can hold Clothing and subclasses
-  bag.put(hat)
-  bag.put(pants)
-  bag.put(dress)
-  println(bag.findBySize(4))
-  println(bag.findByManufacturer("Versace"))
+  val bag = new Bag[Clothing].put(hat, 1).put(pants, 2).put(dress, 3)
+  println(bag.findBySize(5).mkString("Bag contains:\n  ", "\n  ", ""))
+  println(bag.findByManufacturer("Versace").mkString("Bag contains:\n  ", "\n  ", ""))
 }
