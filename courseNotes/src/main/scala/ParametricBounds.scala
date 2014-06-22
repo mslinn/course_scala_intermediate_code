@@ -1,3 +1,5 @@
+import scala.collection.mutable.ListBuffer
+
 object ExtendJavaSet extends App {
 
   trait IgnoredCaseSet[T] extends java.util.Set[T] {
@@ -27,60 +29,85 @@ object ExtendJavaSet extends App {
   println(s"mySet=$mySet")
 }
 
-class Thang(val i: Int, val s: String) extends Ordering[Thang] {
-  def compare(a: Thang, b: Thang) =  {
-    val primaryKey = a.i - b.i
-    if (primaryKey!=0) primaryKey else a.s compare b.s
+object ParametricBounds extends App {
+  abstract class Clothing(val size: Int, val manufacturer: String) extends Ordering[Clothing] {
+    def productPrefix: String
+
+    def compare(a: Clothing, b: Clothing) =  {
+      val primaryKey = a.size - b.size
+      if (primaryKey!=0) primaryKey else a.manufacturer compare b.manufacturer
+    }
+
+    override def equals(other: Any) = {
+      try {
+        val that = other.asInstanceOf[Clothing]
+        this.size == that.size && this.manufacturer==that.manufacturer
+      } catch {
+        case e: Exception => false
+      }
+    }
+
+    override def hashCode = super.hashCode
+
+    override def toString = s"Clothing item by $manufacturer has size $size"
   }
 
-  override def equals(other: Any) = {
-    val that = other.asInstanceOf[Thang]
-    this.i == that.i && this.s==that.s
+  object Clothing {
+    implicit val ClothingOrdering = Ordering.by { clothing: Clothing =>
+      (clothing.size, clothing.manufacturer)
+    }
   }
 
-  override def hashCode = super.hashCode
-
-  override def toString() = s"Thang $i: $s"
-}
-
-object Thang {
-  implicit val ThangOrdering = Ordering.by { thang: Thang =>
-    (thang.i, thang.s)
+  case class Dress(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer) {
+    override def toString = s"Dress $size: $manufacturer"
   }
+
+  case class Pants(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer) {
+    override def toString = s"Pants $size: $manufacturer"
+  }
+
+  case class Hat(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer) {
+    override def toString = s"Hat $size: $manufacturer"
+  }
+
+  class ShoppingCart[A <: Clothing] {
+    val items = ListBuffer[A]()
+
+    def pick(item: A, count: Int): ShoppingCart[A] = {
+      1 to count foreach { i =>
+        items.+=:(item)
+        s"Adding size ${item.size} by ${item.manufacturer} to shopping cart"
+      }
+      this
+    }
+
+    override def toString = {
+      val strings = items.map(item => s"${item.productPrefix} size ${item.size} by ${item.manufacturer}").mkString("\n  ", "\n  ", "\n")
+      s"ShoppingCart has ${items.size} items in it:$strings"
+    }
+  }
+
+  val hat   = new Hat(5, "HatsRUs")
+  val pants = new Pants(5, "Ralph Loren")
+  val dress = new Dress(4, "Versace")
+
+  val shoppingCart = new ShoppingCart[Clothing].pick(hat, 2).pick(dress, 3).pick(pants, 5)
+  println(shoppingCart)
+
+
+  import collection.mutable
+
+  class Bag[+T <: Clothing] {
+    val ml = mutable.MutableList.empty[Clothing]
+    def put[U >: T <: Clothing](item: U): Unit = ml += item
+    def findBySize(i: Int): List[Clothing] = ml.filter(_.size==i).toList
+    def findByManufacturer(s: String): List[Clothing] = ml.filter(_.manufacturer==s).toList
+  }
+
+  val bag = new Bag[Clothing] // bag can hold Clothing and subclasses
+  bag.put(hat)
+  bag.put(pants)
+  bag.put(dress)
+  println(bag.findBySize(4))
+  println(bag.findByManufacturer("Versace"))
 }
-
-class Thung(override val i: Int, override val s: String) extends Thang(i, s) {
-  override def toString() = s"Thung $i: $s"
-}
-
-
-class Th_ngMunger[A <: Thang](th_ng: A) {
-  def doYourThing(count: Int) = s"${th_ng.i * count}: ${th_ng.s * count}"
-}
-
-object Main1 extends App {
-  val thang = new Thang(4, "a")
-  val thung = new Thung(5, "b")
-
-  new Th_ngMunger(thang).doYourThing(3)
-  new Th_ngMunger(thung).doYourThing(5)
-}
-
-import collection.mutable
-
-class Bag[+T <: Thang] {
-  val ml = mutable.MutableList.empty[Thang]
-  def put[U >: T <: Thang](item: U): Unit = ml += item
-  def findByI(i: Int): List[Thang] = ml.filter(_.i==i).toList
-  def findByS(s: String): List[Thang] = ml.filter(_.s==s).toList
-}
-
-object Main2 extends App {
-  val bag = new Bag[Thung] // bag can hold Thungs and Thangs
-  bag.put(new Thang(2, "abc"))
-  bag.put(new Thung(3, "def"))
-  bag.put(new Thang(4, "xyz"))
-  println(bag.findByI(4))
-  println(bag.findByS("def"))
-}
-
