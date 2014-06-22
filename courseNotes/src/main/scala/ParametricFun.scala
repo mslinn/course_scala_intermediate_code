@@ -1,4 +1,4 @@
-object ParametricFun {
+object ParametricFun extends App {
   def hasValue[T] (option: Option[T]): Boolean = option.isDefined
 
   println(s"hasValue[Int](Some(1)) = ${hasValue[Int](Some(1))}")
@@ -12,6 +12,24 @@ object ParametricFun {
   println(s"""hasValue(Some("a")) = ${hasValue(Some("a"))}""")
   println(s"""hasValue(Option((1,2))) = ${hasValue(Option((1,2)))}""")
   println(s"""hasValue(Some(Array(1,2))) = ${hasValue(Some(Array(1,2)))}""")
+}
+
+object ScopedParams extends App {
+  case class Outer(propOuter: String)
+  case class Inner(propInner: String)
+
+  class Test[T] {
+    def print[U](u: U, t: T): Unit = println(s"Test.test: u=$u; t=$t")
+  }
+
+  new Test[Outer].print(Inner("inner"), Outer("outer"))
+
+
+  class Shadow[T] {
+    def print[T](t: T): Unit = println(s"Test.test: y=$t")
+  }
+
+  new Shadow[Outer].print(Inner("inner"))
 }
 
 object TimeableT extends App {
