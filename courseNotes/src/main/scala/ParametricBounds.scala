@@ -91,7 +91,6 @@ object ParametricBounds extends App {
 
   // Bag can hold Clothing and subclasses
   class Bag[T <: Clothing] {
-
     import collection.mutable
 
     val items = mutable.MutableList.empty[Clothing]
