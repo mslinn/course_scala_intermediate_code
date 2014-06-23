@@ -81,9 +81,9 @@ object ParametricBounds extends App {
     }
   }
 
-  val hat   = new Hat(5, "HatsRUs")
-  val pants = new Pants(5, "Ralph Loren")
-  val dress = new Dress(4, "Versace")
+  val hat   = new Hat(5, "Gucci")
+  val pants = new Pants(5, "Ralph Lauren")
+  val dress = new Dress(4, "Donna Karan")
 
   val shoppingCart = new ShoppingCart[Clothing].pick(hat, 2).pick(dress, 3).pick(pants, 5)
   println(shoppingCart)
@@ -113,5 +113,5 @@ object ParametricBounds extends App {
 
   val bag = new Bag[Clothing].put(hat, 1).put(pants, 2).put(dress, 3)
   println(bag.findBySize(5).mkString("Bag contains:\n  ", "\n  ", ""))
-  println(bag.findByManufacturer("Versace").mkString("Bag contains:\n  ", "\n  ", ""))
+  println(bag.findByManufacturer("Donna Karan").mkString("Bag contains:\n  ", "\n  ", ""))
 }
