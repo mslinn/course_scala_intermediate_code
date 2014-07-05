@@ -9,6 +9,22 @@ object ProcessIO extends App {
 
   val grepX = "printf xray\\nyankee\\nzulu" #> "grep x" !!;
   println(s"grepX=$grepX")
+
+  val cmd = List("psql", "-h", "localhost", "-U", "postgres", "-p", "5432", "-c", "select * from pg_tables where schemaname='public'")
+  val cwd = None
+  val extraEnv = ("PGPASSWORD", "mypass")
+  try {
+    val result = Process(cmd, cwd, extraEnv).!!.trim
+    println(s"psql tables are:\n$result")
+  } catch {
+    case e: RuntimeException =>
+
+    case e: java.io.IOException =>
+      println(s"${e.getMessage}\nPerhaps PostgreSQL is not installed on your system, or psql is not on the path?")
+
+    case e: Exception =>
+      println(e.getMessage)
+  }
 }
 
 object URLBuilderDemo extends App {
