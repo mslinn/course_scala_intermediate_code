@@ -1,5 +1,4 @@
 import com.typesafe.config.{Config, ConfigFactory}
-
 import scala.collection.JavaConverters._
 
 object ConfigAWS extends App {
