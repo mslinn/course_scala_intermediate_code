@@ -89,7 +89,7 @@ object ParametricBounds extends App {
   println(shoppingCart)
 
 
-  // Bag can hold Clothing and subclasses
+  /** Bag can hold Clothing and subclasses */
   class Bag[T <: Clothing] {
     import collection.mutable
 
