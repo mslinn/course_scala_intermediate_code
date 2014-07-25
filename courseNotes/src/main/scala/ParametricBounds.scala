@@ -41,21 +41,21 @@ object Variance extends App {
   val baseClass = new BaseClass
   val subClass  = new SubClass
 
+  val invariantContainingBase     = new InvariantContainer(baseClass)
+  val invariantContainingSub      = new InvariantContainer(subClass)
+
+  val covariantContainingBase     = new CovariantContainer(baseClass)
+  val covariantContainingSub      = new CovariantContainer(subClass)
+
+  val contravariantContainingBase = new ContravariantContainer(baseClass)
+  val contravariantContainingSub  = new ContravariantContainer(subClass)
+
   val icb1 = new InvariantContainer(baseClass)
   val idb2 = new InvariantContainer[BaseClass](baseClass)
   val idb3: InvariantContainer[BaseClass] = new InvariantContainer(baseClass)
   val idb4 = new InvariantContainer[BaseClass](subClass)
 
-  val invariantContainingBase     = new InvariantContainer[BaseClass](baseClass)
-  val invariantContainingSub      = new InvariantContainer[SubClass](subClass)
-
-  val covariantContainingBase     = new CovariantContainer[BaseClass](baseClass)
-  val covariantContainingSub      = new CovariantContainer[SubClass](subClass)
-
-  val contravariantContainingBase = new ContravariantContainer[BaseClass](baseClass)
-  val contravariantContainingSub  = new ContravariantContainer[SubClass](subClass)
-
-  def base(container: Container) = ???
+  def base(container: Container) = {}
   base(invariantContainingBase)
   base(invariantContainingSub)
   base(covariantContainingBase)
@@ -63,23 +63,23 @@ object Variance extends App {
   base(contravariantContainingBase)
   base(contravariantContainingSub)
 
-  def invariantWithBase(container: InvariantContainer[BaseClass]) = ???
+  def invariantWithBase(container: InvariantContainer[BaseClass]) = {}
   invariantWithBase(invariantContainingBase)
 
-  def invariantWithSuper(container: InvariantContainer[SubClass]) = ???
+  def invariantWithSuper(container: InvariantContainer[SubClass]) = {}
   invariantWithSuper(invariantContainingSub)
 
-  def covariantWithBase(container: CovariantContainer[BaseClass]) = ???
+  def covariantWithBase(container: CovariantContainer[BaseClass]) = {}
   covariantWithBase(covariantContainingBase)
   covariantWithBase(covariantContainingSub)
 
-  def covariantWithSuper(container: CovariantContainer[SubClass]) = ???
+  def covariantWithSuper(container: CovariantContainer[SubClass]) = {}
   covariantWithSuper(covariantContainingSub)
 
-  def contravariantWithBase(container: ContravariantContainer[BaseClass]) = ???
+  def contravariantWithBase(container: ContravariantContainer[BaseClass]) = {}
   contravariantWithBase(contravariantContainingBase)
 
-  def contravariantWithSuper(container: ContravariantContainer[SubClass]) = ???
+  def contravariantWithSuper(container: ContravariantContainer[SubClass]) = {}
   contravariantWithSuper(contravariantContainingBase)
   contravariantWithSuper(contravariantContainingSub)
 }
