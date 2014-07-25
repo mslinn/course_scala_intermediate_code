@@ -41,6 +41,10 @@ object TypeRules extends App {
   val baseClass = new BaseClass
   val superClass = new SuperClass
 
+  val icb1 = new InvariantContainer(baseClass)
+  val icb1 = new InvariantContainer(baseClass)
+
+
   val invariantContainingBase      = new InvariantContainer[BaseClass](baseClass)
   val invariantContainingSuper     = new InvariantContainer[SuperClass](superClass)
 
