@@ -55,7 +55,7 @@ object Variance extends App {
   val idb3: InvariantContainer[BaseClass] = new InvariantContainer(baseClass)
   val idb4 = new InvariantContainer[BaseClass](subClass)
 
-  def base(container: Container) = {}
+  def base(container: Container) = container.getClass.getName
   base(invariantContainingBase)
   base(invariantContainingSub)
   base(covariantContainingBase)
@@ -63,23 +63,23 @@ object Variance extends App {
   base(contravariantContainingBase)
   base(contravariantContainingSub)
 
-  def invariantWithBase(container: InvariantContainer[BaseClass]) = {}
+  def invariantWithBase(container: InvariantContainer[BaseClass]) = container.getClass.getName
   invariantWithBase(invariantContainingBase)
 
-  def invariantWithSuper(container: InvariantContainer[SubClass]) = {}
+  def invariantWithSuper(container: InvariantContainer[SubClass]) = container.getClass.getName
   invariantWithSuper(invariantContainingSub)
 
-  def covariantWithBase(container: CovariantContainer[BaseClass]) = {}
+  def covariantWithBase(container: CovariantContainer[BaseClass]) = container.getClass.getName
   covariantWithBase(covariantContainingBase)
   covariantWithBase(covariantContainingSub)
 
-  def covariantWithSuper(container: CovariantContainer[SubClass]) = {}
+  def covariantWithSuper(container: CovariantContainer[SubClass]) = container.getClass.getName
   covariantWithSuper(covariantContainingSub)
 
-  def contravariantWithBase(container: ContravariantContainer[BaseClass]) = {}
+  def contravariantWithBase(container: ContravariantContainer[BaseClass]) = container.getClass.getName
   contravariantWithBase(contravariantContainingBase)
 
-  def contravariantWithSuper(container: ContravariantContainer[SubClass]) = {}
+  def contravariantWithSuper(container: ContravariantContainer[SubClass]) = container.getClass.getName
   contravariantWithSuper(contravariantContainingBase)
   contravariantWithSuper(contravariantContainingSub)
 }
