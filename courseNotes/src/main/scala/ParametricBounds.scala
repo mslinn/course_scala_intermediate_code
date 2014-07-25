@@ -29,7 +29,7 @@ object ExtendJavaSet extends App {
   println(s"mySet=$mySet")
 }
 
-object TypeRules extends App {
+object Variance extends App {
   class BaseClass
   class SubClass extends BaseClass
 
