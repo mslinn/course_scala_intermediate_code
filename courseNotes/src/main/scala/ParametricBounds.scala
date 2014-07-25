@@ -41,39 +41,31 @@ object TypeRules extends App {
   val baseClass = new BaseClass
   val superClass = new SuperClass
 
-  val invariantContainingBase = new InvariantContainer[BaseClass](baseClass)
-  val invariantContainingBaseSuper = new InvariantContainer[BaseClass](superClass)
-  val invariantContainingSuper = new InvariantContainer[SuperClass](superClass)
+  val invariantContainingBase      = new InvariantContainer[BaseClass](baseClass)
+  val invariantContainingSuper     = new InvariantContainer[SuperClass](superClass)
 
-  val covariantContainingBase = new CovariantContainer[BaseClass](baseClass)
-  val covariantContainingBaseSuper = new CovariantContainer[BaseClass](superClass)
-  val covariantContainingSuper = new CovariantContainer[SuperClass](superClass)
+  val covariantContainingBase      = new CovariantContainer[BaseClass](baseClass)
+  val covariantContainingSuper     = new CovariantContainer[SuperClass](superClass)
 
-  val contravariantContainingBase = new ContravariantContainer[BaseClass](baseClass)
-  val contravariantContainingBaseSuper = new ContravariantContainer[BaseClass](superClass)
+  val contravariantContainingBase  = new ContravariantContainer[BaseClass](baseClass)
   val contravariantContainingSuper = new ContravariantContainer[SuperClass](superClass)
 
   def base(container: Container) = ???
   base(invariantContainingBase)
-  base(invariantContainingBaseSuper)
   base(invariantContainingSuper)
   base(covariantContainingBase)
-  base(covariantContainingBaseSuper)
   base(covariantContainingSuper)
   base(contravariantContainingBase)
-  base(contravariantContainingBaseSuper)
   base(contravariantContainingSuper)
 
   def invariantWithBase(container: InvariantContainer[BaseClass]) = ???
   invariantWithBase(invariantContainingBase)
-  invariantWithBase(invariantContainingBaseSuper)
 
   def invariantWithSuper(container: InvariantContainer[SuperClass]) = ???
   invariantWithSuper(invariantContainingSuper)
 
   def covariantWithBase(container: CovariantContainer[BaseClass]) = ???
   covariantWithBase(covariantContainingBase)
-  covariantWithBase(covariantContainingBaseSuper)
   covariantWithBase(covariantContainingSuper)
 
   def covariantWithSuper(container: CovariantContainer[SuperClass]) = ???
@@ -81,11 +73,9 @@ object TypeRules extends App {
 
   def contravariantWithBase(container: ContravariantContainer[BaseClass]) = ???
   contravariantWithBase(contravariantContainingBase)
-  contravariantWithBase(contravariantContainingBaseSuper)
 
   def contravariantWithSuper(container: ContravariantContainer[SuperClass]) = ???
   contravariantWithSuper(contravariantContainingBase)
-  contravariantWithSuper(contravariantContainingBaseSuper)
   contravariantWithSuper(contravariantContainingSuper)
 }
 
