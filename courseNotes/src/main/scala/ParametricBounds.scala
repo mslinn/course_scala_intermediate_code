@@ -39,21 +39,21 @@ object TypeRules extends App {
   class ContravariantContainer[-T](t: T) extends Container
 
   val baseClass = new BaseClass
-  val subClass = new SubClass
+  val subClass  = new SubClass
 
   val icb1 = new InvariantContainer(baseClass)
   val idb2 = new InvariantContainer[BaseClass](baseClass)
   val idb3: InvariantContainer[BaseClass] = new InvariantContainer(baseClass)
   val idb4 = new InvariantContainer[BaseClass](subClass)
 
-  val invariantContainingBase      = new InvariantContainer[BaseClass](baseClass)
-  val invariantContainingSub     = new InvariantContainer[SubClass](subClass)
+  val invariantContainingBase     = new InvariantContainer[BaseClass](baseClass)
+  val invariantContainingSub      = new InvariantContainer[SubClass](subClass)
 
-  val covariantContainingBase      = new CovariantContainer[BaseClass](baseClass)
-  val covariantContainingSub     = new CovariantContainer[SubClass](subClass)
+  val covariantContainingBase     = new CovariantContainer[BaseClass](baseClass)
+  val covariantContainingSub      = new CovariantContainer[SubClass](subClass)
 
-  val contravariantContainingBase  = new ContravariantContainer[BaseClass](baseClass)
-  val contravariantContainingSub = new ContravariantContainer[SubClass](subClass)
+  val contravariantContainingBase = new ContravariantContainer[BaseClass](baseClass)
+  val contravariantContainingSub  = new ContravariantContainer[SubClass](subClass)
 
   def base(container: Container) = ???
   base(invariantContainingBase)
