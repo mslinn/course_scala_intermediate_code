@@ -29,6 +29,66 @@ object ExtendJavaSet extends App {
   println(s"mySet=$mySet")
 }
 
+object TypeRules extends App {
+  class BaseClass
+  class SuperClass extends BaseClass
+
+  trait Container
+  class InvariantContainer[T](t: T) extends Container
+  class CovariantContainer[+T](t: T) extends Container
+  class ContravariantContainer[-T](t: T) extends Container
+
+  val baseClass = new BaseClass
+  val superClass = new SuperClass
+
+  val invariantContainingBase = new InvariantContainer[BaseClass](baseClass)
+  val invariantContainingBaseSuper = new InvariantContainer[BaseClass](superClass)
+  val invariantContainingSuper = new InvariantContainer[SuperClass](superClass)
+
+  val covariantContainingBase = new CovariantContainer[BaseClass](baseClass)
+  val covariantContainingBaseSuper = new CovariantContainer[BaseClass](superClass)
+  val covariantContainingSuper = new CovariantContainer[SuperClass](superClass)
+
+  val contravariantContainingBase = new ContravariantContainer[BaseClass](baseClass)
+  val contravariantContainingBaseSuper = new ContravariantContainer[BaseClass](superClass)
+  val contravariantContainingSuper = new ContravariantContainer[SuperClass](superClass)
+
+  def base(container: Container) = ???
+  base(invariantContainingBase)
+  base(invariantContainingBaseSuper)
+  base(invariantContainingSuper)
+  base(covariantContainingBase)
+  base(covariantContainingBaseSuper)
+  base(covariantContainingSuper)
+  base(contravariantContainingBase)
+  base(contravariantContainingBaseSuper)
+  base(contravariantContainingSuper)
+
+  def invariantWithBase(container: InvariantContainer[BaseClass]) = ???
+  invariantWithBase(invariantContainingBase)
+  invariantWithBase(invariantContainingBaseSuper)
+
+  def invariantWithSuper(container: InvariantContainer[SuperClass]) = ???
+  invariantWithSuper(invariantContainingSuper)
+
+  def covariantWithBase(container: CovariantContainer[BaseClass]) = ???
+  covariantWithBase(covariantContainingBase)
+  covariantWithBase(covariantContainingBaseSuper)
+  covariantWithBase(covariantContainingSuper)
+
+  def covariantWithSuper(container: CovariantContainer[SuperClass]) = ???
+  covariantWithSuper(covariantContainingSuper)
+
+  def contravariantWithBase(container: ContravariantContainer[BaseClass]) = ???
+  contravariantWithBase(contravariantContainingBase)
+  contravariantWithBase(contravariantContainingBaseSuper)
+
+  def contravariantWithSuper(container: ContravariantContainer[SuperClass]) = ???
+  contravariantWithSuper(contravariantContainingBase)
+  contravariantWithSuper(contravariantContainingBaseSuper)
+  contravariantWithSuper(contravariantContainingSuper)
+}
+
 object ParametricBounds extends App {
   abstract class Clothing(val size: Int, val manufacturer: String) extends Ordering[Clothing] {
     def compare(a: Clothing, b: Clothing) =  {
