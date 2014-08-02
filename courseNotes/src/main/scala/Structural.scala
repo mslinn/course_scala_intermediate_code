@@ -38,7 +38,7 @@ object GoodDuck extends App {
   }
 
   class Duck1 extends DuckLike {
-    def quack(count: Int) = println("Duck1: " + "Quack! " * 3)
+    def quack(count: Int) = println("Duck1: " + "Quack! " * count)
 
     def waddle() = println("Duck1 Waddling...")
   }
@@ -48,17 +48,17 @@ object GoodDuck extends App {
   }
 
   class Duck2 extends AbstractDuck {
-    def quack(count: Int) = println("Duck2: " + "Quack! " * 3)
+    def quack(count: Int) = println("Duck2: " + "Quack! " * count)
 
     def waddle() = println("Duck2: Waddling...")
   }
 
   val duck1 = new Duck1
-  duck1.quack(2)
+  duck1.quack(3)
   duck1.waddle()
 
   val duck2 = new Duck2
-  duck2.quack(2)
+  duck2.quack(3)
   duck2.waddle()
 }
 
