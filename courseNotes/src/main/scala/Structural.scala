@@ -32,6 +32,36 @@ object Ducks2 extends App {
   frenchDuck.quack(3)
 }
 
+object GoodDuck extends App {
+  trait DuckLike {
+    def quack(count: Int): Unit
+  }
+
+  class Duck1 extends DuckLike {
+    def quack(count: Int) = println("Duck1: " + "Quack! " * 3)
+
+    def waddle() = println("Duck1 Waddling...")
+  }
+
+  abstract class AbstractDuck {
+    def quack(count: Int): Unit
+  }
+
+  class Duck2 extends AbstractDuck {
+    def quack(count: Int) = println("Duck2: " + "Quack! " * 3)
+
+    def waddle() = println("Duck2: Waddling...")
+  }
+
+  val duck1 = new Duck1
+  duck1.quack(2)
+  duck1.waddle()
+
+  val duck2 = new Duck2
+  duck2.quack(2)
+  duck2.waddle()
+}
+
 object Structural extends App {
   type Closeable = { def close(): Unit }
 

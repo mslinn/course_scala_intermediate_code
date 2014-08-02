@@ -138,3 +138,11 @@ object ParametricBounds extends App {
   println(bag.findBySize(5).mkString("Bag contains:\n  ", "\n  ", ""))
   println(bag.findByManufacturer("Donna Karan").mkString("Bag contains:\n  ", "\n  ", ""))
 }
+
+object TypeSafety2 extends App {
+  case class Container2[+A](a: A) {
+    def consume[B >: A](b: B): Unit = println(s"$a $b")
+  }
+
+  Container2("Hello to all my").consume("fans")
+}
