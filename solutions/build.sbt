@@ -25,18 +25,9 @@ scalacOptions in Test ++= Seq("-Yrangepos")
 
 libraryDependencies ++= Seq(
   "org.xerial"        %  "sqlite-jdbc"   % "3.7.2" withSources(),
-  "com.typesafe.akka" %% "akka-actor"    % "2.3.3" withSources(),
-  "com.typesafe"      %  "config"        % "1.2.1" withSources(),
-  "org.scalautils"    %% "scalautils"    % "2.1.7" withSources(),
   //
-  "com.typesafe.akka" %% "akka-testkit"  % "2.3.3"  % "test" withSources(),
-  "org.specs2"        %% "specs2"        % "2.3.12" % "test" withSources(),
   "org.scalatest"     %% "scalatest"     % "2.2.0"  % "test" withSources(),
   "junit"             %  "junit"         % "4.11"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
-)
-
-resolvers ++= Seq(
-  "releases" at "http://oss.sonatype.org/content/repositories/releases"
 )
 
 // Optional settings from https://github.com/harrah/xsbt/wiki/Quick-Configuration-Examples follow
