@@ -42,7 +42,7 @@ object Ducks3 extends App {
   }
 
   case class Mallard(age: Double) {
-    def quack(count: Int): Unit = println(s"Mallard  has $color feathers: " + "Quack! " * count)
+    def quack(count: Int): Unit = println(s"Mallard has $color feathers: " + "Quack! " * count)
 
     val color = "yellow"
   }
