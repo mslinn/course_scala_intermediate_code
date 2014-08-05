@@ -1,4 +1,4 @@
-object PartiallyApplied extends App {
+object PartiallyApplied {
   case class Rider(name: String, weight: Double, height: Double) {
     override def toString = s"$name weighs $weight pounds and is $height inches tall"
   }
@@ -42,8 +42,4 @@ object PartiallyApplied extends App {
 
   val bike4 = team4a("green")
   val weight4 = s"Team ${bike4.color} weighs ${bike4.totalWeight} pounds"
-
-  println(cheer1)
-  println(riders2)
-  println(weight4)
 }
