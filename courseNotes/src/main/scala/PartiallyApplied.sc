@@ -51,4 +51,5 @@ object PartiallyApplied {
  //
   val uncurriedBike1 = curriedBike _
   val uncurriedBike2 = Function.uncurried(curriedBike)
+  val bikex = uncurriedBike2(chloe, louise, beth, "Brown")
 }
