@@ -18,28 +18,46 @@ object LoanPattern extends App {
   def read(inputStream: InputStream): String =
     Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toChar).mkString
 
-  def print2lines(msg: String, string: String): Unit = println(s"$msg:\n  " + string.split("\n").take(2).mkString("\n  "))
+  def first2lines(msg: String, inputStream: InputStream): String = {
+    val string = read(inputStream)
+    s"$msg:\n  " + string.split("\n").take(2).mkString("\n  ")
+  }
 
-  val tryContents: Try[String] = withCloseable(new FileInputStream(new File("/etc/passwd")))(read)
-  tryContents.foreach(print2lines("tryContents", _))
+  val file = new File("/etc/passwd")
+  def fileInputStream = new FileInputStream(file)
 
-  val openFileInputStream2 = withCloseable(new FileInputStream(new File("/etc/passwd")))(_: FileInputStream => String)
-  val tryContents2: Try[String] = openFileInputStream2 { read }
-  tryContents2.foreach(print2lines("tryContents2", _))
+  val tryContents1: Try[String] = withCloseable(fileInputStream) { first2lines("tryContents1", _) }
+  tryContents1.foreach(println)
 
-  val fileInputStream = new FileInputStream(new File("/etc/passwd"))
+  val tryContents2: Try[String] = withCloseable(fileInputStream) { first2lines("tryContents2", _).toUpperCase }
+  tryContents2.foreach(println)
 
-  // underscore is optional if a type hint on the left of the equals sign indicates currying
-  val openFileInputStream3: ((FileInputStream) => String) => Try[String] = withCloseable(fileInputStream) _
-  val tryContents3: Try[String] = openFileInputStream3 { read }
-  tryContents3.foreach(print2lines("tryContents3", _))
+  val openFileInputStream3 = withCloseable(fileInputStream)(_: FileInputStream => String)
+  val tryContents3: Try[String] = openFileInputStream3 { first2lines("tryContents3", _).reverse }
+  tryContents3.foreach(println)
 
-  // underscore is optional if a type hint on the left of the equals sign indicates currying
   val openFileInputStream4: ((FileInputStream) => String) => Try[String] = withCloseable(fileInputStream)
-  val tryContents4: Try[String] = openFileInputStream4 { read }
-  tryContents4.foreach(print2lines("tryContents4", _))
+  val tryContents4: Try[String] = openFileInputStream4 { first2lines("tryContents4", _).toUpperCase.reverse }
+  tryContents4.foreach(println)
 
   def openFileInputStream5[T] = withCloseable[FileInputStream, T](fileInputStream) _
-  val tryContents5: Try[String] = openFileInputStream5 { read }
-  tryContents5.foreach(print2lines("tryContents5", _))
+  val tryContents5: Try[String] = openFileInputStream5 { first2lines("tryContents6", _).replace(":", "#") }
+  tryContents5.foreach(println)
+
+  def withBufferedInputStream1[T](input: File) =
+    withCloseable(new BufferedInputStream(new FileInputStream(input))) _
+
+  def withBufferedInputStream[T](input: File): (BufferedInputStream => T) => Try[T] =
+    withCloseable(new BufferedInputStream(new FileInputStream(input)))
+
+  withBufferedInputStream(file) { first2lines("withBufferedInputStream", _) } foreach println
+
+  def withBufferedOutputStream[T](input: File): (BufferedOutputStream ⇒ T) ⇒ Try[T] =
+    withCloseable(new BufferedOutputStream(new FileOutputStream(input)))
+
+  withBufferedInputStream(file) { inputStream ⇒
+    withBufferedOutputStream(new File("/tmp/blah")) { outputStream ⇒
+      read(inputStream).foreach(outputStream.write(_))
+    }
+  }
 }
