@@ -39,16 +39,16 @@ object PartiallyApplied {
   val threeRidersB = curriedBike(chloe)(louise)(beth)
   //
   val team4a = twoRidersA(beth)(_: String)
-  val team4b = twoRidersB(beth) // team3a is identical to team3b
+  val team4b = twoRidersB(beth) // team4a is identical to team4b
   //
-  val beekayCurried1 = (Rider.apply _).curried
-  val beekayCurried2 = Rider.curried
-  val beekayCurried3 = (Rider.apply _).curried("Beekay")
-  val beekayCurried4 = Rider.curried("Beekay")
+  val riderCurried1 = (Rider.apply _).curried
+  val riderCurried2 = Rider.curried
+  val beekayCurried1 = (Rider.apply _).curried("Beekay")
+  val beekayCurried2 = Rider.curried("Beekay")
   //
   val bike4 = team4a("green")
   val weight4 = s"Team ${bike4.color} weighs ${bike4.totalWeight} pounds"
- //
+  //
   val uncurriedBike1 = curriedBike _
   val uncurriedBike2 = Function.uncurried(curriedBike)
   val bikex = uncurriedBike2(chloe, louise, beth, "Brown")
