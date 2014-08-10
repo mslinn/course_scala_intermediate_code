@@ -55,7 +55,7 @@ object TimeableT extends App {
 }
 
 object ParametricWith extends App {
-  def withT[T](t: T)(operation: T => Unit):  Unit = { operation(t) }
+  def withT[T, U](t: T)(operation: T => U): U = operation(t)
 
   withT(6) { i => println( i * 2) }
   withT(new java.util.Date) { println }
