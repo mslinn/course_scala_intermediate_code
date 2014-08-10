@@ -16,7 +16,7 @@ object LoanPattern extends App {
   }
 
   def read(inputStream: InputStream): String =
-    Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toChar).mkString
+    Iterator.continually(inputStream.read).takeWhile(_ != -1).map(_.toChar).mkString
 
   def first2lines(msg: String, inputStream: InputStream): String = {
     val string = read(inputStream)
