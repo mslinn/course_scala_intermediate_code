@@ -83,3 +83,15 @@ object Combinators extends App {
   println(s"""even = $even""")
   println(s"""odd = $odd""")
 }
+
+object FuncMeth extends App {
+  class Klass {
+    val x = 3
+    def method1(y: Int) = s"x=$x and y=$y from method 1"
+    val function1 = (y:Int) => s"x=$x and y=$y from function 1"
+  }
+
+  val klass = new Klass()
+  println(klass.method1(4))
+  println(klass.function1(4))
+}
