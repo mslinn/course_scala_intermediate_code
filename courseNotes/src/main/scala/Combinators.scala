@@ -88,7 +88,7 @@ object FuncMeth extends App {
   class Klass {
     val x = 3
     def method1(y: Int) = s"x=$x and y=$y from method 1"
-    val function1 = (y:Int) => s"x=$x and y=$y from function 1"
+    val function1 = (y: Int) => s"x=$x and y=$y from function 1"
   }
 
   val klass = new Klass()
