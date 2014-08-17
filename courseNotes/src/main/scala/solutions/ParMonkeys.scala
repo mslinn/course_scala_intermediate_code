@@ -16,11 +16,6 @@ object ParMonkeys extends App {
     allowableChars.substring(i, i+1)
   }.mkString
 
-  def randomString2(n: Int) = (1 to n).map { _ =>
-    val i = random.nextInt(allowableChars.length-1)
-    allowableChars(i)
-  }.mkString
-
   /** return longer of s1 and s2 */
   def longestStr (s1:String, s2: String) = if (s1.length>= s2.length) s1 else s2
 
@@ -36,7 +31,7 @@ object ParMonkeys extends App {
     }
 
     (1 to numSims).par
-      .map(_ => longestCommonSubstring(randomString2(simStrLen)))
+      .map(_ => longestCommonSubstring(randomString(simStrLen)))
       .foldLeft("")(longestStr)
   }
   println("Longest common substring: '" + simMonkeys(50000, 100, target) + "'")
