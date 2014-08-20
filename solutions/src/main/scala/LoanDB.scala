@@ -1,5 +1,5 @@
 import collection.immutable.Map
-import java.sql.{Connection, DriverManager}
+import java.sql.{ResultSet, Statement, Connection, DriverManager}
 import scala.util.{Failure, Success, Try}
 
 trait Closeable {
@@ -23,7 +23,7 @@ trait Closeable {
   }
 }
 
-trait DBOps {
+trait DBOps extends Closeable {
   def connectTable(url: String, userName: String="", password: String=""): Connection = {
     val conn = connection(url, userName, password)
     createTable(conn, "person", "id integer, name string, age integer")
@@ -53,6 +53,27 @@ trait DBOps {
     }
     stmt.executeUpdate()
   }
+
+  /** Required to support statement.cancel() */
+  private var maybeCurrentStatement: Option[Statement] = None
+
+  /** Must be run from another thread than execute */
+  def cancel(): Unit = {
+    maybeCurrentStatement.foreach(_.cancel())
+    maybeCurrentStatement = None
+  }
+
+  /** Executes simple queries, which can be cancelled */
+  def execute(conn: Connection, statementString:String)(body: ResultSet => Any) = {
+    withCloseable(conn.createStatement) { statement =>
+      maybeCurrentStatement = Some(statement)
+      val rs = statement.executeQuery(statementString)
+      withCloseable(rs) { resultSet =>
+        body(resultSet)
+      }
+      maybeCurrentStatement = None
+    }
+  }
 }
 
 trait AdvancedDBOps extends DBOps {
@@ -73,15 +94,14 @@ trait AdvancedDBOps extends DBOps {
 }
 
 /** Mix in AdvancedDBOps instead of DBOps to alternate the implementation */
-object LoanDB extends App with Closeable with DBOps {
+object LoanDB extends App with DBOps {
   withCloseable(connectTable("jdbc:sqlite:person.db")) { conn: Connection =>
-    insert(conn, "person", Map("id" -> 1, "name" -> "Fred Flintsone",  "age" -> 400002))
+    insert(conn, "person", Map("id" -> 1, "name" -> "Fred Flintsone", "age" -> 400002))
     insert(conn, "person", Map("id" -> 2, "name" -> "Wilma Flintsone", "age" -> 400001))
-    insert(conn, "person", Map("id" -> 3, "name" -> "Barney Rubble",   "age" -> 400004))
-    insert(conn, "person", Map("id" -> 4, "name" -> "Betty Rubble",    "age" -> 400003))
+    insert(conn, "person", Map("id" -> 3, "name" -> "Barney Rubble", "age" -> 400004))
+    insert(conn, "person", Map("id" -> 4, "name" -> "Betty Rubble", "age" -> 400003))
 
-    val stmt2 = conn.prepareStatement("select * from person")
-    withCloseable(stmt2.executeQuery) { resultSet =>
+    execute(conn, "select * from person") { resultSet =>
       val columnCount: Int = resultSet.getMetaData.getColumnCount
       do {
         val x = (1 to columnCount).map(resultSet.getObject).mkString(", ")
