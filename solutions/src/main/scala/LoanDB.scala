@@ -24,17 +24,20 @@ trait Closeable {
 }
 
 trait DBOps extends Closeable {
+  import java.sql.{Connection, DriverManager, ResultSet, Statement}
+  import scala.collection.immutable.Map
+
+  Class.forName("org.sqlite.JDBC")
+
   def connectTable(url: String, userName: String="", password: String=""): Connection = {
-    val conn = connection(url, userName, password)
-    createTable(conn, "person", "id integer, name string, age integer")
+    implicit val conn = connection(url, userName, password)
+    createTable("person", "id integer, name string, age integer")
   }
 
-  def connection(url: String, userName: String="", password: String=""): Connection = {
-    Class.forName("org.sqlite.JDBC")
+  def connection(url: String, userName: String="", password: String=""): Connection =
     DriverManager.getConnection(url, userName, password)
-  }
 
-  def createTable(connection: Connection, tableName: String, creationStatement: String): Connection = {
+  def createTable(tableName: String, creationStatement: String)(implicit connection: Connection): Connection = {
     val statement = connection.createStatement
     statement.setQueryTimeout(30)
     statement.executeUpdate(s"drop table if exists $tableName")
@@ -42,7 +45,7 @@ trait DBOps extends Closeable {
     connection
   }
 
-  def insert(conn: Connection, tableName: String, nameValueMap: Map[String, Any]) = {
+  def insert(tableName: String, nameValueMap: Map[String, Any])(implicit conn: Connection) = {
     val keys = nameValueMap.keys.toList // nameValueMap.keys is an iterable, which can only be traversed once
     val names = keys.mkString(", ")
     val placeholders = keys.map { _ => "?" }.mkString(", ")
@@ -64,7 +67,7 @@ trait DBOps extends Closeable {
   }
 
   /** Executes simple queries, which can be cancelled */
-  def execute(conn: Connection, statementString:String)(body: ResultSet => Any) = {
+  def execute(statementString:String)(body: ResultSet => Any)(implicit conn: Connection) = {
     withCloseable(conn.createStatement) { statement =>
       maybeCurrentStatement = Some(statement)
       val rs = statement.executeQuery(statementString)
@@ -95,13 +98,13 @@ trait AdvancedDBOps extends DBOps {
 
 /** Mix in AdvancedDBOps instead of DBOps to alternate the implementation */
 object LoanDB extends App with DBOps {
-  withCloseable(connectTable("jdbc:sqlite:person.db")) { conn: Connection =>
-    insert(conn, "person", Map("id" -> 1, "name" -> "Fred Flintsone", "age" -> 400002))
-    insert(conn, "person", Map("id" -> 2, "name" -> "Wilma Flintsone", "age" -> 400001))
-    insert(conn, "person", Map("id" -> 3, "name" -> "Barney Rubble", "age" -> 400004))
-    insert(conn, "person", Map("id" -> 4, "name" -> "Betty Rubble", "age" -> 400003))
+  withCloseable(connectTable("jdbc:sqlite:person.db")) { implicit conn: Connection =>
+    insert("person", Map("id" -> 1, "name" -> "Fred Flintsone", "age" -> 400002))
+    insert("person", Map("id" -> 2, "name" -> "Wilma Flintsone", "age" -> 400001))
+    insert("person", Map("id" -> 3, "name" -> "Barney Rubble", "age" -> 400004))
+    insert("person", Map("id" -> 4, "name" -> "Betty Rubble", "age" -> 400003))
 
-    execute(conn, "select * from person") { resultSet =>
+    execute("select * from person") { resultSet =>
       val columnCount: Int = resultSet.getMetaData.getColumnCount
       do {
         val x = (1 to columnCount).map(resultSet.getObject).mkString(", ")
