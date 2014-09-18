@@ -1,9 +1,10 @@
 package solutions
 
-trait DBOps extends Closeable {
+trait DBOps extends java.io.Closeable {
   import java.sql.{Connection, DriverManager, ResultSet, Statement}
 
 import scala.collection.immutable.Map
+  import scala.util.Try
 
   Class.forName("org.sqlite.JDBC")
 
@@ -45,14 +46,28 @@ import scala.collection.immutable.Map
   }
 
   /** Executes simple queries, which can be cancelled */
-  def execute(statementString:String)(body: ResultSet => Any)(implicit conn: Connection) = {
-    withCloseable(conn.createStatement) { statement =>
+  def execute(statementString:String)(body: ResultSet => Any)(implicit conn: Connection): Try[Any] =
+    withAutoCloseable(conn.createStatement) { statement: Statement =>
       maybeCurrentStatement = Some(statement)
-      val rs = statement.executeQuery(statementString)
-      withCloseable(rs) { resultSet =>
+      val rs: ResultSet = statement.executeQuery(statementString)
+      val result: Try[Any] = withAutoCloseable(rs) { resultSet =>
         body(resultSet)
       }
       maybeCurrentStatement = None
+      result.getOrElse(result.failed)
+    }
+
+  private def withAutoCloseable[C <: AutoCloseable, T](factory: => C)(operation: C => T): util.Try[T] = {
+    val closeable = factory
+    try {
+      val result: T = operation(closeable)
+      closeable.close()
+      util.Success(result)
+    } catch {
+      case throwable: Throwable =>
+        try { closeable.close() } catch { case _: Throwable => }
+        util.Failure(throwable)
     }
   }
+
 }
