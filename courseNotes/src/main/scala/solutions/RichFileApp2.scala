@@ -12,7 +12,7 @@ object RichFile2 {
 
   implicit class EnrichedFile(underlying: File)(implicit charset: Charset=Charset.forName("UTF-8")) {
 
-    private def withCloseable[C <: Closeable, T](factory: => C)(operation: C => T): Try[T] = {
+    private def withCloseable[C <: java.io.Closeable, T](factory: => C)(operation: C => T): Try[T] = {
       val closeable = factory
       try {
         val result: T = operation(closeable)

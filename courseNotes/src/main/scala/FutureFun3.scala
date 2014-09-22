@@ -7,7 +7,7 @@ import util.{Success, Failure}
  * once the program has reached the end of the main program, any other threads still executing
  * are terminated */
 
-object FutureFun extends App {
+object FutureFun3 extends App {
 //  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
 //  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
