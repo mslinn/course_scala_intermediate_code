@@ -22,7 +22,7 @@ class Chunker extends Actor {
   def receive = {
     case msg: ChunkerMsg =>
       //println(s"Chunker actor got $msg")
-      rootActor = sender
+      rootActor = sender()
       context.actorOf(Props[Persistence], name = "persistence") ! msg
       1 to msg.numWorkers foreach { i =>
         context.actorOf(Props[Worker], name = s"worker$i") ! WorkerMsg(msg.text.length, msg.tries)
@@ -98,16 +98,16 @@ object ActorFun extends App {
 
   val system = ActorSystem("monkeyCage")
   val chunker = system.actorOf(Props[Chunker], name = "chunker")
-  val future = chunker ? ChunkerMsg(50, 30000, "One upon a time, there was a little girl who dreamed she could fly.")
+  val future = chunker ? ChunkerMsg(50, 30000, "Once upon a time, there was a little girl who dreamed she could fly.")
+  val waiter = concurrent.Promise[String]()
   future.mapTo[ResultMsg] onComplete {
-    case Success(result) =>
-      println(s"Best match is '${result.text}' (${result.text.length} characters})")
-      system.notifyAll()
+    case Success(value) =>
+      waiter.success(s"Best match is '${value.text}' (${value.text.length} characters})")
 
     case Failure(msg) =>
-      println(msg)
-      system.notifyAll()
+      waiter.failure(new Exception(msg))
   }
-  system.synchronized { system.wait() } // let daemon threads continue
-  println("All done")
+  val result = concurrent.Await.result(waiter.future, concurrent.duration.Duration.Inf)
+  println(result)
+  system.shutdown()
 }

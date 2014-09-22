@@ -1,9 +1,7 @@
-import concurrent.{ExecutionContext, Await, Future}
+import concurrent.{Await, Future}
 import concurrent.duration._
-import concurrent.forkjoin.{ForkJoinWorkerThread, ForkJoinPool}
 import concurrent.ExecutionContext.Implicits.global
 import util.{Success, Failure}
-import io.Source
 
 /** WARNING: if you use concurrent.ExecutionContext.Implicits.global, daemon threads are used
  * once the program has reached the end of the main program, any other threads still executing
@@ -14,9 +12,9 @@ object FutureFun extends App {
 //  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
   //val urls2 = List("http://www.scalacourses.com", "http://www.not_really_here.com", "http://www.micronauticsresearch.com")
-  val urls2 = List("http://www.scalacourses.com", "http://www.micronauticsresearch.com")
+  val urls2: List[String] = List("http://www.scalacourses.com", "http://www.micronauticsresearch.com")
 
-  def readUrl(url: String): String = Source.fromURL(url).mkString
+  def readUrl(url: String): String = io.Source.fromURL(url).mkString
 
   def urlSearch(word: String, urls: List[String]): Unit = {
     val futures2: List[Future[String]] = urls.map { url =>
@@ -43,16 +41,16 @@ object FutureFun extends App {
     println()
   }
 
-  val futures = urls2.map(u => Future(io.Source.fromURL(u).mkString))
-  val fs = Future.sequence(futures)
+  val futures: List[Future[String]] = urls2.map(u => Future(io.Source.fromURL(u).mkString))
+  val fs: Future[List[String]] = Future.sequence(futures)
 
   for {
-    allDone <- fs
-    (url, content) <- urls2 zip allDone if content.toLowerCase.contains("scala")
+    contents: List[String] <- fs
+    (url, content) <- urls2 zip contents if content.toLowerCase.contains("scala")
   } println(url)
 
   urlSearch("scala", urls2)
-  synchronized { wait() } // let daemon threads continue
+  synchronized { wait() } // let daemon threads continue; hit control-C to terminate
 }
 
 object ForComp1 extends App {
@@ -78,8 +76,8 @@ object ForComp1 extends App {
   } yield x + y + z
   future4 onComplete {
     case Success(r) =>
-            println(s"Success: $r")
-            System.exit(0)
+      println(s"Success: $r")
+      System.exit(0)
     case Failure(ex) =>
       println(s"Failure: ${ex.getMessage}")
       System.exit(0)
@@ -120,7 +118,7 @@ object ForComp3 extends App {
 }
 
 object ForComp4 extends App {
-  val sky = Console.readLine("What color is the sky? ").toLowerCase
+  val sky = io.StdIn.readLine("What color is the sky? ").toLowerCase
   val future4 = for {
     x <- Future(1+2)
     y <- Future(2+3)
@@ -140,7 +138,7 @@ object ForComp4 extends App {
 
 object ForComp5 extends App {
   print("What color is the sky? ")
-  val sky = Console.readLine().toLowerCase
+  val sky = io.StdIn.readLine().toLowerCase
   val future4 = Future(1+2).withFilter {
     x => sky=="blue"
   }.flatMap { x =>

@@ -1,9 +1,9 @@
 package solutions
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.parallel._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 trait Timeable[T] {
   def time(block: => T): T = {
@@ -26,8 +26,7 @@ object FutureMonkey extends App with Timeable[Future[String]]{
 
   val stringToMatch = "I thought I saw a lolcat! I did, I did see a lolcat!"
   val random = new scala.util.Random
-  val allowableChars = """ !.,;'""" + (('a' to 'z').toList ::: ('A' to 'Z').toList
-    ::: (0 to 9).toList).mkString
+  val allowableChars = """ !.,;'""" + (('a' to 'z').toList ::: ('A' to 'Z').toList ::: (0 to 9).toList).mkString
 
   try {
     val result = Await.result(time(parFun), singleFutureTimeout)
