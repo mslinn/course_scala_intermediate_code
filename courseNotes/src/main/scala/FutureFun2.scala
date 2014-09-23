@@ -8,12 +8,15 @@ object FutureFun2 extends App {
   val promise1, promise2, promise3, promise4 = Promise[String]()
   println(s"promise1.isCompleted=${promise1.isCompleted}")
   println(s"promise4.isCompleted-${promise4.isCompleted}")
+  println(s"promise1.future.isCompleted=${promise1.future.isCompleted}")
+  println(s"promise4.future.isCompleted-${promise4.future.isCompleted}")
 
   promise1.future.onSuccess {
     case value ⇒ println(s"onSuccess: Promise1 value=$value")
   }
   promise1.success("Hi there")
-  promise1.isCompleted
+  println(s"promise1.isCompleted=${promise1.isCompleted}")
+  println(s"promise1.future.isCompleted=${promise1.future.isCompleted}")
 
   promise2.future.onSuccess {
     case value ⇒ println(s"onSuccess: promise2 value=$value")
@@ -26,10 +29,10 @@ object FutureFun2 extends App {
   object TheExceptTrace extends Exception("Boom!") with NoStackTrace
   promise4.complete(Failure(TheExceptTrace))
 
-  promise1.future.value
-  promise2.future.failed
-  promise3.future.value
-  promise4.future.value
+  println(s"promise1.future.value=${promise1.future.value}")
+  println(s"promise2.future.failed=${promise2.future.failed}")
+  println(s"promise3.future.value=${promise3.future.value}")
+  println(s"promise4.future.value=${promise4.future.value}")
 
   val f = Future(Source.fromURL("http://www.scalacourses.com"))
   println(s"f.isCompleted=${f.isCompleted}")
