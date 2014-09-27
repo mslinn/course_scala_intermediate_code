@@ -12,9 +12,9 @@ object FutureFun2 extends App {
   println(s"promise4.future.isCompleted-${promise4.future.isCompleted}")
 
   promise1.future.onSuccess {
-    case value ⇒ println(s"onSuccess: Promise1 value=$value")
+    case value ⇒ println(s"onSuccess: promise1 value=$value")
   }
-  promise1.success("Hi there")
+  promise1.success(s"Promise1 completed successfully")
   println(s"promise1.isCompleted=${promise1.isCompleted}")
   println(s"promise1.future.isCompleted=${promise1.future.isCompleted}")
 
