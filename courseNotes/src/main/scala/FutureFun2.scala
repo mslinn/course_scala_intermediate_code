@@ -5,6 +5,17 @@ import scala.util.control.NoStackTrace
 import scala.util.{Success,Failure}
 
 object FutureFun2 extends App {
+  def factorial(number: BigInt): BigInt = {
+    import annotation.tailrec
+    @tailrec def fact(total: BigInt, number: BigInt): BigInt = {
+      if (number == BigInt(1))
+        total
+      else
+        fact(total* number, number - 1)
+    }
+    fact(1, number)
+  }
+
   val promise1, promise2, promise3, promise4 = Promise[String]()
   println(s"promise1.isCompleted=${promise1.isCompleted}")
   println(s"promise4.isCompleted-${promise4.isCompleted}")
@@ -12,9 +23,9 @@ object FutureFun2 extends App {
   println(s"promise4.future.isCompleted-${promise4.future.isCompleted}")
 
   promise1.future.onSuccess {
-    case value ⇒ println(s"onSuccess: Promise1 value=$value")
+    case value ⇒ println(s"onSuccess: promise1 value=$value")
   }
-  promise1.success("Hi there")
+  promise1.success(s"Promise1 completed successfully")
   println(s"promise1.isCompleted=${promise1.isCompleted}")
   println(s"promise1.future.isCompleted=${promise1.future.isCompleted}")
 
