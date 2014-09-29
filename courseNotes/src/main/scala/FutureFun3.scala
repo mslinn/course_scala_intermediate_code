@@ -100,10 +100,6 @@ object ForComp5 extends App {
   synchronized { wait() }
 }
 
-/** If you use concurrent.ExecutionContext.Implicits.global, daemon threads are used, so
- * once the program has reached the end of the main program any other threads still executing
- * are terminated */
-
 object FutureFun3 extends App {
   import language.postfixOps
 
