@@ -107,13 +107,7 @@ object ForComp5 extends App {
 object FutureFun3 extends App {
   import language.postfixOps
 
-  implicit val executionContext: ExecutionContext = if (args.contains("fixed")) {
-    import java.util.concurrent.{Executors, ExecutorService}
-    val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
-    ExecutionContext.fromExecutor(pool)
-  } else {
-    concurrent.ExecutionContext.Implicits.global
-  }
+  implicit val context = MultiThreading.executionContext()
 
   def urls(includeBad: Boolean=false): List[String] =
     List("http://www.scalacourses.com", "http://www.micronauticsresearch.com") ::: (if (includeBad) List( "http://www.not_really_here.com") else Nil)
