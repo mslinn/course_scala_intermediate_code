@@ -148,3 +148,32 @@ object ForComp5 extends App {
   }
   synchronized { wait() }
 }
+
+object FutureCombinators extends App {
+  val fZero: Future[Int]          = Future(5/0)
+  val defaultFuture: Future[Int]  = Future.successful(42)
+  val result: Future[Int]         = fZero.fallbackTo(defaultFuture)
+  // can also write:
+  // val result = fZero fallbackTo defaultFuture
+
+  Future(6 / 2).recover { case e: ArithmeticException => 42 } // new Future value: 3
+  Future(6 / 0).recover { case e: ArithmeticException => 42 } // new Future value: 42
+  // new Future value: java.lang.ArithmeticException("/ by zero")
+  Future(6 / 0).recover { case e: NoSuchElementException => 42 }
+
+  Future(6 / 0).recoverWith { case e: ArithmeticException => defaultFuture }
+  Future(6 / 0).recoverWith { case e: NoSuchElementException => defaultFuture }
+
+  val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
+
+  val q = f5.collect {
+    case value: Int if value>50 => value * 2
+  }.recover {
+    case throwable: Throwable => 42 // default value
+  }
+
+  val g: Future[Int] = f5 filter { _ % 2 == 1 } // This future succeeded, contains 5
+  val h: Future[Int] = f5 filter { _ % 2 == 0 } // This future contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
+  val r1 = Await.result(g, Duration.Zero) // evaluates to 5
+  val r2 = Await.result(h.recover { case throwable: Throwable => 42 }, Duration.Zero) // evaluates to 42
+}

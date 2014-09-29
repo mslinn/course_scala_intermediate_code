@@ -51,6 +51,12 @@ initialCommands := """
                    |import java.io.File
                    |import java.net.URL
                    |import scala.sys.process._
+                   |import concurrent._
+                   |import concurrent.ExecutionContext.Implicits.global
+                   |import scala.util.control.NoStackTrace
+                   |import scala.util.{Try,Success,Failure}
+                   |import concurrent.{Await, Future}
+                   |import concurrent.duration._
                    |""".stripMargin
 
 // Only show warnings and errors on the screen for compilations.
