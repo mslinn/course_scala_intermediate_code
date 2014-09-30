@@ -252,10 +252,11 @@ object FutureFlatMap extends App {
   val boostedUser: Future[User] = getUser.flatMap {
     _.grantPrivilege("student")
   }
-  boostedUser.onComplete {
+  boostedUser.andThen {
     case Success(value) => println(s"Student privilege is now: $value")
     case Failure(throwable) => println("Problem augmenting student privilege: " + throwable.getMessage)
-  }
+  }.andThen { case _ => System.exit(0) }
+  synchronized { wait() }
 }
 
 object FutureForeach extends App {
@@ -283,20 +284,35 @@ object FutureTransform extends App {
   Future(6/0).transform (
     identity,
     throwable => new Exception("Something went wrong", throwable)
-  ).onComplete {
+  ).andThen {
     case Success(value) => println(value)
     case Failure(throwable) => println(throwable.getMessage)
-  }
+  }.andThen { case _ => System.exit(0) }
+  synchronized { wait() }
 }
 
 object FutureZip extends App {
   import language.postfixOps
-  import FutureFixtures._
 
-  implicit val context = MultiThreading.executionContext()
+  case class User(name: String, privilege: List[String])
 
-  for {
-    contents: List[String] <- futureOfList() // all futures must succeed in order for url to be printed
-    (url, content) <- urls() zip contents if content.toLowerCase.contains("scala")
-  } println(url)
+  def getUser: Future[User] = Future {
+    // simulate slow database access
+    Thread.sleep(150)
+    User("bogusName", Nil)
+  }
+
+  def lotteryNumber: Future[Int] = Future {
+    // simulate slow database access
+    Thread.sleep(150)
+    new util.Random().nextInt()
+  }
+
+  val luckyUser: Future[(User, Int)] = getUser zip lotteryNumber
+  luckyUser.andThen {
+    case Success(value) => println(s"User lottery tuple: $value")
+    case Failure(throwable) => println("Problem: " + throwable.getMessage)
+  }.andThen { case _ => System.exit(0) }
+  synchronized { wait() }
 }
+

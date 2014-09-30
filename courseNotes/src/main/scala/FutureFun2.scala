@@ -34,6 +34,14 @@ object FutureFun2 extends App {
   }
   promise2.complete(Success("Promise2 completed with Try/Success"))
 
+  promise3.future.andThen {
+    case Success(value) ⇒ println(s"andThen success: promise3 value=$value")
+    case Failure(throwable) => println(s"onComplete failure: promise2 throwable message = ${throwable.getMessage}")
+  }.andThen {
+    case _ => println("Ok to shut everything down now!")
+  }
+  promise3.complete(Success("Promise3 completed with Try/Success"))
+
   class ExceptTrace(msg: String) extends Exception(msg) with NoStackTrace
   promise3.failure(new ExceptTrace("Boom!"))
 
