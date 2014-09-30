@@ -326,3 +326,67 @@ object FutureFind extends App {
   }.andThen { case _ => System.exit(0) }
   synchronized { wait() }
 }
+
+object FutureFirstCompletedOf extends App {
+  val f1 = Future(factorial(12345))
+  val f2 = Future(factorial(23456))
+  val f3 = Future(factorial(34567))
+  Future.firstCompletedOf(List(f1, f2, f3)).andThen {
+    case Success(result) => println(s"result = $result")
+    case Failure(throwable) => println(throwable.getMessage)
+  }.andThen { case _ => System.exit(0) }
+  synchronized { wait() }
+}
+
+object FutureFold extends App {
+  val f1 = Future(factorial(12345))
+  val f2 = Future(factorial(23456))
+  val f3 = Future(factorial(34567))
+  val futures = List(f1, f2, f3)
+  val bigMax = (x: BigInt, y: BigInt) => if (x>y) x else y
+
+  Future.fold(futures)(BigInt(0))(_+_).andThen {
+    case Success(result) => println(s"fold addition result = $result")
+    case Failure(throwable) => println(throwable.getMessage)
+  }.andThen {
+    case _ =>
+      Future.fold(futures)(BigInt(0))(bigMax).andThen {
+        case Success(result) => println(s"fold max result = $result")
+        case Failure(throwable) => println(throwable.getMessage)
+      }.andThen { case _ => System.exit(0) }
+  }
+  synchronized { wait() }
+}
+
+object FutureReduce extends App {
+  val f1 = Future(factorial(12345))
+  val f2 = Future(factorial(23456))
+  val f3 = Future(factorial(34567))
+  val futures = List(f1, f2, f3)
+  val bigMax = (x: BigInt, y: BigInt) => if (x>y) x else y
+
+  Future.reduce(futures)(_+_).andThen {
+    case Success(result) => println(s"reduce addition result = $result")
+    case Failure(throwable) => println(throwable.getMessage)
+  }.andThen {
+    case _ =>
+      Future.reduce(futures)(bigMax).andThen {
+        case Success(result) => println(s"reduce max result = $result")
+        case Failure(throwable) => println(throwable.getMessage)
+      }.andThen { case _ => System.exit(0) }
+  }
+  synchronized { wait() }
+}
+
+object FutureSequence extends App {
+  val f1 = Future(factorial(12345))
+  val f2 = Future(factorial(23456))
+  val f3 = Future(factorial(34567))
+  val futures = List(f1, f2, f3)
+
+  Future.sequence(futures).andThen {
+    case Success(result) => println(s"reduce result = $result")
+    case Failure(throwable) => println(throwable.getMessage)
+  }.andThen { case _ => System.exit(0) }
+  synchronized { wait() }
+}
