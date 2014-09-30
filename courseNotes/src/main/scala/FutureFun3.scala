@@ -100,58 +100,9 @@ object ForComp5 extends App {
   synchronized { wait() }
 }
 
-object FutureCombinators extends App {
-  val fZero: Future[Int] = Future(5 / 0)
-  val defaultFuture: Future[Int] = Future.successful(42)
-  val result: Future[Int] = fZero.fallbackTo(defaultFuture)
-  // can also write:
-  // val result = fZero fallbackTo defaultFuture
-
-  Future(6 / 2).recover { case e: ArithmeticException => 42 } // new Future value: 3
-  Future(6 / 0).recover { case e: ArithmeticException => 42 } // new Future value: 42
-  // new Future value: java.lang.ArithmeticException("/ by zero")
-  Future(6 / 0).recover { case e: NoSuchElementException => 42 }
-  Future(6 / 0)
-    .recover { case e: NoSuchElementException => 42 }
-    .recover { case e: java.io.IOException => 43 }
-    .recover { case e: java.net.MalformedURLException => 44 }
-  Future(6 / 0).recover {
-    case e: NoSuchElementException => 42
-    case e: java.io.IOException => 43
-    case e: java.net.MalformedURLException => 44
-  }
-
-  Future(6 / 0).recoverWith { case e: ArithmeticException => defaultFuture}
-  Future(6 / 0).recoverWith { case e: NoSuchElementException => defaultFuture}
-
-  val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
-
-  val q = f5.collect {
-    case value: Int if value > 50 => value * 2
-  }.recover {
-    case throwable: Throwable => 42 // default value
-  }
-
-  val g: Future[Int] = f5 filter {
-    _ % 2 == 1
-  }
-  // This future succeeded, contains 5
-  val h: Future[Int] = f5 filter {
-    _ % 2 == 0
-  }
-  // This future contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
-  val r1 = Await.result(g, Duration.Zero)
-  // evaluates to 5
-  val r2 = Await.result(h.recover { case throwable: Throwable => 42}, Duration.Zero) // evaluates to 42
-}
-
-object FutureFun3 extends App {
-  import language.postfixOps
-
-  implicit val context = MultiThreading.executionContext()
-
-  def urls(includeBad: Boolean=false): List[String] =
-    List("http://www.scalacourses.com", "http://www.micronauticsresearch.com") ::: (if (includeBad) List( "http://www.not_really_here.com") else Nil)
+object FutureFixtures {
+  def urls(includeBad: Boolean = false): List[String] =
+    List("http://www.scalacourses.com", "http://www.micronauticsresearch.com") ::: (if (includeBad) List("http://www.not_really_here.com") else Nil)
 
   def readUrl(url: String): String = io.Source.fromURL(url).mkString
 
@@ -185,22 +136,71 @@ object FutureFun3 extends App {
     println()
   }
 
-  def listOfFutures(includeBad:Boolean=false): List[Future[String]] = urls(includeBad).map { url => Future(readUrl(url)) }
+  def listOfFutures(includeBad: Boolean = false): List[Future[String]] = urls(includeBad).map { url => Future(readUrl(url))}
 
-  def futureOfList(includeBad:Boolean=false): Future[List[String]] = Future.sequence(listOfFutures(includeBad))
+  def futureOfList(includeBad: Boolean = false): Future[List[String]] = Future.sequence(listOfFutures(includeBad))
 
-  println("\nZip demo")
-  for {
-    contents: List[String] <- futureOfList() // all futures must succeed in order for url to be printed
-    (url, content) <- urls() zip contents if content.toLowerCase.contains("scala")
-  } println(url)
+  urlSearch("scala", urls())
+  synchronized { wait() } // let daemon threads continue; hit control-C to terminate
+}
 
-  println("\nCollect demo")
-  val allUrlsWithFutures: List[(String, Future[String])] = urls(includeBad=true) zip listOfFutures(includeBad=true)
+object FutureFallbackTo extends App {
+  import language.postfixOps
+  import FutureFixtures._
+
+  val fZero: Future[Int] = Future(5 / 0)
+  val defaultFuture: Future[Int] = Future.successful(42)
+  val result: Future[Int] = fZero.fallbackTo(defaultFuture)
+  // can also write:
+  // val result = fZero fallbackTo defaultFuture
+
+  Future(readUrl(urls().head))
+    .fallbackTo(Future(readUrl(urls().take(2).head)))
+    .fallbackTo(Future.successful("This is the default value"))
+}
+
+object FutureRecover extends App {
+  import language.postfixOps
+
+  Future(6 / 2).recover { case e: ArithmeticException => 42 } // new Future value: 3
+  Future(6 / 0).recover { case e: ArithmeticException => 42 } // new Future value: 42
+  // new Future value: java.lang.ArithmeticException("/ by zero")
+  Future(6 / 0).recover { case e: NoSuchElementException => 42 }
+  Future(6 / 0)
+    .recover { case e: NoSuchElementException => 42 }
+    .recover { case e: java.io.IOException => 43 }
+    .recover { case e: java.net.MalformedURLException => 44 }
+  Future(6 / 0).recover {
+    case e: NoSuchElementException => 42
+    case e: java.io.IOException => 43
+    case e: java.net.MalformedURLException => 44
+  }
+}
+
+object FutureRecoverWith extends App {
+  import language.postfixOps
+
+  val defaultFuture: Future[Int] = Future.successful(42)
+  Future(6 / 0).recoverWith { case e: ArithmeticException => defaultFuture}
+  Future(6 / 0).recoverWith { case e: NoSuchElementException => defaultFuture}
+
+  val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
+  val q = f5.collect {
+    case value: Int if value > 50 => value * 2
+  }.recover {
+    case throwable: Throwable => 42 // default value
+  }
+}
+
+object FutureCollect extends App {
+  import language.postfixOps
+  import FutureFixtures._
+  val allUrlsWithFutures: List[(String, Future[String])] = urls(includeBad = true) zip listOfFutures(includeBad = true)
   allUrlsWithFutures foreach {
     case tuple: (String, Future[String]) =>
       println(s"  Examining ${tuple._1}")
-      tuple._2.collect { // this is Future.collect
+      tuple._2.collect {
+        // this is Future.collect
         case content: String if content.toLowerCase.contains("scala") =>
           println(s"  Using Future.collect, scala was found in ${tuple._1}")
       }.recover { case throwable: Throwable =>
@@ -208,18 +208,64 @@ object FutureFun3 extends App {
       }
   }
 
-  println("\nFallbackTo demo")
   Future(readUrl(urls().head))
+    .collect { case value: String => value.substring(0, math.min(100, value.length))} // only performed if future succeeded
     .fallbackTo(Future(readUrl(urls().take(2).head)))
+    .collect { case value: String => value.substring(0, math.min(100, value.length))} // only performed if future succeeded
     .fallbackTo(Future.successful("This is the default value"))
+}
 
-  println("\nCollect/fallbackTo demo")
-  Future(readUrl(urls().head))
-    .collect { case value: String => value.substring(0, math.min(100, value.length)) } // only performed if future succeeded
-    .fallbackTo(Future(readUrl(urls().take(2).head)))
-    .collect { case value: String => value.substring(0, math.min(100, value.length)) } // only performed if future succeeded
-    .fallbackTo(Future.successful("This is the default value"))
+object FutureFilter extends App {
+  import language.postfixOps
 
-  urlSearch("scala", urls())
-  synchronized { wait() } // let daemon threads continue; hit control-C to terminate
+  val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
+  val g: Future[Int] = f5 filter {
+    _ % 2 == 1
+  }
+  // This future succeeded, contains 5
+  val h: Future[Int] = f5 filter {
+    _ % 2 == 0
+  }
+  // This future contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
+  val r1 = Await.result(g, Duration.Zero)
+  // evaluates to 5
+  val r2 = Await.result(h.recover { case throwable: Throwable => 42}, Duration.Zero) // evaluates to 42
+}
+
+object FutureFlatMap extends App {
+  import language.postfixOps
+
+  case class User(name: String, privilege: List[String]) {
+    def grantPrivilege(newPriv: String) = Future {
+      // simulate slow database access
+      Thread.sleep(149)
+      copy(privilege = newPriv :: privilege)
+    }
+  }
+
+  def getUser: Future[User] = Future {
+    // simulate slow database access
+    Thread.sleep(150)
+    User("bogusName", Nil)
+  }
+
+  val boostedUser = getUser.flatMap {
+    _.grantPrivilege("student")
+  }
+  boostedUser.onComplete {
+    case Success(value) => println(s"Student privilege is now: $value")
+    case Failure(throwable) => println("Problem augmenting student privilege: " + throwable.getMessage)
+  }
+}
+
+object FutureZip extends App {
+  import language.postfixOps
+  import FutureFixtures._
+
+  implicit val context = MultiThreading.executionContext()
+
+  for {
+    contents: List[String] <- futureOfList() // all futures must succeed in order for url to be printed
+    (url, content) <- urls() zip contents if content.toLowerCase.contains("scala")
+  } println(url)
 }
