@@ -294,12 +294,12 @@ object FutureTransform extends App {
 object FutureZip extends App {
   import language.postfixOps
 
-  case class User(name: String, privilege: List[String])
+  case class User(name: String, id: Long)
 
   def getUser: Future[User] = Future {
     // simulate slow database access
     Thread.sleep(150)
-    User("bogusName", Nil)
+    User("Fred Flintstone", 123)
   }
 
   def lotteryNumber: Future[Int] = Future {
@@ -316,3 +316,13 @@ object FutureZip extends App {
   synchronized { wait() }
 }
 
+object FutureFind extends App {
+  val f1 = Future(factorial(12345))
+  val f2 = Future(factorial(23456))
+  val f3 = Future(factorial(34567))
+  Future.find(List(f1, f2, f3)) { _ % 2 == 0 }.andThen {
+    case Success(result) => println(s"result = $result")
+    case Failure(throwable) => println(throwable.getMessage)
+  }.andThen { case _ => System.exit(0) }
+  synchronized { wait() }
+}
