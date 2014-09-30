@@ -249,7 +249,7 @@ object FutureFlatMap extends App {
     User("bogusName", Nil)
   }
 
-  val boostedUser = getUser.flatMap {
+  val boostedUser: Future[User] = getUser.flatMap {
     _.grantPrivilege("student")
   }
   boostedUser.onComplete {
