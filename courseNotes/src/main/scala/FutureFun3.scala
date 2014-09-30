@@ -107,10 +107,19 @@ object FutureCombinators extends App {
   // can also write:
   // val result = fZero fallbackTo defaultFuture
 
-  Future(6 / 2).recover { case e: ArithmeticException => 42} // new Future value: 3
-  Future(6 / 0).recover { case e: ArithmeticException => 42} // new Future value: 42
+  Future(6 / 2).recover { case e: ArithmeticException => 42 } // new Future value: 3
+  Future(6 / 0).recover { case e: ArithmeticException => 42 } // new Future value: 42
   // new Future value: java.lang.ArithmeticException("/ by zero")
-  Future(6 / 0).recover { case e: NoSuchElementException => 42}
+  Future(6 / 0).recover { case e: NoSuchElementException => 42 }
+  Future(6 / 0)
+    .recover { case e: NoSuchElementException => 42 }
+    .recover { case e: java.io.IOException => 43 }
+    .recover { case e: java.net.MalformedURLException => 44 }
+  Future(6 / 0).recover {
+    case e: NoSuchElementException => 42
+    case e: java.io.IOException => 43
+    case e: java.net.MalformedURLException => 44
+  }
 
   Future(6 / 0).recoverWith { case e: ArithmeticException => defaultFuture}
   Future(6 / 0).recoverWith { case e: NoSuchElementException => defaultFuture}
