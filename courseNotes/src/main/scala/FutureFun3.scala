@@ -390,3 +390,15 @@ object FutureSequence extends App {
   }.andThen { case _ => System.exit(0) }
   synchronized { wait() }
 }
+
+object FutureTraverse extends App {
+  val f1 = Future(factorial(12345))
+  val f2 = Future(factorial(23456))
+  val f3 = Future(factorial(34567))
+  val list = List(1234, 2345, 3456)
+  Future.traverse(list) { x => Future(factorial(x)) }.andThen {
+    case Success(factorialList) => factorialList.foreach { result => println(s"traverse result = $result") }
+    case Failure(throwable) => println(throwable.getMessage)
+  }.andThen { case _ => System.exit(0) }
+  synchronized { wait() }
+}
