@@ -258,6 +258,37 @@ object FutureFlatMap extends App {
   }
 }
 
+object FutureForeach extends App {
+  import concurrent.ExecutionContext.Implicits.global
+
+  Future(factorial(12345)).foreach(println)
+}
+
+object FutureMap extends App {
+  import concurrent.ExecutionContext.Implicits.global
+
+  val x = Future(factorial(12345)).map { _ == 0 }
+  println(s"x = $x")
+}
+
+object FutureMapTo extends App {
+  val x: Future[Any] = Future.successful(1)
+  val y: Future[Int] = x.mapTo[Int]
+  println(s"x = $x; y = $y")
+}
+
+object FutureTransform extends App {
+  import concurrent.ExecutionContext.Implicits.global
+
+  Future(6/0).transform (
+    identity,
+    throwable => new Exception("Something went wrong", throwable)
+  ).onComplete {
+    case Success(value) => println(value)
+    case Failure(throwable) => println(throwable.getMessage)
+  }
+}
+
 object FutureZip extends App {
   import language.postfixOps
   import FutureFixtures._
