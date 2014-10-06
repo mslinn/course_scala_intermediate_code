@@ -1,5 +1,6 @@
 import concurrent.Future
-import concurrent.duration.Duration
+import concurrent.duration._
+import concurrent.ExecutionContext.Implicits.global
 
 object FutureWork extends App {
   val urls = List("http://scalacourses.com", "http://micronauticsresearch.com", "http://mslinn.com")
@@ -61,4 +62,29 @@ object FutureWork extends App {
 
   urlSearch3("free", urls2)
   urlSearch3("scala", urls2)
+
+  def readUrl4(url: String): String = io.Source.fromURL(url).mkString
+
+  def urlSearch4(word: String, urls: List[String]): Unit = {
+      val futures2: List[Future[String]] = urls.map { url ⇒
+        Future(readUrl4(url)).recoverWith {
+          case e: Exception ⇒ Future.successful("") // catches all Exceptions
+        }
+      }
+      val sequence: Future[List[String]] = Future.sequence(futures2)
+      concurrent.Await.ready(sequence, 30 seconds) // block until all futures complete, timeout occurs, or a future fails
+      println("sequence completed: " + sequence.isCompleted) // false if timeout occurred
+      for {
+        (url, future) ← urls zip futures2
+        contents ← future if contents.toLowerCase.contains(word)
+      } println(s"'$word' was found in $url")
+    }
+
+  def urlSearch5(word: String, urls: List[String]): Unit = {
+    val futures2: List[Future[String]] = urls.map(u ⇒ Future(io.Source.fromURL(u).mkString))
+    for {
+      (url, future) ← urls2 zip futures2
+      contents ← future if contents.toLowerCase.contains(word)
+    } println(url)
+  }
 }
