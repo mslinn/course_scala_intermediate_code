@@ -3,10 +3,12 @@ import concurrent.duration._
 import concurrent.ExecutionContext.Implicits.global
 import util.{Success, Failure}
 import FutureFun2.factorial
+import language.postfixOps
 
 object FutureFixtures {
   def urls(includeBad: Boolean = false): List[String] =
-    List("http://www.scalacourses.com", "http://www.micronauticsresearch.com") ::: (if (includeBad) List("http://www.not_really_here.com") else Nil)
+    List("http://www.scalacourses.com", "http://www.micronauticsresearch.com") :::
+      (if (includeBad) List("http://www.not_really_here.com") else Nil)
 
   def readUrl(url: String): String = io.Source.fromURL(url).mkString
 
@@ -49,7 +51,6 @@ object FutureFixtures {
 }
 
 object FutureFallbackTo extends App {
-  import language.postfixOps
   import FutureFixtures._
 
   val fZero: Future[Int] = Future(5 / 0)
@@ -64,8 +65,6 @@ object FutureFallbackTo extends App {
 }
 
 object FutureRecover extends App {
-  import language.postfixOps
-
   Future(6 / 2).recover { case e: ArithmeticException => 42 } // new Future value: 3
   Future(6 / 0).recover { case e: ArithmeticException => 42 } // new Future value: 42
   // new Future value: java.lang.ArithmeticException("/ by zero")
@@ -82,8 +81,6 @@ object FutureRecover extends App {
 }
 
 object FutureRecoverWith extends App {
-  import language.postfixOps
-
   val defaultFuture: Future[Int] = Future.successful(42)
   Future(6 / 0).recoverWith { case e: ArithmeticException => defaultFuture}
   Future(6 / 0).recoverWith { case e: NoSuchElementException => defaultFuture}
@@ -97,8 +94,8 @@ object FutureRecoverWith extends App {
 }
 
 object FutureCollect extends App {
-  import language.postfixOps
   import FutureFixtures._
+
   val allUrlsWithFutures: List[(String, Future[String])] = urls(includeBad = true) zip listOfFutures(includeBad = true)
   allUrlsWithFutures foreach {
     case tuple: (String, Future[String]) =>
@@ -120,8 +117,6 @@ object FutureCollect extends App {
 }
 
 object FutureFilter extends App {
-  import language.postfixOps
-
   val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
   val g: Future[Int] = f5 filter {
     _ % 2 == 1
@@ -137,8 +132,6 @@ object FutureFilter extends App {
 }
 
 object FutureFlatMap extends App {
-  import language.postfixOps
-
   case class User(name: String, privilege: List[String]) {
     def grantPrivilege(newPriv: String) = Future {
       // simulate slow database access
