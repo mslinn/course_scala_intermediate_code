@@ -189,34 +189,34 @@ object FutureCancel extends App {
     *         The Function1 returns None if Future has not been canceled, otherwise it returns Some(CancellationException))
     *         that contains the String passed to the function when the future was canceled.
    * */
-  def interruptableFuture[T](block: =>T)(implicit ex: ExecutionContext): (Future[T], String => Option[CancellationException]) = {
-    val p = Promise[T]()
-    val future = p.future
-    val atomicReference = new java.util.concurrent.atomic.AtomicReference[Thread](null)
-    p tryCompleteWith Future {
-      val thread = Thread.currentThread
-      atomicReference.synchronized { atomicReference.set(thread) }
-      try block finally {
-        atomicReference.synchronized { atomicReference getAndSet null } ne thread
-      }
+def interruptableFuture[T](block: =>T)(implicit ex: ExecutionContext): (Future[T], String => Option[CancellationException]) = {
+  val p = Promise[T]()
+  val future = p.future
+  val atomicReference = new java.util.concurrent.atomic.AtomicReference[Thread](null)
+  p tryCompleteWith Future {
+    val thread = Thread.currentThread
+    atomicReference.synchronized { atomicReference.set(thread) }
+    try block finally {
+      atomicReference.synchronized { atomicReference getAndSet null } ne thread
     }
-
-    /** This method can be called multiple times */
-    val cancelMe = (msg: String) => {
-      if (p.isCompleted) {
-        None
-      } else {
-        atomicReference.synchronized {
-          Option(atomicReference getAndSet null) foreach { _.interrupt() }
-        }
-        val ex = new CancellationException(msg)
-        p.tryFailure(ex)
-        Some(ex)
-      }
-    }
-
-    (future, cancelMe)
   }
+
+  /** This method can be called multiple times */
+  val cancelMe = (msg: String) => {
+    if (p.isCompleted) {
+      None
+    } else {
+      atomicReference.synchronized {
+        Option(atomicReference getAndSet null) foreach { _.interrupt() }
+      }
+      val ex = new CancellationException(msg)
+      p.tryFailure(ex)
+      Some(ex)
+    }
+  }
+
+  (future, cancelMe)
+}
 
   val signal = Promise[String]()
   val (future, cancel) = interruptableFuture(io.Source.fromURL("http://scalacourses.com").mkString)
