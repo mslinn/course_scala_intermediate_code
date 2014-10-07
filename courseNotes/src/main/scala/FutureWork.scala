@@ -47,6 +47,7 @@ object FutureWork extends App {
       contents ← future if contents.toLowerCase.contains(word)
     } {
       println(s"urlSearch2: $url contains '$word'")
+    }
   }
 
   urlSearch2("free", urls2)
@@ -122,28 +123,27 @@ object FutureSelect extends App {
     * @param whenDone block of code to execute when all futures have been processed
     * @author David Crosson
     * @author Mike Slinn */
-  def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit = {
+  def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit =
     if (futures.nonEmpty) {
-      val nextOne = select(futures)
-      nextOne andThen {
-        case Success((result, remains)) =>
-          operation(result)
-          asapFutures(remains)(operation)(whenDone)
-        case Failure(ex) =>
-          operation(Failure[T](ex))
+      select(futures) andThen {
+        case Success((tryResult, remainingFutures)) =>
+          operation(tryResult)
+          asapFutures(remainingFutures)(operation)(whenDone)
+
+        case Failure(throwable) =>
+          operation(Failure[T](throwable))
       } andThen {
         case _ =>
           if (futures.size==1)
             whenDone
       }
     }
-  }
 
-val urls2 = List("http://scalacourses.com", "http://not_really_here.com", "http://micronauticsresearch.com")
+val urls2 = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
 val futures = urls2.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
 val allFutures = Promise[String]()
 
-val word = "slinn"
+val word = "free"
 asapFutures(futures) {
   case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
     val m = tuple._2.trim.toLowerCase
