@@ -148,7 +148,8 @@ object FutureSelect extends App {
       val m = tuple._2.trim.toLowerCase
       val i = math.max(0, m.indexOf(word) - 50)
       val j = math.min(m.length, i + 100)
-      println(s"Found '$word' in ${tuple._1}:\n${m.substring(i, j)}\n")
+      val snippet = (if (i==0) "" else "...") + m.substring(i, j).trim + (if (j==m.length) "" else "...")
+      println(s"Found '$word' in ${tuple._1}:\n$snippet\n")
 
     case Success(tuple) =>
       println(s"Sorry, ${tuple._1} does not contain '$word'\n")
