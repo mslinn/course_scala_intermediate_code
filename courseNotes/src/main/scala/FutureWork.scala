@@ -99,64 +99,80 @@ object FutureSelect extends App {
   import scala.annotation.tailrec
 
   /** @return the first future to complete, with the remainder of the Futures as a sequence.
-   * @param fs a scala.collection.Seq
-   * @author Victor Klang (https://gist.github.com/4488970) */
-  def select[A](fs: Seq[Future[A]])(implicit ec: ExecutionContext): Future[(Try[A], Seq[Future[A]])] = {
+   * @param futures a scala.collection.Seq
+   * @author Victor Klang (https://gist.github.com/4488970)
+   * @author Mike Slinn */
+  def select[A](futures: Seq[Future[A]])(implicit ec: ExecutionContext): Future[(Try[A], Seq[Future[A]])] = {
     @tailrec
-    def stripe(p: Promise[(Try[A], Seq[Future[A]])],
-               heads: Seq[Future[A]],
-               elem: Future[A],
+    def stripe(promise: Promise[(Try[A], Seq[Future[A]])],
+               head: Seq[Future[A]],
+               thisFuture: Future[A],
                tail: Seq[Future[A]]): Future[(Try[A], Seq[Future[A]])] = {
-      elem onComplete { res => if (!p.isCompleted) p.trySuccess((res, heads ++ tail)) }
-      if (tail.isEmpty) p.future
-      else stripe(p, heads :+ elem, tail.head, tail.tail)
+      thisFuture onComplete { result => if (!promise.isCompleted) promise.trySuccess((result, head ++ tail)) }
+      if (tail.isEmpty) promise.future
+      else stripe(promise, head :+ thisFuture, tail.head, tail.tail)
     }
 
-    if (fs.isEmpty) Future.failed(new IllegalArgumentException("List of futures is empty"))
-    else stripe(Promise(), fs.genericBuilder[Future[A]].result(), fs.head, fs.tail)
+    if (futures.isEmpty) Future.failed(new IllegalArgumentException("List of futures is empty"))
+    else stripe(Promise(), futures.genericBuilder[Future[A]].result(), futures.head, futures.tail)
   }
 
 
-  /** Apply a function over a sequence of futures as soon as each future completes.
-    * @param futures sequence of futures to operate on
-    * @param operation function to apply on each Future value as soon as they complete
+  /** Apply a function over a sequence of Future as soon as each future completes.
+    * @param futures sequence of Future to operate on
+    * @param operation Function1 to apply on each Future value as soon as the Future completes
     * @param whenDone block of code to execute when all futures have been processed
     * @author David Crosson
     * @author Mike Slinn */
-  def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit =
-    if (futures.nonEmpty) {
-      select(futures) andThen {
-        case Success((tryResult, remainingFutures)) =>
-          operation(tryResult)
-          asapFutures(remainingFutures)(operation)(whenDone)
+  def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit = {
+    def jiffyFutures(futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit = {
+      if (futures.nonEmpty) {
+        select(futures) andThen {
+          case Success((tryResult, remainingFutures)) =>
+            operation(tryResult)
+            jiffyFutures(remainingFutures)(operation)(whenDone)
 
-        case Failure(throwable) =>
-          operation(Failure[T](throwable))
-      } andThen {
-        case _ =>
-          if (futures.size==1)
-            whenDone
+          case Failure(throwable) =>
+            println("Unexpected exception: " + throwable.getMessage)
+        } andThen {
+          case _ =>
+            if (futures.size==1)
+              whenDone
+        }
       }
     }
 
+    if (futures.isEmpty)
+      whenDone
+    else
+      jiffyFutures(futures)(operation)(whenDone)
+  }
+
+  def urlSearch6(word: String, urls: List[String])(whenDone: =>Unit): Unit = {
+    val futures = urls.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
+    asapFutures(futures) {
+      case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
+        val m = tuple._2.trim.toLowerCase
+        val i = math.max(0, m.indexOf(word) - 50)
+        val j = math.min(m.length, i + 100)
+        val snippet = (if (i == 0) "" else "...") + m.substring(i, j).trim + (if (j == m.length) "" else "...")
+        println(s"Found '$word' in ${tuple._1}:\n$snippet\n")
+
+      case Success(tuple) =>
+        println(s"Sorry, ${tuple._1} does not contain '$word'\n")
+
+      case Failure(err) =>
+        println(s"Error: Could not read from ${err.getMessage}\n")
+    }(whenDone)
+  }
+
   val urls2 = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
-  val futures = urls2.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
-  val allFutures = Promise[String]()
-  val word = "free"
-  asapFutures(futures) {
-    case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
-      val m = tuple._2.trim.toLowerCase
-      val i = math.max(0, m.indexOf(word) - 50)
-      val j = math.min(m.length, i + 100)
-      val snippet = (if (i==0) "" else "...") + m.substring(i, j).trim + (if (j==m.length) "" else "...")
-      println(s"Found '$word' in ${tuple._1}:\n$snippet\n")
+  val signal1 = Promise[String]()
+  urlSearch6("free", urls2) { signal1.success("done") }
+  Await.result(signal1.future, duration.Duration.Inf)
 
-    case Success(tuple) =>
-      println(s"Sorry, ${tuple._1} does not contain '$word'\n")
-
-    case Failure(err) =>
-      println(s"Error: Could not read from ${err.getMessage}\n")
-  } { allFutures.success("done") }
-
-  Await.result(allFutures.future, duration.Duration.Inf)
+  val signal2 = Promise[String]()
+  urlSearch6("free", Nil) { signal2.success("done") }
+  Await.result(signal2.future, duration.Duration.Inf)
+  println("All done")
 }
