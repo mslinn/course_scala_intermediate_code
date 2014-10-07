@@ -145,3 +145,11 @@ object ForFun2 extends App {
   val output = postcards.mkString("\n")
   println(output)
 }
+
+object ForFunMonads extends App {
+  def reps(list: List[Int], maybeString: Option[String]): List[String] = for {
+    j <- maybeString.toList
+    i <- list
+  } yield j*i
+  println(reps(List(1, 2, 3), Some("a")))
+}
