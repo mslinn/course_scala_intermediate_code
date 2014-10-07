@@ -169,10 +169,11 @@ object FutureSelect extends App {
   val urls2 = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
   val signal1 = Promise[String]()
   urlSearch6("free", urls2) { signal1.success("done") }
-  Await.result(signal1.future, duration.Duration.Inf)
+  Await.ready(signal1.future, duration.Duration.Inf)
 
   val signal2 = Promise[String]()
   urlSearch6("free", Nil) { signal2.success("done") }
-  Await.result(signal2.future, duration.Duration.Inf)
+  Await.ready(signal2.future, duration.Duration.Inf)
+
   println("All done")
 }
