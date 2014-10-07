@@ -90,7 +90,7 @@ object FutureWork extends App {
 }
 
 object FutureSelect extends App {
-  import scala.concurrent._
+  import concurrent._
   import scala.util._
   import scala.annotation.tailrec
   import java.util.concurrent.{Executors,ThreadPoolExecutor,TimeUnit}
@@ -123,13 +123,13 @@ object FutureSelect extends App {
   def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit = {
     if (futures.nonEmpty) {
       val nextOne = select(futures)
-      nextOne.andThen {
+      nextOne andThen {
         case Success((result, remains)) =>
           operation(result)
           asapFutures(remains)(operation)(whenDone)
         case Failure(ex) =>
           operation(Failure[T](ex))
-      }.andThen {
+      } andThen {
         case _ =>
           if (futures.size==1)
             whenDone
@@ -144,7 +144,7 @@ object FutureSelect extends App {
     s"slept ${inS}s"
   }
 
-  val allFutures = concurrent.Promise[String]()
+  val allFutures = Promise[String]()
   val workToDo = List(4, 11, 2, 8, 1, 13, 15)
   val workToDoFutures = workToDo.map { t => Future { doWork(t) } }
 
@@ -153,5 +153,5 @@ object FutureSelect extends App {
     case Failure(err) => println(s"Not OK - ${err.getMessage}")
   } { allFutures.success("done") }
 
-  concurrent.Await.result(allFutures.future, concurrent.duration.Duration.Inf)
+  Await.result(allFutures.future, duration.Duration.Inf)
 }
