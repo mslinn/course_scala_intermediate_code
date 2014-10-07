@@ -166,9 +166,9 @@ object FutureSelect extends App {
     }(whenDone)
   }
 
-  val urls2 = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
+  val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
   val signal1 = Promise[String]()
-  urlSearch6("free", urls2) { signal1.success("done") }
+  urlSearch6("free", urls) { signal1.success("done") }
   Await.ready(signal1.future, duration.Duration.Inf)
 
   val signal2 = Promise[String]()
@@ -177,4 +177,77 @@ object FutureSelect extends App {
 
   urlSearch6("free", Nil)()
   println("All done")
+}
+
+object FutureCancel extends App {
+  import scala.concurrent._
+  import scala.util.{Failure, Success}
+
+  /** @param block is lazily evaluated and is used to create the Future.
+    * @param ex is the usual ExecutionContext for the Future to run
+    * @return Tuple containing the Future and a Function1[String,CancellationException].
+    *         The Function1 returns None if Future has not been canceled, otherwise it returns Some(CancellationException))
+    *         that contains the String passed to the function when the future was canceled.
+   * */
+  def interruptableFuture[T](block: =>T)(implicit ex: ExecutionContext): (Future[T], String => Option[CancellationException]) = {
+    val p = Promise[T]()
+    val future = p.future
+    val atomicReference = new java.util.concurrent.atomic.AtomicReference[Thread](null)
+    p tryCompleteWith Future {
+      val thread = Thread.currentThread
+      atomicReference.synchronized { atomicReference.set(thread) }
+      try block finally {
+        atomicReference.synchronized { atomicReference getAndSet null } ne thread
+      }
+    }
+
+    /** This method can be called multiple times */
+    val cancelMe = (msg: String) => {
+      if (p.isCompleted) {
+        None
+      } else {
+        atomicReference.synchronized {
+          Option(atomicReference getAndSet null) foreach { _.interrupt() }
+        }
+        val ex = new CancellationException(msg)
+        p.tryFailure(ex)
+        Some(ex)
+      }
+    }
+
+    (future, cancelMe)
+  }
+
+  val signal = Promise[String]()
+  val (future, cancel) = interruptableFuture(io.Source.fromURL("http://scalacourses.com").mkString)
+  val wasCancelled = cancel("Die!")
+  cancel("Die again!")
+  println(s"Fetch of ScalaCourses.com wasCancelled: ${wasCancelled.isDefined}\n")
+
+  // List of slow web sites: http://internetsupervision.com/scripts/urlcheck/report.aspx?reportid=slowest
+  val urls = List("http://magarihub.com", "http://vitarak.com", "http://www.firstpersonmedical.com")
+  val iFutures = urls.map(u ⇒ interruptableFuture((u, io.Source.fromURL(u).mkString)))
+
+  Future.firstCompletedOf(iFutures.map(_._1)).andThen { // cancel all the remaining futures
+    case _ =>
+      iFutures.foreach {
+        case iFuture if !iFuture._1.isCompleted =>
+          val i = iFutures.indexOf(iFuture)
+          iFuture._2(s"Cancelled fetch of ${urls(i)}")
+
+        case completedIFuture =>
+      }
+      signal.complete(Success("All done"))
+  }
+
+  iFutures foreach { case (iFuture, cancelThis) =>
+    iFuture.onComplete {
+      case Success((url, contents)) =>
+        println(s"Fetched $url successfully")
+
+      case Failure(throwable) => println(throwable)
+    }
+  }
+
+  Await.ready(signal.future, duration.Duration.Inf)
 }
