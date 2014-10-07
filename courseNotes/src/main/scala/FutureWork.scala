@@ -88,3 +88,70 @@ object FutureWork extends App {
     } println(url)
   }
 }
+
+object FutureSelect extends App {
+  import scala.concurrent._
+  import scala.util._
+  import scala.annotation.tailrec
+  import java.util.concurrent.{Executors,ThreadPoolExecutor,TimeUnit}
+
+  /** @return the first future to complete, with the remainder of the Futures as a sequence.
+   * @param fs a scala.collection.Seq
+   * @author Victor Klang (https://gist.github.com/4488970) */
+  def select[A](fs: Seq[Future[A]])(implicit ec: ExecutionContext): Future[(Try[A], Seq[Future[A]])] = {
+    @tailrec
+    def stripe(p: Promise[(Try[A], Seq[Future[A]])],
+               heads: Seq[Future[A]],
+               elem: Future[A],
+               tail: Seq[Future[A]]): Future[(Try[A], Seq[Future[A]])] = {
+      elem onComplete { res => if (!p.isCompleted) p.trySuccess((res, heads ++ tail)) }
+      if (tail.isEmpty) p.future
+      else stripe(p, heads :+ elem, tail.head, tail.tail)
+    }
+
+    if (fs.isEmpty) Future.failed(new IllegalArgumentException("List of futures is empty"))
+    else stripe(Promise(), fs.genericBuilder[Future[A]].result(), fs.head, fs.tail)
+  }
+
+
+  /** Apply a function over a sequence of futures as soon as each future completes.
+    * @param futures sequence of futures to operate on
+    * @param operation function to apply on each Future value as soon as they complete
+    * @param whenDone block of code to execute when all futures have been processed
+    * @author David Crosson
+    * @author Mike Slinn */
+  def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit = {
+    if (futures.nonEmpty) {
+      val nextOne = select(futures)
+      nextOne.andThen {
+        case Success((result, remains)) =>
+          operation(result)
+          asapFutures(remains)(operation)(whenDone)
+        case Failure(ex) =>
+          operation(Failure[T](ex))
+      }.andThen {
+        case _ =>
+          if (futures.size==1)
+            whenDone
+      }
+    }
+  }
+
+  /** Simulates doing work and sometimes throwing errors */
+  def doWork(inS: Int):String = {
+    Thread.sleep(inS * 1000)
+    if (inS > 10 && inS < 15) throw new RuntimeException("Simulated exception")
+    s"slept ${inS}s"
+  }
+
+  val allFutures = concurrent.Promise[String]()
+  val workToDo = List(4, 11, 2, 8, 1, 13, 15)
+  val workToDoFutures = workToDo.map { t => Future { doWork(t) } }
+
+  asapFutures(workToDoFutures) {
+    case Success(msg) => println(s"OK  - $msg")
+    case Failure(err) => println(s"Not OK - ${err.getMessage}")
+  } { allFutures.success("done") }
+
+  concurrent.Await.result(allFutures.future, concurrent.duration.Duration.Inf)
+}
