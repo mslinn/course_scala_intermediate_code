@@ -139,24 +139,23 @@ object FutureSelect extends App {
       }
     }
 
-val urls2 = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
-val futures = urls2.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
-val allFutures = Promise[String]()
+  val urls2 = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
+  val futures = urls2.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
+  val allFutures = Promise[String]()
+  val word = "free"
+  asapFutures(futures) {
+    case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
+      val m = tuple._2.trim.toLowerCase
+      val i = math.max(0, m.indexOf(word) - 50)
+      val j = math.min(m.length, i + 100)
+      println(s"Found '$word' in ${tuple._1}:\n${m.substring(i, j)}\n")
 
-val word = "free"
-asapFutures(futures) {
-  case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
-    val m = tuple._2.trim.toLowerCase
-    val i = math.max(0, m.indexOf(word) - 50)
-    val j = math.min(m.length, i + 100)
-    println(s"Found '$word' in ${tuple._1}:\n${m.substring(i, j)}\n")
+    case Success(tuple) =>
+      println(s"Sorry, ${tuple._1} does not contain '$word'\n")
 
-  case Success(tuple) =>
-    println(s"Sorry, ${tuple._1} does not contain '$word'\n")
+    case Failure(err) =>
+      println(s"Error: Could not read from ${err.getMessage}\n")
+  } { allFutures.success("done") }
 
-  case Failure(err) =>
-    println(s"Error: Could not read from ${err.getMessage}\n")
-} { allFutures.success("done") }
-
-Await.result(allFutures.future, duration.Duration.Inf)
+  Await.result(allFutures.future, duration.Duration.Inf)
 }
