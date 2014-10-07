@@ -11,22 +11,22 @@ object FutureWork extends App {
     for {
       (url, future) <- urls zip futures
       contents <- future if contents.toLowerCase.contains(word)
-      } println(url)
-    }
+    } println(s"urlSearch: $url contains '$word'")
+  }
 
-  urlSearch("e", List("http://micronauticsresearch.com"))
-  urlSearch("e", List("http://scalacourses.com"))
-  urlSearch("e", List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com"))
+  urlSearch("scala", List("http://micronauticsresearch.com"))
+  urlSearch("free", List("http://scalacourses.com"))
+  urlSearch("free", List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com"))
 
   def slowUrlSearch(word: String, urls: List[String]): Unit = {
     for {
       url <- urls
       contents <- Future(io.Source.fromURL(url).mkString)
       if contents.toLowerCase.contains(word)
-    } println(url)
+    } println(s"slowUrlSearch: $url contains '$word'")
   }
 
-  slowUrlSearch("e", List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com"))
+  slowUrlSearch("free", List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com"))
 
   val containsFree: Future[List[String]] = Future.sequence(futures).collect {
     case value: List[String] ⇒ value.filter(_.toLowerCase.contains("free"))
@@ -45,7 +45,8 @@ object FutureWork extends App {
       allDone ← Future.sequence(futures2)
       (url, future) ← urls2 zip futures2
       contents ← future if contents.toLowerCase.contains(word)
-    } println(url)
+    } {
+      println(s"urlSearch2: $url contains '$word'")
   }
 
   urlSearch2("free", urls2)
@@ -57,7 +58,9 @@ object FutureWork extends App {
     for {
       (url, future) ← urls2 zip futures2
       contents ← future if contents.toLowerCase.contains(word)
-    } println(url)
+    } {
+      println(s"urlSearch3: $url contains '$word'")
+    }
   }
 
   urlSearch3("free", urls2)
@@ -77,7 +80,7 @@ object FutureWork extends App {
       for {
         (url, future) ← urls zip futures2
         contents ← future if contents.toLowerCase.contains(word)
-      } println(s"'$word' was found in $url")
+      } println(s"urlSearch4: '$word' was found in $url")
     }
 
   def urlSearch5(word: String, urls: List[String]): Unit = {
@@ -85,7 +88,7 @@ object FutureWork extends App {
     for {
       (url, future) ← urls2 zip futures2
       contents ← future if contents.toLowerCase.contains(word)
-    } println(url)
+    } println(s"urlSearch5: $url contains '$word'")
   }
 }
 
