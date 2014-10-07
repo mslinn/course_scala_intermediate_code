@@ -124,7 +124,7 @@ object FutureSelect extends App {
     * @param whenDone block of code to execute when all futures have been processed
     * @author David Crosson
     * @author Mike Slinn */
-  def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit = {
+  def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit={}): Unit = {
     def jiffyFutures(futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit = {
       if (futures.nonEmpty) {
         select(futures) andThen {
@@ -148,7 +148,7 @@ object FutureSelect extends App {
       jiffyFutures(futures)(operation)(whenDone)
   }
 
-  def urlSearch6(word: String, urls: List[String])(whenDone: =>Unit): Unit = {
+  def urlSearch6(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
     val futures = urls.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
     asapFutures(futures) {
       case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
@@ -175,5 +175,6 @@ object FutureSelect extends App {
   urlSearch6("free", Nil) { signal2.success("done") }
   Await.ready(signal2.future, duration.Duration.Inf)
 
+  urlSearch6("free", Nil)()
   println("All done")
 }
