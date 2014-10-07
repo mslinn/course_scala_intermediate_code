@@ -93,7 +93,6 @@ object FutureSelect extends App {
   import concurrent._
   import scala.util._
   import scala.annotation.tailrec
-  import java.util.concurrent.{Executors,ThreadPoolExecutor,TimeUnit}
 
   /** @return the first future to complete, with the remainder of the Futures as a sequence.
    * @param fs a scala.collection.Seq
@@ -137,21 +136,24 @@ object FutureSelect extends App {
     }
   }
 
-  /** Simulates doing work and sometimes throwing errors */
-  def doWork(inS: Int):String = {
-    Thread.sleep(inS * 1000)
-    if (inS > 10 && inS < 15) throw new RuntimeException("Simulated exception")
-    s"slept ${inS}s"
-  }
+val urls2 = List("http://scalacourses.com", "http://not_really_here.com", "http://micronauticsresearch.com")
+val futures = urls2.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
+val allFutures = Promise[String]()
 
-  val allFutures = Promise[String]()
-  val workToDo = List(4, 11, 2, 8, 1, 13, 15)
-  val workToDoFutures = workToDo.map { t => Future { doWork(t) } }
+val word = "slinn"
+asapFutures(futures) {
+  case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
+    val m = tuple._2.trim.toLowerCase
+    val i = math.max(0, m.indexOf(word) - 50)
+    val j = math.min(m.length, i + 100)
+    println(s"Found '$word' in ${tuple._1}:\n${m.substring(i, j)}\n")
 
-  asapFutures(workToDoFutures) {
-    case Success(msg) => println(s"OK  - $msg")
-    case Failure(err) => println(s"Not OK - ${err.getMessage}")
-  } { allFutures.success("done") }
+  case Success(tuple) =>
+    println(s"Sorry, ${tuple._1} does not contain '$word'\n")
 
-  Await.result(allFutures.future, duration.Duration.Inf)
+  case Failure(err) =>
+    println(s"Error: Could not read from ${err.getMessage}\n")
+} { allFutures.success("done") }
+
+Await.result(allFutures.future, duration.Duration.Inf)
 }
