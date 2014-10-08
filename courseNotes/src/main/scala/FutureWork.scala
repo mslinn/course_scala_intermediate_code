@@ -42,7 +42,6 @@ object FutureWork extends App {
   def urlSearch2(word: String, urls: List[String]): Unit = {
     val futures2: List[Future[String]] = urls.map(u ⇒ Future(io.Source.fromURL(u).mkString))
     for {
-      allDone ← Future.sequence(futures2)
       (url, future) ← urls2 zip futures2
       contents ← future if contents.toLowerCase.contains(word)
     } {
@@ -91,6 +90,61 @@ object FutureWork extends App {
       contents ← future if contents.toLowerCase.contains(word)
     } println(s"urlSearch5: $url contains '$word'")
   }
+}
+
+object FutureMixed extends App {
+  import scala.concurrent._
+
+  // Error:(100, 16) type mismatch;
+  // found   : scala.concurrent.Future[String]
+  // required: scala.collection.GenTraversableOnce[?]
+  //      contents <- future if contents.toLowerCase.contains(word)
+  //               ^
+  //def urlSearch(word: String, urls: List[String]) = {
+  //  val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
+  //  for {
+  //    (url, future) <- urls zip futures
+  //    contents <- future if contents.toLowerCase.contains(word)
+  //  } yield url
+  //}
+
+def snippet(word: String, string: String): String = {
+  val m = string.trim.toLowerCase
+  val i = math.max(0, m.indexOf(word) - 50)
+  val j = math.min(m.length, i + 100)
+  val snippet = (if (i == 0) "" else "...") + m.substring(i, j).trim + (if (j == m.length) "" else "...")
+  snippet
+}
+
+  val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
+  val indices = List(1, 2, 3)
+  val result1 = for (url <- urls; index <- indices) yield (index, url)
+  println(s"for-comprehension result = $result1")
+
+  val result2 = urls.flatMap { url => indices.map { index => (index, url) } }
+  println(s"flatMap/map result = $result2")
+
+  val futureContent: String => (String, Future[String]) = (url: String) => (url, Future(io.Source.fromURL(url).mkString))
+  val futureContents: List[String] => List[(String, Future[String])] =
+    (_: List[String]).collect { case url => (url, Future(io.Source.fromURL(url).mkString)) }
+
+  val result3 = futureContents(urls).map { case (url, future) => (future, url) }
+  println(s"map/map result = $result3")
+
+  val futureString = (future: Future[String]) =>
+    try {
+      Await.result(future, duration.Duration.Inf)
+    } catch {
+      case e: Exception => ""
+    }
+
+  val listOfTuples: List[(String, String)] =
+    futureContents(urls).collect {
+      case (url, future) if futureString(future).contains("free") =>
+        //println(s"$url contains 'free'")
+        (snippet("free", futureString(future)), url)
+    }
+  println(s"map/collect result = $listOfTuples")
 }
 
 object FutureSelect extends App {
@@ -148,15 +202,19 @@ object FutureSelect extends App {
       jiffyFutures(futures)(operation)(whenDone)
   }
 
+  def snippet(word: String, string: String): String = {
+    val m = string.trim.toLowerCase
+    val i = math.max(0, m.indexOf(word) - 50)
+    val j = math.min(m.length, i + 100)
+    val snippet = (if (i == 0) "" else "...") + m.substring(i, j).trim + (if (j == m.length) "" else "...")
+    snippet
+  }
+
   def urlSearch6(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
     val futures = urls.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
     asapFutures(futures) {
       case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
-        val m = tuple._2.trim.toLowerCase
-        val i = math.max(0, m.indexOf(word) - 50)
-        val j = math.min(m.length, i + 100)
-        val snippet = (if (i == 0) "" else "...") + m.substring(i, j).trim + (if (j == m.length) "" else "...")
-        println(s"Found '$word' in ${tuple._1}:\n$snippet\n")
+        println(s"Found '$word' in ${tuple._1}:\n${snippet(word, tuple._2)}\n")
 
       case Success(tuple) =>
         println(s"Sorry, ${tuple._1} does not contain '$word'\n")
