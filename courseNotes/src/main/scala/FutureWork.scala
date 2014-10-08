@@ -108,13 +108,13 @@ object FutureMixed extends App {
   //  } yield url
   //}
 
-def snippet(word: String, string: String): String = {
-  val m = string.trim.toLowerCase
-  val i = math.max(0, m.indexOf(word) - 50)
-  val j = math.min(m.length, i + 100)
-  val snippet = (if (i == 0) "" else "...") + m.substring(i, j).trim + (if (j == m.length) "" else "...")
-  snippet
-}
+  def snippet(word: String, string: String): String = {
+    val m = string.trim.toLowerCase
+    val i = math.max(0, m.indexOf(word) - 50)
+    val j = math.min(m.length, i + 100)
+    val snippet = (if (i == 0) "" else "...") + m.substring(i, j).trim + (if (j == m.length) "" else "...")
+    snippet
+  }
 
   val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
   val indices = List(1, 2, 3)
@@ -131,7 +131,8 @@ def snippet(word: String, string: String): String = {
   val result3 = futureContents(urls).map { case (url, future) => (future, url) }
   println(s"map/map result = $result3")
 
-  val futureString = (future: Future[String]) =>
+  /** @return value of completed Future, or empty string if any Exception */
+  val futureString: Future[String] => String = (future: Future[String]) =>
     try {
       Await.result(future, duration.Duration.Inf)
     } catch {
@@ -144,7 +145,7 @@ def snippet(word: String, string: String): String = {
         //println(s"$url contains 'free'")
         (snippet("free", futureString(future)), url)
     }
-  println(s"map/collect result = $listOfTuples")
+  println(s"listOfTuples = $listOfTuples")
 }
 
 object FutureSelect extends App {
