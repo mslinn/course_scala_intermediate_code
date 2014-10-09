@@ -212,13 +212,13 @@ object FutureSelect extends App {
   }
 
   def urlSearch6(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
-    val futures = urls.map(u ⇒ Future((u, io.Source.fromURL(u).mkString)))
+    val futures = urls.map(url ⇒ Future((url, io.Source.fromURL(url).mkString)))
     asapFutures(futures) {
-      case Success(tuple) if tuple._2.toLowerCase.contains(word) =>
-        println(s"Found '$word' in ${tuple._1}:\n${snippet(word, tuple._2)}\n")
+      case Success((url, contents)) if contents.toLowerCase.contains(word) =>
+        println(s"Found '$word' in $url:\n${snippet(word, contents)}\n")
 
-      case Success(tuple) =>
-        println(s"Sorry, ${tuple._1} does not contain '$word'\n")
+      case Success((url, contents)) =>
+        println(s"Sorry, $url does not contain '$word'\n")
 
       case Failure(err) =>
         println(s"Error: Could not read from ${err.getMessage}\n")
