@@ -7,12 +7,13 @@ object FutureWork extends App {
   val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
   val futures = urls.map(u ⇒ Future(io.Source.fromURL(u).mkString))
 
-  def urlSearch(word: String, urls: List[String]): Unit = {
+  def urlSearch(word: String, urls: List[String]): List[Future[String]] = {
     val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
     for {
       (url, future) <- urls zip futures
       contents <- future if contents.toLowerCase.contains(word)
     } println(s"urlSearch: $url contains '$word'")
+    futures
   }
 
   urlSearch("free", urls)
@@ -46,7 +47,7 @@ object FutureWork extends App {
   urlSearch("scala", urls)
 
 
-  def urlSearch2(word: String, urls: List[String]): Unit = {
+  def urlSearch2(word: String, urls: List[String]): List[Future[String]] = {
     val readUrl = (url: String) => io.Source.fromURL(url).mkString
 
     val futures: List[Future[String]] = urls.map { url ⇒
@@ -54,13 +55,17 @@ object FutureWork extends App {
         case e: Exception ⇒ Future.successful("") // catches all Exceptions
       }
     }
+
     val sequence: Future[List[String]] = Future.sequence(futures)
     concurrent.Await.ready(sequence, 30 seconds) // block until all futures complete, timeout occurs, or a future fails
     println("urlSearch2 sequence completed: " + sequence.isCompleted) // false if timeout occurred
+
     for {
       (url, future) ← urls zip futures
       contents ← future if contents.toLowerCase.contains(word)
     } println(s"urlSearch2: '$word' was found in $url")
+
+    futures
   }
 
   urlSearch2("free", urls)
