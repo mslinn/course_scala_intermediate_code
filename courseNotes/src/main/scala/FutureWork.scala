@@ -16,7 +16,7 @@ object FutureWork extends App {
     futures
   }
 
-  urlSearch("free", urls)
+  Await.ready(Future.sequence(urlSearch("free", urls)), Duration.Inf)
 
 
   def slowUrlSearch(word: String, urls: List[String]): Unit = {
@@ -44,7 +44,8 @@ object FutureWork extends App {
   }
 
   urlSearch("free", urls)
-  urlSearch("scala", urls)
+  val futureList = urlSearch("scala", urls)
+  Await.ready(Future.sequence(futureList), Duration.Inf)
 
 
   def urlSearch2(word: String, urls: List[String]): List[Future[String]] = {
@@ -69,7 +70,8 @@ object FutureWork extends App {
   }
 
   urlSearch2("free", urls)
-  urlSearch2("scala", urls)
+  val futureList2 = urlSearch2("scala", urls)
+  Await.ready(Future.sequence(futureList2), Duration.Inf)
 }
 
 object FutureUtilities {
