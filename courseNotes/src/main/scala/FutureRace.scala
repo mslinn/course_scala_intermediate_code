@@ -14,14 +14,14 @@ object FutureRace extends App {
     2 + 3 + offset // will be executed asynchronously
   } andThen {
     case Success(result)   => println("Race Scala result1 : " + result)
-    case Failure(exception) => println("Race Scala exception 1: " + exception.asInstanceOf[Exception].getMessage)
+    case Failure(exception) => println("Race Scala exception 1: " + exception.getMessage)
   }
 
   val f2 = Future {
     2 + 3 + accessor // will be executed asynchronously
   } andThen {
     case Success(result)   => println("Race Scala result 2: " + result)
-    case Failure(exception) => println("Race Scala exception 2: " + exception.asInstanceOf[Exception].getMessage)
+    case Failure(exception) => println("Race Scala exception 2: " + exception.getMessage)
   }
   offset = 42
   println("End of mainline, offset = " + offset)
