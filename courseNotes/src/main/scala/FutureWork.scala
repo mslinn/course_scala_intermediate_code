@@ -119,7 +119,7 @@ object FutureMixed extends App {
   val result1 = for (url <- urls; index <- indices) yield (index, url)
   println(s"for-comprehension result = $result1")
 
-  val result2 = urls.flatMap { url => indices.map { index => (index, url) } }
+  val result2 = urls.flatMap { url => indices.map { index => (url, index) } }
   println(s"flatMap/map result = $result2")
 
   val futureContent: String => (String, Future[String]) = (url: String) => (url, Future(io.Source.fromURL(url).mkString))
@@ -137,13 +137,13 @@ object FutureMixed extends App {
       case e: Exception => ""
     }
 
-  val listOfTuples: List[(String, String)] =
+  val listOfTuples: String => List[(String, String)] = (word: String) =>
     futureContents(urls).collect {
-      case (url, future) if futureString(future).contains("free") =>
-        //println(s"$url contains 'free'")
-        (snippet("free", futureString(future)), url)
+      case (url, future) if futureString(future).contains(word) =>
+        //println(s"$url contains '$word'")
+        (snippet(word, futureString(future)), url)
     }
-  println(s"listOfTuples = $listOfTuples")
+  println(s"listOfTuples = ${listOfTuples("free")}")
 }
 
 object FutureCancel extends App {
