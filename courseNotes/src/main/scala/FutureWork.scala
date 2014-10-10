@@ -1,13 +1,16 @@
 import scala.concurrent._
-import scala.util._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util._
 
-object FutureUtilities {
+object FutureArtifacts {
   val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
 
   val futureContents: List[String] => List[Future[String]] =
     (_: List[String]).map { url => Future(io.Source.fromURL(url).mkString) }
+
+  val futureTuples: List[String] => List[Future[(String, String)]] =
+    (_: List[String]).map { url => Future((url, io.Source.fromURL(url).mkString)) }
 
   /** @return String of the form [...]blah blah word blah blah [...] */
   def snippet(word: String, string: String): String = {
@@ -20,7 +23,7 @@ object FutureUtilities {
 }
 
 object FutureWork extends App {
-  import FutureUtilities._
+  import FutureArtifacts._
 
   val futuresTemp: List[Future[String]] = urls.map(url => Future(io.Source.fromURL(url).mkString))
   println(s"futuresTemp=$futuresTemp")
@@ -67,12 +70,11 @@ object FutureWork extends App {
 }
 
 object FutureSelect extends App {
-  import FutureUtilities.snippet
+  import FutureArtifacts._
   import FuturesUtil.asapFutures
 
   def urlSearch2(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
-    val futures = urls.map(url ⇒ Future((url, io.Source.fromURL(url).mkString)))
-    asapFutures(futures) {
+    asapFutures(futureTuples(urls)) {
       case Success((url, contents)) if contents.toLowerCase.contains(word) =>
         println(s"Found '$word' in $url:\n${snippet(word, contents)}\n")
 
@@ -84,7 +86,6 @@ object FutureSelect extends App {
     }(whenDone)
   }
 
-  val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
   val signal1 = Promise[String]()
   urlSearch2("free", urls) { signal1.success("done") }
   Await.ready(signal1.future, duration.Duration.Inf)
@@ -99,7 +100,7 @@ object FutureSelect extends App {
 
 object FutureMixed extends App {
   import scala.concurrent._
-  import FutureUtilities.snippet
+  import FutureArtifacts._
 
   //def urlSearch3(word: String, urls: List[String]) = {
   //  val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
@@ -114,7 +115,6 @@ object FutureMixed extends App {
   //      contents <- future if contents.toLowerCase.contains(word)
   //               ^
 
-  val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
   val indices = List(1, 2, 3)
   val result1 = for (url <- urls; index <- indices) yield (index, url)
   println(s"for-comprehension result = $result1")
