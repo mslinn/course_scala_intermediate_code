@@ -3,6 +3,17 @@ import scala.util._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
+object FutureUtilities {
+  /** @return String of the form [...]blah blah word blah blah [...] */
+  def snippet(word: String, string: String): String = {
+    val m = string.trim.toLowerCase
+    val i = math.max(0, m.indexOf(word) - 50)
+    val j = math.min(m.length, i + 100)
+    val result = (if (i == 0) "" else "...") + m.substring(i, j).trim + (if (j == m.length) "" else "...")
+    result
+  }
+}
+
 object FutureWork extends App {
   import FutureUtilities.snippet
 
@@ -50,15 +61,35 @@ object FutureWork extends App {
   Await.ready(containsFree("free", futures), Duration.Inf)
 }
 
-object FutureUtilities {
-  /** @return String of the form [...]blah blah word blah blah [...] */
-  def snippet(word: String, string: String): String = {
-    val m = string.trim.toLowerCase
-    val i = math.max(0, m.indexOf(word) - 50)
-    val j = math.min(m.length, i + 100)
-    val result = (if (i == 0) "" else "...") + m.substring(i, j).trim + (if (j == m.length) "" else "...")
-    result
+object FutureSelect extends App {
+  import FutureUtilities.snippet
+  import FuturesUtil.asapFutures
+
+  def urlSearch2(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
+    val futures = urls.map(url ⇒ Future((url, io.Source.fromURL(url).mkString)))
+    asapFutures(futures) {
+      case Success((url, contents)) if contents.toLowerCase.contains(word) =>
+        println(s"Found '$word' in $url:\n${snippet(word, contents)}\n")
+
+      case Success((url, contents)) =>
+        println(s"Sorry, $url does not contain '$word'\n")
+
+      case Failure(err) =>
+        println(s"Error: Could not read from ${err.getMessage}\n")
+    }(whenDone)
   }
+
+  val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
+  val signal1 = Promise[String]()
+  urlSearch2("free", urls) { signal1.success("done") }
+  Await.ready(signal1.future, duration.Duration.Inf)
+
+  val signal2 = Promise[String]()
+  urlSearch2("free", Nil) { signal2.success("done") }
+  Await.ready(signal2.future, duration.Duration.Inf)
+
+  urlSearch2("free", Nil)()
+  println("All done")
 }
 
 object FutureMixed extends App {
@@ -108,37 +139,6 @@ object FutureMixed extends App {
         (snippet("free", futureString(future)), url)
     }
   println(s"listOfTuples = $listOfTuples")
-}
-
-object FutureSelect extends App {
-  import FuturesUtil.asapFutures
-  import FutureUtilities.snippet
-
-  def urlSearch6(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
-    val futures = urls.map(url ⇒ Future((url, io.Source.fromURL(url).mkString)))
-    asapFutures(futures) {
-      case Success((url, contents)) if contents.toLowerCase.contains(word) =>
-        println(s"Found '$word' in $url:\n${snippet(word, contents)}\n")
-
-      case Success((url, contents)) =>
-        println(s"Sorry, $url does not contain '$word'\n")
-
-      case Failure(err) =>
-        println(s"Error: Could not read from ${err.getMessage}\n")
-    }(whenDone)
-  }
-
-  val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
-  val signal1 = Promise[String]()
-  urlSearch6("free", urls) { signal1.success("done") }
-  Await.ready(signal1.future, duration.Duration.Inf)
-
-  val signal2 = Promise[String]()
-  urlSearch6("free", Nil) { signal2.success("done") }
-  Await.ready(signal2.future, duration.Duration.Inf)
-
-  urlSearch6("free", Nil)()
-  println("All done")
 }
 
 object FutureCancel extends App {
