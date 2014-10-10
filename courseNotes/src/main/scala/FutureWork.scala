@@ -67,13 +67,31 @@ object FutureWork extends App {
       }
 
   Await.ready(brokenUrlSearch("free", urls), Duration.Inf)
+
+
+  def urlSearch2(word: String, urls: List[String]): Unit = {
+    val readUrl: String => String = io.Source.fromURL(_: String).mkString
+
+    val futures: List[Future[String]] = urls.map { url ⇒
+      Future(readUrl(url)).recoverWith {
+        case e: Exception ⇒ Future.successful("") // catches all Exceptions
+      }
+    }
+    val sequence = Future.sequence(futures)
+    concurrent.Await.ready(sequence, 30 seconds) // block until all futures complete or timeout occurs
+    println("sequence completed: " + sequence.isCompleted) // false if timeout occurred
+    for {
+      (url, future) ← urls zip futures
+      contents ← future if contents.toLowerCase.contains(word)
+    } println(s"'$word' was found in $url")
+  }
 }
 
 object FutureSelect extends App {
   import FutureArtifacts._
   import FuturesUtil.asapFutures
 
-  def urlSearch2(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
+  def urlSearch3(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
     asapFutures(futureTuples(urls)) {
       case Success((url, contents)) if contents.toLowerCase.contains(word) =>
         println(s"Found '$word' in $url:\n${snippet(word, contents)}\n")
@@ -87,14 +105,14 @@ object FutureSelect extends App {
   }
 
   val signal1 = Promise[String]()
-  urlSearch2("free", urls) { signal1.success("done") }
+  urlSearch3("free", urls) { signal1.success("done") }
   Await.ready(signal1.future, duration.Duration.Inf)
 
   val signal2 = Promise[String]()
-  urlSearch2("free", Nil) { signal2.success("done") }
+  urlSearch3("free", Nil) { signal2.success("done") }
   Await.ready(signal2.future, duration.Duration.Inf)
 
-  urlSearch2("free", Nil)()
+  urlSearch3("free", Nil)()
   println("All done")
 }
 
@@ -102,7 +120,7 @@ object FutureMixed extends App {
   import scala.concurrent._
   import FutureArtifacts._
 
-  //def urlSearch3(word: String, urls: List[String]) = {
+  //def urlSearch4(word: String, urls: List[String]) = {
   //  val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
   //  for {
   //    (url, future) <- urls zip futures
@@ -115,7 +133,7 @@ object FutureMixed extends App {
   //      contents <- future if contents.toLowerCase.contains(word)
   //               ^
 
-  val indices = List(1, 2, 3)
+  val indices = (1 to 3).toList
   val result1 = for (url <- urls; index <- indices) yield (index, url)
   println(s"for-comprehension result = $result1")
 
@@ -159,7 +177,7 @@ object FutureCancel extends App {
 
   // List of slow web sites: http://internetsupervision.com/scripts/urlcheck/report.aspx?reportid=slowest
   val urls = List("http://magarihub.com", "http://vitarak.com", "http://www.firstpersonmedical.com")
-  val iFutures = urls.map(u ⇒ interruptableFuture((u, io.Source.fromURL(u).mkString)))
+  val iFutures = urls.map(url ⇒ interruptableFuture((url, io.Source.fromURL(url).mkString)))
 
   Future.firstCompletedOf(iFutures.map(_._1)).andThen { // cancel all the remaining futures
     case _ =>
