@@ -5,7 +5,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object FutureWork extends App {
   val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
-  val futures = urls.map(u ⇒ Future(io.Source.fromURL(u).mkString))
+  val futures: List[Future[String]] = urls.map(u ⇒ Future(io.Source.fromURL(u).mkString))
 
   def urlSearch(word: String, urls: List[String]): List[Future[String]] = {
     val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
@@ -30,48 +30,21 @@ object FutureWork extends App {
   slowUrlSearch("free", urls)
 
 
-  val containsFree: Future[List[String]] = Future.sequence(futures).collect {
-    case list: List[String] =>
-      val resultList = list.filter(_.toLowerCase.contains("free"))
-      resultList.foreach { contents => println(s"containsFree: ${FutureUtilities.snippet("free", contents)}") }
-      resultList
-  }.andThen{
-    case Success(value) =>
-      println(value)
+  val containsFree: (String, List[Future[String]]) => Future[List[String]] = (word: String, futures: List[Future[String]]) =>
+    Future.sequence(futures).collect {
+      case list: List[String] =>
+        val resultList = list.filter(_.toLowerCase.contains("free"))
+        resultList.foreach { contents => println(s"containsFree: ${FutureUtilities.snippet("free", contents)}") }
+        resultList
+    }.andThen{
+      case Success(list) =>
+        println("containsFree succeeded: " + list.map(contents => FutureUtilities.snippet(word, contents)))
 
-    case Failure(ex) =>
-      println(ex.getMessage)
-  }
-
-  urlSearch("free", urls)
-  val futureList = urlSearch("scala", urls)
-  Await.ready(Future.sequence(futureList), Duration.Inf)
-
-
-  def urlSearch2(word: String, urls: List[String]): List[Future[String]] = {
-    val readUrl = (url: String) => io.Source.fromURL(url).mkString
-
-    val futures: List[Future[String]] = urls.map { url ⇒
-      Future(readUrl(url)).recoverWith {
-        case e: Exception ⇒ Future.successful("") // catches all Exceptions
-      }
+      case Failure(ex) =>
+        println("containsFree failed on URL " + ex.getMessage)
     }
 
-    val sequence: Future[List[String]] = Future.sequence(futures)
-    concurrent.Await.ready(sequence, 30 seconds) // block until all futures complete, timeout occurs, or a future fails
-    println("urlSearch2 sequence completed: " + sequence.isCompleted) // false if timeout occurred
-
-    for {
-      (url, future) ← urls zip futures
-      contents ← future if contents.toLowerCase.contains(word)
-    } println(s"urlSearch2: '$word' was found in $url")
-
-    futures
-  }
-
-  urlSearch2("free", urls)
-  val futureList2 = urlSearch2("scala", urls)
-  Await.ready(Future.sequence(futureList2), Duration.Inf)
+  Await.ready(containsFree("free", futures), Duration.Inf)
 }
 
 object FutureUtilities {
