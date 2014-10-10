@@ -7,7 +7,7 @@ object FutureRace extends App {
   val pool: ExecutorService = Executors.newFixedThreadPool(1)
   implicit val ec = ExecutionContext.fromExecutor(pool)
 
-  @volatile var offset = 6 // @volatile makes no difference because it does not solve race conditions
+  @volatile var offset = 6 // @volatile does not solve race conditions
   def accessor = offset
 
   val f1 = Future {
