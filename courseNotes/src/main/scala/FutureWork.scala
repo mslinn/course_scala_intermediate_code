@@ -4,6 +4,8 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object FutureWork extends App {
+  import FutureUtilities.snippet
+
   val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
   val futures: List[Future[String]] = urls.map(u ⇒ Future(io.Source.fromURL(u).mkString))
 
@@ -30,19 +32,20 @@ object FutureWork extends App {
   slowUrlSearch("free", urls)
 
 
-  val containsFree: (String, List[Future[String]]) => Future[List[String]] = (word: String, futures: List[Future[String]]) =>
-    Future.sequence(futures).collect {
-      case list: List[String] =>
-        val resultList = list.filter(_.toLowerCase.contains("free"))
-        resultList.foreach { contents => println(s"containsFree: ${FutureUtilities.snippet("free", contents)}") }
-        resultList
-    }.andThen{
-      case Success(list) =>
-        println("containsFree succeeded: " + list.map(contents => FutureUtilities.snippet(word, contents)))
+  val containsFree: (String, List[Future[String]]) => Future[List[String]] =
+    (word: String, futures: List[Future[String]]) =>
+      Future.sequence(futures).collect {
+        case list: List[String] =>
+          val resultList = list.filter(_.toLowerCase.contains("free"))
+          resultList.foreach { contents => println(s"containsFree: ${snippet("free", contents)}") }
+          resultList
+      }.andThen{
+        case Success(list) =>
+          println("containsFree succeeded!")
 
-      case Failure(ex) =>
-        println("containsFree failed on URL " + ex.getMessage)
-    }
+        case Failure(ex) =>
+          println("containsFree failed on URL " + ex.getMessage)
+      }
 
   Await.ready(containsFree("free", futures), Duration.Inf)
 }
