@@ -4,6 +4,11 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object FutureUtilities {
+  val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
+
+  val futureContents: List[String] => List[Future[String]] =
+    (_: List[String]).map { url => Future(io.Source.fromURL(url).mkString) }
+
   /** @return String of the form [...]blah blah word blah blah [...] */
   def snippet(word: String, string: String): String = {
     val m = string.trim.toLowerCase
@@ -15,13 +20,13 @@ object FutureUtilities {
 }
 
 object FutureWork extends App {
-  import FutureUtilities.snippet
+  import FutureUtilities._
 
-  val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
-  val futures: List[Future[String]] = urls.map(u ⇒ Future(io.Source.fromURL(u).mkString))
+  val futuresTemp: List[Future[String]] = urls.map(url => Future(io.Source.fromURL(url).mkString))
+  println(s"futuresTemp=$futuresTemp")
 
   def urlSearch(word: String, urls: List[String]): List[Future[String]] = {
-    val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
+    val futures: List[Future[String]] = futureContents(urls)
     for {
       (url, future) <- urls zip futures
       contents <- future if contents.toLowerCase.contains(word)
@@ -43,12 +48,12 @@ object FutureWork extends App {
   slowUrlSearch("free", urls)
 
 
-  val containsFree: (String, List[Future[String]]) => Future[List[String]] =
-    (word: String, futures: List[Future[String]]) =>
-      Future.sequence(futures).collect {
+  val brokenUrlSearch: (String, List[String]) => Future[List[String]] =
+    (word: String, urls: List[String]) =>
+      Future.sequence(futureContents(urls)).collect {
         case list: List[String] =>
-          val resultList = list.filter(_.toLowerCase.contains("free"))
-          resultList.foreach { contents => println(s"containsFree: ${snippet("free", contents)}") }
+          val resultList = list.filter(_.toLowerCase.contains(word))
+          resultList.foreach { contents => println(s"containsFree: ${snippet(word, contents)}") }
           resultList
       }.andThen{
         case Success(list) =>
@@ -58,7 +63,7 @@ object FutureWork extends App {
           println("containsFree failed on URL " + ex.getMessage)
       }
 
-  Await.ready(containsFree("free", futures), Duration.Inf)
+  Await.ready(brokenUrlSearch("free", urls), Duration.Inf)
 }
 
 object FutureSelect extends App {
@@ -75,7 +80,7 @@ object FutureSelect extends App {
         println(s"Sorry, $url does not contain '$word'\n")
 
       case Failure(err) =>
-        println(s"Error: Could not read from ${err.getMessage}\n")
+        println(s"Error: ${err.getMessage}\n")
     }(whenDone)
   }
 
@@ -96,18 +101,18 @@ object FutureMixed extends App {
   import scala.concurrent._
   import FutureUtilities.snippet
 
-  // Error:(100, 16) type mismatch;
-  // found   : scala.concurrent.Future[String]
-  // required: scala.collection.GenTraversableOnce[?]
-  //      contents <- future if contents.toLowerCase.contains(word)
-  //               ^
-  //def urlSearch(word: String, urls: List[String]) = {
+  //def urlSearch3(word: String, urls: List[String]) = {
   //  val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
   //  for {
   //    (url, future) <- urls zip futures
   //    contents <- future if contents.toLowerCase.contains(word)
   //  } yield url
   //}
+  // Error:(100, 16) type mismatch;
+  // found   : scala.concurrent.Future[String]
+  // required: scala.collection.GenTraversableOnce[?]
+  //      contents <- future if contents.toLowerCase.contains(word)
+  //               ^
 
   val urls = List("http://not_really_here.com", "http://scalacourses.com", "http://micronauticsresearch.com")
   val indices = List(1, 2, 3)
