@@ -1,12 +1,11 @@
-import akka.actor.ActorSystem
-import com.typesafe.config.ConfigFactory
-import concurrent.{ExecutionContext, Future}
-import scala.util.{Success, Failure}
+object FutureRace extends App {
+  import java.util.concurrent.{Executors, ExecutorService}
+  import scala.concurrent.{ExecutionContext, Await, Future}
+  import scala.util.{Success, Failure}
+  import scala.concurrent.duration.Duration
 
-object Race extends App {
-  private val configString: String = "akka { logConfigOnStart=off }"
-  private val system: ActorSystem = ActorSystem.apply("actorSystem", ConfigFactory.parseString(configString))
-  implicit private var dispatcher: ExecutionContext = system.dispatcher
+  val pool: ExecutorService = Executors.newFixedThreadPool(1)
+  implicit val ec = ExecutionContext.fromExecutor(pool)
 
   @volatile var offset = 6 // @volatile makes no difference because it does not solve race conditions
   def accessor = offset
@@ -25,9 +24,7 @@ object Race extends App {
     case Failure(exception) => println("Race Scala exception 2: " + exception.asInstanceOf[Exception].getMessage)
   }
   offset = 42
-  system.log.info("End of mainline, offset = " + offset)
+  println("End of mainline, offset = " + offset)
 
-  Future.sequence(List(f1, f2)) andThen {
-    case _ => system.shutdown() // terminates this thread, and the program if no other threads are active
-  }
+  Await.ready(Future.sequence(List(f1, f2)), Duration.Inf)
 }
