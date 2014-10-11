@@ -22,7 +22,7 @@ object ParallelFun extends App {
 
     def goNuts(decimals: Int) = {
       println(s"Starting $iterations CPU-bound computations")
-      time("scalar CPU-bound computation") { (1 to iterations).map(_ => calculatePiFor(decimals)) }
+      time("serial CPU-bound computation") { (1 to iterations).map(_ => calculatePiFor(decimals)) }
       time[ParSeq[Double]]("parallel CPU-bound computation") { (1 to iterations).par.map { _ => calculatePiFor(decimals) } }
     }
 
@@ -70,9 +70,9 @@ object ParallelFun extends App {
       ()
     }
 
-    def goNuts: Unit = {
+    def goNuts(): Unit = {
       println(s"Starting $fetchCount IO-bound computations")
-      time("scalar IO-bound computation") {
+      time("serial IO-bound computation") {
         (1 to iterations).foreach { _ => simulateSpider()}
       }
       time("parallel IO-bound computation") {
@@ -82,15 +82,15 @@ object ParallelFun extends App {
   }
 
   class AntiDemo {
-    def goNuts: Unit = {
+    def goNuts(): Unit = {
       println("AntiDemo")
-      time[Long]("scalar sum") { (1L to 10000000L).map(_ * 2L).sum }
+      time[Long]("serial sum") { (1L to 10000000L).map(_ * 2L).sum }
       time[Long]("parallel sum") { (1L to 10000000L).par.map(_ * 2L).sum }
       println()
     }
   }
 
-  new AntiDemo().goNuts
+  new AntiDemo().goNuts()
 
   val cpuBound = new CpuBound()
   val result = cpuBound.goNuts(1000)
@@ -104,5 +104,5 @@ object ParallelFun extends App {
   println(s"${cpuBound.parSixes} of the ${cpuBound.iterations} results had sixes in them.")
   println()
 
-  new IoBound().goNuts
+  new IoBound().goNuts()
 }
