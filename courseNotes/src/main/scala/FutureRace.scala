@@ -5,10 +5,10 @@ object FutureRace extends App {
   import scala.concurrent.duration.Duration
 
   val threadCount: Int = try {
-    if (args.length==1) args(0).toInt else 1
+      if (args.length==1) math.max(1, args(0).toInt) else 1
   } catch {
     case e: Exception =>
-      println("You can specify the number of threads in the threadpool on the command line; default is 1")
+      println("You can specify the number of threads in the threadpool on the command line; default value is 1")
       System.exit(-1)
       1
   }
