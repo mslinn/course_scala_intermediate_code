@@ -4,9 +4,9 @@ name := "Intermediate Scala Course Solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
-version := "2.11.2"
+version := "2.11.3"
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.3"
 
 scalacOptions in (Compile, doc) <++= baseDirectory.map {
   (bd: File) => Seq[String](

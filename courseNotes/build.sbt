@@ -4,9 +4,9 @@ name := "IntermediateScalaCourse"
 
 description := "Core Scala - Intermediate Scala Course Notes"
 
-version := "2.11.2"
+version := "2.11.3"
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.3"
 
 autoCompilerPlugins := true
 
