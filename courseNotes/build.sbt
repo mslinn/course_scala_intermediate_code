@@ -12,7 +12,6 @@ autoCompilerPlugins := true
 
 scalacOptions in (Compile, doc) <++= baseDirectory.map {
   (bd: File) => Seq[String](
-     "-P:continuations:enable",
      "-deprecation",
 	   "-encoding", "UTF-8",
 	   "-unchecked",
@@ -27,8 +26,6 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 scalacOptions in Test ++= Seq("-Yrangepos")
 
 libraryDependencies ++= Seq(
-  "org.scala-lang.plugins"      % "scala-continuations-library_2.11" % "1.0.2",
-  "com.typesafe.akka"           %% "akka-dataflow"                   % "2.3.3"  withSources(),
   "com.typesafe.akka"           %% "akka-actor"                      % "2.3.3"  withSources(),
   "com.beachape.filemanagement" %% "schwatcher"                      % "0.1.5",
   "com.typesafe"                %  "config"                          % "1.2.1"  withSources(),
