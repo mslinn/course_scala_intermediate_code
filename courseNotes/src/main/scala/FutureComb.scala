@@ -73,6 +73,9 @@ object FutureRecover extends App {
     .recover { case e: NoSuchElementException => 42 }
     .recover { case e: java.io.IOException => 43 }
     .recover { case e: java.net.MalformedURLException => 44 }
+  // This next expression causes the compiler to issue a warning. I explain why in the Future Combinators lecture
+  // http://trainingadmin2.herokuapp.com/student/showLecture/176
+  // Feel free to correct this code
   Future(6 / 0).recover {
     case e: NoSuchElementException => 42
     case e: java.io.IOException => 43

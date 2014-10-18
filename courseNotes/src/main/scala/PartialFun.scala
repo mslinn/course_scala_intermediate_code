@@ -1,6 +1,163 @@
-case class Attendee(name: String, id: Long, knowledge: Option[String])
+object PartialFunReview extends App {
+  val f1 = (a: Int) => a.toString
+  println(s"f1(3 * 10)=${f1(3 * 10)}")
 
-object PartialFun extends App {
+  val f2 = (_: Int).toString
+  println(s"f2(3 * 10)=${f2(3 * 10)}")
+}
+
+object PartialFun1 extends App {
+  println(s"System.getProperties.keySet=${System.getProperties.keySet}")
+  println(s"System.getenv.keySet=${System.getenv.keySet}")
+
+  val home = Option(System.getenv("JAVA_HOME"))
+
+  val env = new PartialFunction[String, String] {
+    private def value(name: String) = Option(System.getenv(name))
+
+    def apply(name: String): String = value(name).get
+
+    def isDefinedAt(name: String): Boolean = value(name).isDefined
+  }
+
+  println(s"""env.isDefinedAt("JAVA_HOME")=${env.isDefinedAt("JAVA_HOME")}""")
+  println(s"""env("JAVA_HOME")=${env("JAVA_HOME")}""")
+  println(s"""env.isDefinedAt("x")=${env.isDefinedAt("x")}""")
+  try {
+    println(s"""env("x")=${env("x")}""")
+  } catch {
+    case e: Exception => println(s"""env("x") threw ${e.getMessage}""")
+  }
+}
+
+object PartialFunShorthand extends App {
+  val env: PartialFunction[String, String] = {
+    case name: String if Option(System.getenv(name)).isDefined  ⇒ System.getenv(name)
+  }
+
+  /* }
+  <console>:8: error: missing parameter type for expanded function
+     The argument types of an anonymous function must be fully known. (SLS 8.5)
+     Expected type was: ?
+   val env = { case name: String ⇒ getenv } */
+//  val env2 = {
+//    case name: String if Option(System.getenv(name) ).isDefined ⇒ System.getenv(name)
+//  }
+}
+
+object PartialFunMultiIn extends App {
+  val checkStringLength: PartialFunction[(String, Int), Boolean] = {
+   case (string: String, length: Int) if string.toLowerCase==string => string.length==length
+  }
+
+  println(s"""checkStringLength.isDefinedAt(("asdf", 4))=${checkStringLength.isDefinedAt(("asdf", 4))}""")
+  println(s"""checkStringLength(("asdf", 4))=${checkStringLength(("asdf", 4))}""")
+  println(s"""checkStringLength("asdf", 4)=${checkStringLength("asdf", 4)}""")
+  println(s"""checkStringLength("asdf", 43)=${checkStringLength("asdf", 43)}""")
+  println(s"""checkStringLength.isDefinedAt(("ASDF", 4))=${checkStringLength.isDefinedAt(("ASDF", 4))}""")
+  println(s"""checkStringLength("ASDF", 4)=${checkStringLength("ASDF", 4)}""")
+}
+
+object PartialFunCompose extends App {
+  type PfAnyToUnit = PartialFunction[Any, Unit]
+  val int: PfAnyToUnit = { case x: Int => println("Int found") }
+  val double: PfAnyToUnit = { case x: Double => println("Double found") }
+  val any: PfAnyToUnit = { case x => println(s"Something else found ($x)") }
+  val chainedPF = int orElse double orElse any
+
+  println(s"""chainedPF(1)=${chainedPF(1)}""")
+
+  val chainedPF2: PfAnyToUnit = {
+    case _: Int => println("Int found")
+
+    case _: Double => println("Double found")
+
+    case x => println(s"Something else found ($x)")
+  }
+  println(s"""chainedPF2(1)=${chainedPF2(1)}""")
+  println(s"""(int orElse double orElse any)(1.0)=${(int orElse double orElse any)(1.0)}""")
+  println(s"""(int orElse double orElse any)(true)=${(int orElse double orElse any)(true)}""")
+}
+
+object PartialFunCollect extends App {
+  import PartialFunShorthand.env
+
+  val javaHomes = List("JAVA_HOME_8", "JAVA_HOME_7", "JAVA_HOME_6", "JAVA_HOME_5", "JAVA_HOME")
+  println(s"""javaHomes.collect(env)=${javaHomes.collect(env)}""")
+  println(s"""javaHomes collect env=${javaHomes collect env}""")
+}
+
+object PartialFunCompColl extends App {
+  val sample = 1 to 10
+
+  val isEven: PartialFunction[Int, String] = { case x if x % 2 == 0 ⇒ x + " is even" }
+  val evenNumbers = sample collect isEven
+  println(s"""evenNumbers=$evenNumbers""")
+
+  val isOdd: PartialFunction[Int, String] = { case x if x % 2 == 1 ⇒ x + " is odd" }
+  val oddNumbers = sample collect isOdd
+  println(s"""oddNumbers=$oddNumbers""")
+
+  val numbers = sample collect (isEven orElse isOdd)
+  println(s"""numbers=$numbers""")
+
+  val numbers2 = sample map (isEven orElse isOdd)
+  println(s"""numbers2=$numbers2""")
+}
+
+object PartialFunCaseSeq extends App {
+  val list = List(Some(1), None, Some(3))
+  val result1 = list map { item ⇒
+    item match {
+      case Some(x) ⇒ x
+      case None ⇒ 0
+    }
+  }
+
+  val result2 = list map {
+    case Some(x) ⇒ x
+    case None ⇒ 0
+  }
+
+  def doSomething[T](data: T)(operation: T => T) = try {
+     operation(data)
+  } catch {
+    case ioe: java.io.IOException => println(ioe.getMessage)
+    case   e: Exception => println(e)
+  }
+}
+
+object PartialFunWith extends App {
+  def withT[T](t: T)(operation: T ⇒ Unit): Unit = { operation(t) }
+
+  case class Blarg(i: Int, s: String)
+
+  def handle(implicit blarg: Blarg): Unit = withT(blarg) {
+    case Blarg(0, s) ⇒ println("i is 0")
+
+    case Blarg(i, "triple") ⇒ println("s is triple")
+
+    case whatever ⇒ println(whatever)
+  }
+
+  println(s"""handle(Blarg(1, "blarg"))=${handle(Blarg(1, "blarg"))}""")
+  println(s"""handle(Blarg(1, "triple"))=${handle(Blarg(1, "triple"))}""")
+  println(s"""handle(Blarg(0, "triple"))=${handle(Blarg(0, "triple"))}""")
+
+  def showBlarg(msg: String)(implicit blarg: Blarg) = println(s"$msg\nblarg.i=${blarg.i}; blarg.s=${blarg.s}")
+
+  withT(Blarg(1, "blarg ")) { implicit blarg =>
+    blarg match {
+      case Blarg(0, s) ⇒ showBlarg("Matched blarg on i==0")
+      case Blarg(i, "triple") ⇒ showBlarg("""Matched blarg on s=triple""")
+      case whatever ⇒ showBlarg("Catchall case")
+    }
+  }
+}
+
+object PartialFun2 extends App {
+  case class Attendee(name: String, id: Long, knowledge: Option[String])
+
   val attendees = List(
     Attendee("Fred", 1, None),
     Attendee("Lisa", 2, Some("Akka")),

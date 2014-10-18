@@ -1,6 +1,6 @@
 package solutions
 
-object PartialFnSoln extends App {
+object PartialFunSoln extends App {
   val squareRoot: PartialFunction[Double, Double] = {
      case d if d >= 0 => math.sqrt(d)
   }
