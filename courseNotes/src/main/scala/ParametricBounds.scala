@@ -105,6 +105,8 @@ object ParametricBounds extends App {
     }
   }
 
+  val clothing: Array[Clothing] = Array(new Hat(5, "Gucci"), new Hat(4, "Ralph Lauren"))
+
   val hat   = new Hat(5, "Gucci")
   val pants = new Pants(5, "Ralph Lauren")
   val dress = new Dress(4, "Donna Karan")
@@ -140,9 +142,26 @@ object ParametricBounds extends App {
 }
 
 object TypeSafety2 extends App {
-  case class Container2[+A](a: A) {
+//  case class Container2[+A] {
+//    def consume(a: A): Unit = println(a)
+//  }
+//  error: covariant type A occurs in contravariant position in type A of value a
+//  def consume(a: A): Unit = println(a)
+
+
+//  val ss: Array[String] = Array("a", "b", "c")
+//  val os: Array[Object] = ss
+//  error: type mismatch;
+//  found   : Array[String]
+//  required: Array[Object]
+//  Note: String <: Object, but class Array is invariant in type T.
+//    You may wish to investigate a wildcard such as `_><: Object`. (SLS 3.2.10)
+//  val os: Array[Object] = ss
+//  ^>
+
+  case class Container3[+A](a: A) {
     def consume[B >: A](b: B): Unit = println(s"$a $b")
   }
 
-  Container2("Hello to all my").consume("fans")
+  Container3("Hello to all my").consume("fans")
 }
