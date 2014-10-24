@@ -141,6 +141,35 @@ object ParametricBounds extends App {
   println(bag.findByManufacturer("Donna Karan").mkString("Bag contains:\n  ", "\n  ", ""))
 }
 
+object UpperBound extends App {
+  import java.io.File
+
+  trait Output {
+    def maybeFile: Option[File]
+  }
+
+  case class Storage(key: String, value: String) extends Output {
+    val maybeFile: Option[File] = try {
+      import java.nio.file._
+      val file = new File(key).toPath
+      val path: Path = Files.write(file, value.getBytes, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE, StandardOpenOption.CREATE)
+      Some(path.toFile)
+    } catch {
+      case e: Exception =>
+        println(e)
+        None
+    }
+  }
+
+  def read[A <: Output](a: A): String = {
+    val maybeFile = a.maybeFile
+    maybeFile.map(io.Source.fromFile(_).getLines().mkString).getOrElse("")
+  }
+
+  val readBackContents: String = read(Storage("storage.txt", "Blah blah blah"))
+  println(s"Contents are '$readBackContents'")
+}
+
 object TypeSafety2 extends App {
 //  case class Container2[+A] {
 //    def consume(a: A): Unit = println(a)
