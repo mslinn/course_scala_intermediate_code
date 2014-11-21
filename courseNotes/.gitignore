@@ -1,8 +1,8 @@
 .classpath
+*.txt
 dirContents.txt
 scalaCourses.html
 scalacourses.html
-test.txt
 *-
 bin/
 .worksheet/
