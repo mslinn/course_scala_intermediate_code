@@ -1,6 +1,6 @@
 package solutions
 
-class Memoize[-T, +R](f: T => R) extends (T => R) {
+class Memoize[T, R](f: T => R) {
   private[this] val vals = collection.mutable.Map.empty[T, R]
 
   def apply(x: T): R = {
