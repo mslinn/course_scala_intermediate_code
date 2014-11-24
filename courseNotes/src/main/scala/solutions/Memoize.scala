@@ -1,8 +1,7 @@
 package solutions
 
 class Memoize[-T, +R](f: T => R) extends (T => R) {
-  import scala.collection.mutable
-  private[this] val vals = mutable.Map.empty[T, R]
+  private[this] val vals = collection.mutable.Map.empty[T, R]
 
   def apply(x: T): R = {
     if (vals.keySet.contains(x)) {
