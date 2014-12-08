@@ -13,12 +13,16 @@ object IoSource extends App {
   println(s"${rootLines2.length} lines printed from /etc/passwd:\n  " + rootLines2.mkString("\n  "))
 }
 
-object Writing extends App {
-  import java.io.{File, PrintWriter}
+object Writing7 extends App {
+  @inline def writeToTextFile(fileName: String, content: String) = {
+    import java.io.{File, PrintWriter}
 
-  val writer = new PrintWriter(new File("test.txt"))
-  writer.write("Hello Scala")
-  writer.close()
+    val writer = new PrintWriter(new File(fileName))
+    writer.write(content)
+    writer.close()
+  }
+
+  writeToTextFile("test.txt", "Being disintegrated makes me go angry!")
 }
 
 object Writing8 extends App {
