@@ -25,7 +25,7 @@ object Writing8 extends App {
   import java.nio.file.{Files, Paths, StandardOpenOption}
 
   /** Requires Java 8 */
-  def writeToTextFile(fileName: String, content: String) =
+  @inline def writeToTextFile(fileName: String, content: String) =
     Files.write(Paths.get(fileName), content.getBytes, StandardOpenOption.CREATE)
 
   writeToTextFile("test.txt", "Being disintegrated makes me go angry!")
