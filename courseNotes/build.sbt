@@ -16,7 +16,7 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 	   "-encoding", "UTF-8",
 	   "-unchecked",
      "-feature",
-	   "-target:jvm-1.6",
+	   "-target:jvm-1.7",
      "-sourcepath", bd.getAbsolutePath,
 	   "-Ywarn-adapted-args",
      "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/coursenotes€{FILE_PATH}.scala"
