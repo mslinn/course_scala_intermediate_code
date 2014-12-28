@@ -65,7 +65,7 @@ object CompanionScope extends App {
   }
 
   object A {
-    implicit def fromInt(n: Int) = new A(n)
+    implicit def fromInt(n: Int): A = new A(n)
   }
 
   val x = 1 + new A(1) // is converted into:
@@ -77,14 +77,14 @@ object CompanionScope extends App {
 
 object ImplicitCoercion extends App {
   case class Complex(re: Double, im: Double) {
-    def + (that: Complex) = new Complex(re + that.re, im + that.im)
+    def +(that: Complex): Complex = Complex(re + that.re, im + that.im)
 
-    def -(that: Complex) =  new Complex(this.re - that.re, this.im - that.im)
+    def -(that: Complex): Complex = Complex(this.re - that.re, this.im - that.im)
 
     override def toString = s"$re + ${im}i"
   }
 
-  implicit def doubleToComplex(d: Double) = Complex(d, 0)
+  implicit def doubleToComplex(d: Double): Complex = Complex(d, 0)
 
   println(s"""Complex(2.0, 5.0) + 5.0 = ${Complex(2.0, 5.0) + 5.0}""")
   println(s"""5.0 + Complex(1.0, -2.0) = ${5.0 + Complex(1.0, -2.0)}""")
