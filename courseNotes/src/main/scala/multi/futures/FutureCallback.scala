@@ -13,10 +13,10 @@ object FutureCallback extends App {
   def promiseStatus(promise: Promise[_], id: Int): Unit =
     if (promise.isCompleted) {
       promise.future.value.get match {
-        case Success(value) => println(s"promise$id.future.value=$value")
-        case Failure(exception) => println(s"promise$id.future exception=${exception.getMessage}")
+        case Success(value) => println(s"promise$id.future.value='$value'.")
+        case Failure(exception) => println(s"promise$id.future exception message: '${exception.getMessage}'.")
       }
-    } else println(s"promise$id is pending")
+    } else println(s"promise$id is pending.")
 
   def promiseStatuses(msg: String): Unit = {
     println(s"\n== $msg ==")
@@ -28,24 +28,31 @@ object FutureCallback extends App {
 
   promiseStatuses("Five Promises Started")
 
-  promise2.future.onSuccess {
-    case value ⇒ println(s"promise2 completed successfully with value=$value")
+  promise2.future onSuccess {
+    case value => println(s"promise2 completed successfully with value='$value'.")
   }
   promise2.success("The tao that is knowable is not the true tao") // happens right away
   //promise2.complete(Success("The tao that is knowable is not the true tao")) // does same thing
 
-  promise3.future.andThen {
-    case Success(value) ⇒ println(s"promise3.andThen success: promise3 value=$value")
-    case Failure(throwable) => println(s"promise3.andThen failure: ${throwable.getMessage}")
-  }.andThen {
-    case _ => println("promise3.andThen.andThen Will that be all, master?")
+  promise3.future onComplete {
+    case Success(value) => println(s"promise3 onComplete success: promise3 value='$value'.")
+    case Failure(throwable) => println(s"promise3 onComplete exception message: '${throwable.getMessage}'.")
   }
-  promise3.complete(Success("Great achievement looks incomplete, yet it works perfectly."))
+  promise3.future andThen {
+    case Success(value) => println(s"promise3 andThen success: promise3 value='$value'.")
+    case Failure(throwable) => println(s"promise3 andThen exception message: '${throwable.getMessage}'.")
+  } andThen {
+    case _ => println("promise3.andThen.andThen - Will that be all, master?")
+  }
+  promise3.complete(Success("Great achievement looks incomplete, yet it works perfectly"))
 
+  promise4.future.onFailure {
+    case exception => println(s"promise4 completed with exception message: '${exception.getMessage}'.")
+  }
   class ExceptTrace(msg: String) extends Exception(msg) with NoStackTrace
-  promise4.failure(new ExceptTrace("Boom!"))
+  promise4.failure(new ExceptTrace("Kaboom"))
 
-  object TheExceptTrace extends Exception("Boom!") with NoStackTrace
+  object TheExceptTrace extends Exception("Kablam") with NoStackTrace
   promise5.complete(Failure(TheExceptTrace))
 
   promiseStatuses("Five Promises Concluded")
@@ -64,14 +71,13 @@ object FutureCallback extends App {
 
   webPageFuture onComplete { // good habits:
     case Success(iterator) ⇒
-      println("First 500 characters of http://scalacourses.com:\n" + iterator.mkString.trim.substring(0, 500))
+      println("\nFirst 500 characters of http://scalacourses.com:\n" + iterator.mkString.trim.substring(0, 500))
       System.exit(0)
 
     case Failure(throwable) ⇒
-      println(throwable.getMessage)
+      println("\n" + throwable.getMessage)
       System.exit(-1)
   }
-  println("End of mainline: suspending thread in case any futures still need to complete.")
-  synchronized {
-    wait() }
+  println("End of mainline: suspending main thread in case any futures still need to complete.")
+  synchronized { wait() }
 }
