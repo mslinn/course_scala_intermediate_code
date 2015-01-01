@@ -10,13 +10,13 @@ object FutureCallback extends App {
   val promise1: Promise[String] = Promise.successful("Hi there")
   val promise2, promise3, promise4, promise5 = Promise[String]()
 
-  def promiseStatus(promise: Promise[_], id: Int): Unit =
-    if (promise.isCompleted) {
-      promise.future.value.get match {
-        case Success(value) => println(s"promise$id.future.value='$value'.")
-        case Failure(exception) => println(s"promise$id.future exception message: '${exception.getMessage}'.")
-      }
-    } else println(s"promise$id is pending.")
+def promiseStatus(promise: Promise[_], id: Int): Unit =
+  if (promise.isCompleted) {
+    promise.future.value.get match {
+      case Success(value) => println(s"promise$id.future.value='$value'.")
+      case Failure(exception) => println(s"promise$id.future exception message: '${exception.getMessage}'.")
+    }
+  } else println(s"promise$id is pending.")
 
   def promiseStatuses(msg: String): Unit = {
     println(s"\n== $msg ==")
