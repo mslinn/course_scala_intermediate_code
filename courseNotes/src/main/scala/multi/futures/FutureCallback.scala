@@ -28,6 +28,10 @@ def promiseStatus(promise: Promise[_], id: Int): Unit =
 
   promiseStatuses("Five Promises Started")
 
+  promise1.future onSuccess {
+    case value => println(s"promise1 completed successfully with value='$value'.")
+  }
+
   promise2.future onSuccess {
     case value => println(s"promise2 completed successfully with value='$value'.")
   }
