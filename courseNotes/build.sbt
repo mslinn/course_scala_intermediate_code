@@ -26,15 +26,15 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 scalacOptions in Test ++= Seq("-Yrangepos")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka"           %% "akka-actor"                      % "2.3.3"  withSources(),
+  "com.typesafe.akka"           %% "akka-actor"                      % "2.3.8"  withSources(),
   "com.beachape.filemanagement" %% "schwatcher"                      % "0.1.5",
   "com.typesafe"                %  "config"                          % "1.2.1"  withSources(),
   "org.scalautils"              %% "scalautils"                      % "2.1.7"  withSources(),
   //
-  "com.typesafe.akka"           %% "akka-testkit"                    % "2.3.3"  % "test" withSources(),
-  "org.specs2"                  %% "specs2"                          % "2.3.12" % "test" withSources(),
-  "org.scalatest"               %% "scalatest"                       % "2.2.0"  % "test" withSources(),
-  "junit"                       %  "junit"                           % "4.11"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
+  "com.typesafe.akka"           %% "akka-testkit"                    % "2.3.8"  % "test" withSources(),
+  "org.specs2"                  %% "specs2"                          % "2.3.12" % "test" withSources(), // do not update, sensitive!
+  "org.scalatest"               %% "scalatest"                       % "2.2.3"  % "test" withSources(),
+  "junit"                       %  "junit"                           % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
 )
 
 resolvers ++= Seq(

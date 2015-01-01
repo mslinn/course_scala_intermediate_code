@@ -1,5 +1,7 @@
+package multi
+
+import akka.actor._
 import com.typesafe.config.ConfigFactory
-import akka.actor.ActorSystem
 
 object ActorSystemFun1 extends App {
   implicit val system = ActorSystem("MySystem")

@@ -1,3 +1,5 @@
+package multi.futures
+
 object FuturesUtil {
   import scala.concurrent._
   import scala.util.{Failure, Success, Try}

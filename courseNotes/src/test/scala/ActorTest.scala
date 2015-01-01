@@ -10,6 +10,8 @@ import org.junit.runner.RunWith
 class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
     with ShouldMatchers with WordSpecLike with BeforeAndAfterAll  {
 
+  import multi._
+
   val chunkerMsg1 = ChunkerMsg(10, 10, "Ain't this grand?")
   val workerMsg1 = WorkerMsg(10, 10)
   val persistenceMsg = PersistenceMsg(10, "Bloop")

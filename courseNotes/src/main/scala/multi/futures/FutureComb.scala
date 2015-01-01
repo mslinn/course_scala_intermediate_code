@@ -1,9 +1,11 @@
+package multi.futures
+
+import multi.factorial
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import concurrent.duration._
-import concurrent.ExecutionContext.Implicits.global
-import util.{Success, Failure}
-import FutureFun2.factorial
-import language.postfixOps
+import scala.language.postfixOps
+import scala.util.{Failure, Success}
 
 object FutureFixtures {
   def urls(includeBad: Boolean = false): List[String] =
@@ -47,11 +49,12 @@ object FutureFixtures {
   def futureOfList(includeBad: Boolean = false): Future[List[String]] = Future.sequence(listOfFutures(includeBad))
 
   urlSearch("scala", urls())
-  synchronized { wait() } // let daemon threads continue; hit control-C to terminate
+  synchronized {
+    wait() } // let daemon threads continue; hit control-C to terminate
 }
 
 object FutureFallbackTo extends App {
-  import FutureFixtures._
+  import multi.futures.FutureFixtures._
 
   val fZero: Future[Int] = Future(5 / 0)
   val defaultFuture: Future[Int] = Future.successful(42)
@@ -97,7 +100,7 @@ object FutureRecoverWith extends App {
 }
 
 object FutureCollect extends App {
-  import FutureFixtures._
+  import multi.futures.FutureFixtures._
 
   val allUrlsWithFutures: List[(String, Future[String])] = urls(includeBad = true) zip listOfFutures(includeBad = true)
   allUrlsWithFutures foreach {
@@ -160,13 +163,13 @@ object FutureFlatMap extends App {
 }
 
 object FutureForeach extends App {
-  import concurrent.ExecutionContext.Implicits.global
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   Future(factorial(12345)).foreach(println)
 }
 
 object FutureMap extends App {
-  import concurrent.ExecutionContext.Implicits.global
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   val x = Future(factorial(12345)).map { _ == 0 }
   println(s"x = $x")
@@ -179,7 +182,7 @@ object FutureMapTo extends App {
 }
 
 object FutureTransform extends App {
-  import concurrent.ExecutionContext.Implicits.global
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   Future(6/0).transform (
     identity,
@@ -192,7 +195,7 @@ object FutureTransform extends App {
 }
 
 object FutureZip extends App {
-  import language.postfixOps
+  import scala.language.postfixOps
 
   case class User(name: String, id: Long)
 

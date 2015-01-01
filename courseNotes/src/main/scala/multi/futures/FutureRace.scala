@@ -1,11 +1,14 @@
+package multi.futures
+
 object FutureRace extends App {
-  import java.util.concurrent.{Executors, ExecutorService}
-  import scala.concurrent.{ExecutionContext, Await, Future}
-  import scala.util.{Success, Failure}
-  import scala.concurrent.duration.Duration
+  import java.util.concurrent.{ExecutorService, Executors}
+
+import scala.concurrent.duration.Duration
+  import scala.concurrent.{Await, ExecutionContext, Future}
+  import scala.util.{Failure, Success}
 
   val threadCount: Int = try {
-      if (args.length==1) math.max(1, args(0).toInt) else 1
+    if (args.length==1) math.max(1, args(0).toInt) else 1
   } catch {
     case e: Exception =>
       println("You can specify the number of threads in the threadpool on the command line; default value is 1")

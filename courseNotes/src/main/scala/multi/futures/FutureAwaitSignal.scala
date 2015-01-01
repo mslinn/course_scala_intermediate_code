@@ -1,8 +1,9 @@
-import scala.concurrent.Future
-import concurrent.ExecutionContext.Implicits.global
-import concurrent.Await
-import util.Try
-import concurrent.duration._
+package multi.futures
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+import scala.util.Try
 
 object FutureBadHabits extends App {
   val f = Future(io.Source.fromURL("http://www.scalacourses.com").mkString)
@@ -30,7 +31,7 @@ object FutureAwait extends App {
 }
 
 object FutureResult extends App {
-  import FutureAwait.fetch
+  import multi.futures.FutureAwait.fetch
 
   val result = Await.result(fetch("http://www.scalacourses.com"), 2 hours)
   println("The future has completed within 2 hours")

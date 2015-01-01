@@ -1,6 +1,8 @@
-import concurrent.ExecutionContext.Implicits.global
-import FutureFun2.factorial
-import concurrent.Future
+package multi.futures
+
+import multi.factorial
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 object ForComp1 extends App {
@@ -33,7 +35,8 @@ object ForComp1 extends App {
       println(s"Failure: ${ex.getMessage}")
       System.exit(0)
   }
-  synchronized { wait() }
+  synchronized {
+    wait() }
 }
 
 object ForComp2 extends App {

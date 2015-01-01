@@ -1,11 +1,11 @@
-import akka.actor.{PoisonPill, Actor, ActorRef, ActorSystem, Props}
-import akka.pattern.ask
+package multi
+
+import akka.actor._
+import akka.pattern._
 import akka.util.Timeout
-import concurrent.duration._
-import concurrent.ExecutionContext
-import concurrent.ExecutionContext.Implicits.global
-import java.util.concurrent.{ExecutorService, Executors}
-import util.{Success, Failure, Random}
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Random, Success}
 
 case class ChunkerMsg(numWorkers: Int, tries: Int, text: String)
 

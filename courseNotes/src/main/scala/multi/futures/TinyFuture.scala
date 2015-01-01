@@ -1,3 +1,5 @@
+package multi.futures
+
 import scala.util.{Failure, Success, Try}
 
 object TinyFuture {
@@ -137,7 +139,7 @@ object TinyFuture {
 }
 
 object WriteOnceDemo extends App {
-  import TinyFuture.WriteOnce
+  import multi.futures.TinyFuture.WriteOnce
 
   val writeOnce1 = new WriteOnce[Int]()
   writeOnce1.set(42)
@@ -165,7 +167,7 @@ object WriteOnceDemo extends App {
 }
 
 object TinyFutureDemo extends App {
-  import TinyFuture._
+  import multi.futures.TinyFuture._
 
   val promise1 = Promise.successful(1)
   println(s"Value of promise1 = ${promise1.future.value.success}")

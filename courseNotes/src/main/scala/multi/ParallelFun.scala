@@ -1,3 +1,5 @@
+package multi
+
 object ParallelFun extends App {
   val calculatePiFor: Int => Double = (decimals: Int) => {
     var acc = 0.0

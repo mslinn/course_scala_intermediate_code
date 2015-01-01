@@ -1,6 +1,8 @@
+package multi.futures
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util._
 
 object FutureArtifacts {
@@ -23,7 +25,7 @@ object FutureArtifacts {
 }
 
 object FutureWork extends App {
-  import FutureArtifacts._
+  import multi.futures.FutureArtifacts._
 
   val futuresTemp: List[Future[String]] = urls.map(url => Future(io.Source.fromURL(url).mkString))
   println(s"futuresTemp=$futuresTemp")
@@ -88,8 +90,8 @@ object FutureWork extends App {
 }
 
 object FutureSelect extends App {
-  import FutureArtifacts._
-  import FuturesUtil.asapFutures
+  import multi.futures.FutureArtifacts._
+  import multi.futures.FuturesUtil.asapFutures
 
   def urlSearch3(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
     asapFutures(futureTuples(urls)) {
@@ -117,8 +119,7 @@ object FutureSelect extends App {
 }
 
 object FutureMixed extends App {
-  import scala.concurrent._
-  import FutureArtifacts._
+  import multi.futures.FutureArtifacts._
 
   //def urlSearch4(word: String, urls: List[String]) = {
   //  val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
@@ -165,9 +166,8 @@ object FutureMixed extends App {
 }
 
 object FutureCancel extends App {
+  import multi.futures.FuturesUtil.interruptableFuture
   import scala.concurrent._
-  import scala.util.{Failure, Success}
-  import FuturesUtil.interruptableFuture
 
   val signal = Promise[String]()
   val (future, cancel) = interruptableFuture(io.Source.fromURL("http://scalacourses.com").mkString)
