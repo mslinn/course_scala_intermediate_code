@@ -10,18 +10,18 @@ object FutureCallback extends App {
   val promise1: Promise[String] = Promise.successful("Hi there")
   val promise2, promise3, promise4, promise5 = Promise[String]()
 
-def promiseStatus(promise: Promise[_], id: Int): Unit =
-  if (promise.isCompleted) {
-    promise.future.value.get match {
-      case Success(value) => println(s"promise$id.future.value='$value'.")
-      case Failure(exception) => println(s"promise$id.future exception message: '${exception.getMessage}'.")
-    }
-  } else println(s"promise$id is pending.")
+  def promiseStatus(promise: Promise[_], id: Int): Unit =
+    if (promise.isCompleted) {
+      promise.future.value.get match {
+        case Success(value) => println(s"promise$id.future.value='$value'.")
+        case Failure(exception) => println(s"promise$id.future exception message: '${exception.getMessage}'.")
+      }
+    } else println(s"promise$id is pending.")
 
   def promiseStatuses(msg: String): Unit = {
     println(s"\n== $msg ==")
     List(promise1, promise2, promise3, promise4, promise5).zipWithIndex.foreach { case (promise, i) =>
-      promiseStatus(promise, i+1)
+      promiseStatus(promise, i + 1)
     }
     println()
   }
@@ -53,35 +53,18 @@ def promiseStatus(promise: Promise[_], id: Int): Unit =
   promise4.future.onFailure {
     case exception => println(s"promise4 completed with exception message: '${exception.getMessage}'.")
   }
-  class ExceptTrace(msg: String) extends Exception(msg) with NoStackTrace
   promise4.failure(new ExceptTrace("Kaboom"))
 
-  object TheExceptTrace extends Exception("Kablam") with NoStackTrace
   promise5.complete(Failure(TheExceptTrace))
-
-  promiseStatuses("Five Promises Concluded")
-
-  val webPageFuture = Future(Source.fromURL("http://www.scalacourses.com"))
-  println(s"webPageFuture.isCompleted=${webPageFuture.isCompleted}")
-  println(s"webPageFuture.value=${webPageFuture.value}")
-  try { // bad habits shown here:
-    println(s"webPageFuture.value.get=${webPageFuture.value.get}")
-    println(s"webPageFuture.value.get.get=${webPageFuture.value.get.get}")
-    println(s"webPageFuture.value.get.get.mkString=${webPageFuture.value.get.get.mkString}")
-  } catch {
-    case e: Exception =>
-      println("The future had not completed, so attempting to get the value was hopeless.")
-  }
-
-  webPageFuture onComplete { // good habits:
-    case Success(iterator) ⇒
-      println("\nFirst 500 characters of http://scalacourses.com:\n" + iterator.mkString.trim.substring(0, 500))
+  promise5.future.onComplete {
+    case _ =>
+      promiseStatuses("Five Promises Concluded")
       System.exit(0)
-
-    case Failure(throwable) ⇒
-      println("\n" + throwable.getMessage)
-      System.exit(-1)
   }
-  println("End of mainline: suspending main thread in case any futures still need to complete.")
+
   synchronized { wait() }
+
+  class ExceptTrace(msg: String) extends Exception(msg) with NoStackTrace
+
+  object TheExceptTrace extends Exception("Kablam") with NoStackTrace
 }
