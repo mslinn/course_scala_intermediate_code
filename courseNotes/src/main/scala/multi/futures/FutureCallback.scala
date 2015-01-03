@@ -32,16 +32,19 @@ object FutureCallback extends App {
     case value => println(s"promise1 completed successfully with value='$value'.")
   }
 
+  promise2.future onComplete {
+    case Success(value) => println(s"promise2 onComplete success: value='$value'.")
+    case Failure(throwable) => println(s"promise2 onComplete exception; message: '${throwable.getMessage}'.")
+  }
   promise2.future onSuccess {
-    case value => println(s"promise2 completed successfully with value='$value'.")
+    case value => println(s"promise2 onSuccess; value='$value'.")
+  }
+  promise2.future onFailure {
+    case throwable => println(s"promise2 onFailure; exception message: '${throwable.getMessage}'.")
   }
   promise2.success("The tao that is knowable is not the true tao") // happens right away
   //promise2.complete(Success("The tao that is knowable is not the true tao")) // does same thing
 
-  promise3.future onComplete {
-    case Success(value) => println(s"promise3 onComplete success: promise3 value='$value'.")
-    case Failure(throwable) => println(s"promise3 onComplete exception message: '${throwable.getMessage}'.")
-  }
   promise3.future andThen {
     case Success(value) => println(s"promise3 andThen success: promise3 value='$value'.")
     case Failure(throwable) => println(s"promise3 andThen exception message: '${throwable.getMessage}'.")
