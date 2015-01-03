@@ -1,5 +1,8 @@
 package multi.futures
 
+import java.io.{FileNotFoundException, IOException}
+import java.util.concurrent.TimeoutException
+import java.net.{MalformedURLException, UnknownHostException}
 import multi.factorial
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -8,11 +11,34 @@ import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
 object FutureFixtures {
-  def urls(includeBad: Boolean = false): List[String] =
-    List("http://www.scalacourses.com", "http://www.micronauticsresearch.com") :::
-      (if (includeBad) List("http://www.not_really_here.com") else Nil)
+  lazy val goodUrlStr1       = "http://www.scalacourses.com"
+  lazy val goodUrlStr2       = "http://www.micronauticsresearch.com"
+  lazy val badHostUrlStr     = "http://www.not_really_here.com"
+  lazy val badPageUrlStr     = "http://scalacourses.com/noPageHere"
+  lazy val badProtocolUrlStr = "blah://scalacourses.com/noPageHere"
 
-  def readUrl(url: String): String = io.Source.fromURL(url).mkString
+  lazy val badHostFuture: Future[String]     = Future(readUrl(badHostUrlStr))
+  lazy val badPageFuture: Future[String]     = Future(readUrl(badHostUrlStr))
+  lazy val badProtocolFuture: Future[String] = Future(readUrl(badHostUrlStr))
+  lazy val defaultFuture: Future[String]     = Future.successful(readUrl(goodUrlStr1))
+
+  /** Print contents of web page at urlStr or whatever recoveryFn contains
+   * @return Future of contents of web page at urlStr or recoverFn */
+  def show(urlStr: String, msg: String)(recoveryFn: Future[String] => Future[String]): Future[String] = {
+    val future = recoveryFn(Future(readUrl(urlStr)))
+    println(s"$urlStr; $msg, returning " + Await.result(future, 10 minutes))
+    future
+  }
+
+  def urls(includeBad: Boolean=false): List[String] =
+    List(goodUrlStr1, goodUrlStr1) :::
+    (if (includeBad) List(badHostUrlStr, badPageUrlStr, badProtocolUrlStr) else Nil)
+
+  /** @return first maxChars characters of web page at given url */
+  def readUrl(url: String, maxChars: Int=500): String = {
+    val contents = io.Source.fromURL(url).mkString.trim
+    contents.substring(0, math.min(contents.length, maxChars)) + (if (contents.length>maxChars) "..." else "")
+  }
 
   def urlSearch(word: String, urls: List[String]): Unit = {
     val futures2: List[Future[String]] = urls.map { url =>
@@ -38,79 +64,106 @@ object FutureFixtures {
         }
       }
     } catch {
-      case te: java.util.concurrent.TimeoutException =>
+      case te: TimeoutException =>
         println("Futures timed out, is there an Internet connection?")
     }
     println()
   }
 
-  def listOfFutures(includeBad: Boolean = false): List[Future[String]] = urls(includeBad).map { url => Future(readUrl(url))}
+  def listOfFutures(includeBad: Boolean = false): List[Future[String]] =
+    urls(includeBad).map { url => Future(readUrl(url))}
 
   def futureOfList(includeBad: Boolean = false): Future[List[String]] = Future.sequence(listOfFutures(includeBad))
-
-  urlSearch("scala", urls())
-  synchronized {
-    wait() } // let daemon threads continue; hit control-C to terminate
 }
 
 object FutureFallbackTo extends App {
   import multi.futures.FutureFixtures._
 
-  val fZero: Future[Int] = Future(5 / 0)
-  val defaultFuture: Future[Int] = Future.successful(42)
-  val result: Future[Int] = fZero.fallbackTo(defaultFuture)
-  // can also write:
-  // val result = fZero fallbackTo defaultFuture
+  val result: Future[String] = badHostFuture.fallbackTo(defaultFuture)
+  // can also write this using infix notation:
+  // val result = fBad fallbackTo defaultFuture
   println(Await.result(result, 10 minutes))
-
-  val result2 = Future(readUrl(urls().head))
-    .fallbackTo(Future(readUrl(urls().take(2).head)))
-    .fallbackTo(Future.successful("This is the default value"))
-  println(Await.result(result2, 10 minutes))
 }
 
 object FutureRecover extends App {
-  def show(msg:String, future: Future[Any]): Unit = println(s"$msg=" + Await.result(future, 10 minutes))
+  import multi.futures.FutureFixtures._
 
-  show("6 / 2", Future(6 / 2).recover { case e: ArithmeticException => 42 })
-  show("6 / 0, handle ArithmeticException, returning", Future(6 / 0).recover { case e: ArithmeticException => 42 })
-  // new Future value: java.lang.ArithmeticException("/ by zero")
+  show(goodUrlStr1, "no problem") {
+    _.recover { case e: UnknownHostException => "Handled UnknownHostException" }
+  }
+
+  show(badHostUrlStr, "handle UnknownHostException") {
+    _.recover { case e: UnknownHostException => s"Handled UnknownHostException" }
+  }
+
   try {
-    show("6 / 0, handle NoSuchElementException, returning", Future(6 / 0).recover { case e: NoSuchElementException => 42 })
+    show(badHostUrlStr, "handle NoSuchElementException") {
+      _.recover {
+        case e: NoSuchElementException => throw new Exception("Should not need to handle NoSuchElementException")
+      }
+    }
   } catch {
     case e: Exception =>
-      println(s"Did not handle ${e.getClass.getName} exception")
+      println(s"Did not handle ${e.getClass.getName} exception for $badHostUrlStr")
   }
-  show("6 / 0, handle 4 Exception types in 4 PartialFunctions, returning", Future(6 / 0)
-    .recover { case e: ArithmeticException            => 41 }
-    .recover { case e: NoSuchElementException         => 42 }
-    .recover { case e: java.io.IOException            => 43 }
-    .recover { case e: java.net.MalformedURLException => 44 })
+
+  show(badHostUrlStr, "handle 4 Exception types in 4 PartialFunctions using recover") {
+    _.recover { case e: FileNotFoundException => "Handled FileNotFoundException" }
+     .recover { case e: IOException           => "Handled IOException" }
+     .recover { case e: MalformedURLException => "Handled MalformedURLException" }
+     .recover { case e: UnknownHostException  => "Handled UnknownHostException" }
+  }
+
   // This next expression causes the compiler to issue a warning. I explain why in the Future Combinators lecture
   // http://scalacourses.com/student/showLecture/176
   // Feel free to correct this code
-  show("6 / 0, handle 4 Exception types in one PartialFunction, returning", Future(6 / 0).recover {
-    case e: ArithmeticException            => 42
-    case e: NoSuchElementException         => 42
-    case e: java.io.IOException            => 43
-    case e: java.net.MalformedURLException => 44
-  })
+  show(badHostUrlStr, "handle 4 Exception types in one PartialFunction") {
+    _.recover {
+      case e: FileNotFoundException  => "Handled FileNotFoundException"
+      case e: IOException            => "Handled IOException"
+      case e: MalformedURLException  => "Handled MalformedURLException"
+      case e: UnknownHostException   => "Handled UnknownHostException"
+    }
+  }
 }
 
 object FutureRecoverWith extends App {
-  val defaultFuture: Future[Int] = Future.successful(42)
-  Future(6 / 0)
-    .recoverWith { case e: ArithmeticException            => defaultFuture }
-    .recoverWith { case e: NoSuchElementException         => defaultFuture }
-    .recoverWith { case e: java.io.IOException            => defaultFuture }
-    .recoverWith { case e: java.net.MalformedURLException => defaultFuture }
+  import multi.futures.FutureFixtures._
 
-  Future(6 / 0)
-    .recoverWith {
-      case e: ArithmeticException            => defaultFuture
-      case e: NoSuchElementException         => defaultFuture
-      case e: java.io.IOException            => defaultFuture
-      case e: java.net.MalformedURLException => defaultFuture
+  show(goodUrlStr1, "no problem") {
+    _.recoverWith { case e: UnknownHostException => Future.successful("Handled UnknownHostException") }
+  }
+
+  show(badHostUrlStr, "handle UnknownHostException") {
+    _.recoverWith { case e: UnknownHostException => Future.successful("Handled UnknownHostException") }
+  }
+
+  try {
+    show(badHostUrlStr, "handle NoSuchElementException") {
+      _.recoverWith {
+        case e: NoSuchElementException =>
+          Future.failed(new Exception("Should not need to handle NoSuchElementException"))
+      }
+    }
+  } catch {
+    case e: Exception =>
+      println(s"Did not handle ${e.getClass.getName} exception for $badHostUrlStr")
+  }
+
+  show(badHostUrlStr, "handle 4 Exception types in 4 PartialFunctions using recoverWith") {
+    _.recoverWith { case e: FileNotFoundException => defaultFuture}
+     .recoverWith { case e: IOException           => defaultFuture}
+     .recoverWith { case e: MalformedURLException => defaultFuture}
+     .recoverWith { case e: UnknownHostException  => defaultFuture}
+  }
+
+  show(badHostUrlStr, "handle 4 Exception types in 1 PartialFunction using recoverWith") {
+    _.recoverWith {
+      case e: FileNotFoundException => defaultFuture
+      case e: IOException           => defaultFuture
+      case e: MalformedURLException => defaultFuture
+      case e: UnknownHostException  => defaultFuture
+    }
   }
 
   val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
@@ -138,9 +191,9 @@ object FutureCollect extends App {
   }
 
   Future(readUrl(urls().head))
-    .collect { case value: String => value.substring(0, math.min(100, value.length))} // only performed if future succeeded
+    .collect { case value: String => value } // only performed if future succeeded
     .fallbackTo(Future(readUrl(urls().take(2).head)))
-    .collect { case value: String => value.substring(0, math.min(100, value.length))} // only performed if future succeeded
+    .collect { case value: String => value } // only performed if future succeeded
     .fallbackTo(Future.successful("This is the default value"))
 }
 
