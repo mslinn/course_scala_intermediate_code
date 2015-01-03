@@ -25,7 +25,6 @@ object FutureCallback extends App {
     }
     println()
   }
-
   promiseStatuses("Five Promises Started")
 
   promise1.future onSuccess {
@@ -44,6 +43,7 @@ object FutureCallback extends App {
   }
   promise2.success("The tao that is knowable is not the true tao") // happens right away
   //promise2.complete(Success("The tao that is knowable is not the true tao")) // does same thing
+  promiseStatuses("After Promise2 Completed")
 
   promise3.future andThen {
     case Success(value) => println(s"promise3 andThen success: promise3 value='$value'.")
@@ -52,12 +52,25 @@ object FutureCallback extends App {
     case _ => println("promise3.andThen.andThen - Will that be all, master?")
   }
   promise3.complete(Success("Great achievement looks incomplete, yet it works perfectly"))
+  promiseStatuses("After Promise3 Completed")
+
+  Future(multi.factorial(12345)).onSuccess {
+    case value => println(s"onSuccess: factorial(12345)=$value")
+  }
+
+  Future(multi.calculatePiFor(1000)).onComplete {
+    case Success(value) => println(s"calculatePiFor onSuccess: future value=$value")
+    case Failure(throwable) => println(throwable.getMessage)
+  }
 
   promise4.future.onFailure {
     case exception => println(s"promise4 completed with exception message: '${exception.getMessage}'.")
   }
+  class ExceptTrace(msg: String) extends Exception(msg) with NoStackTrace
   promise4.failure(new ExceptTrace("Kaboom"))
+  promiseStatuses("After Promise4 Completed")
 
+  object TheExceptTrace extends Exception("Kablam") with NoStackTrace
   promise5.complete(Failure(TheExceptTrace))
   promise5.future.onComplete {
     case _ =>
@@ -66,8 +79,4 @@ object FutureCallback extends App {
   }
 
   synchronized { wait() }
-
-  class ExceptTrace(msg: String) extends Exception(msg) with NoStackTrace
-
-  object TheExceptTrace extends Exception("Kablam") with NoStackTrace
 }
