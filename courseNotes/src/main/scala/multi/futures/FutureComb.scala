@@ -87,7 +87,7 @@ object FutureRecover extends App {
     .recover { case e: java.io.IOException            => 43 }
     .recover { case e: java.net.MalformedURLException => 44 })
   // This next expression causes the compiler to issue a warning. I explain why in the Future Combinators lecture
-  // http://trainingadmin2.herokuapp.com/student/showLecture/176
+  // http://scalacourses.com/student/showLecture/176
   // Feel free to correct this code
   show("6 / 0, handle 4 Exception types in one PartialFunction, returning", Future(6 / 0).recover {
     case e: ArithmeticException            => 42
