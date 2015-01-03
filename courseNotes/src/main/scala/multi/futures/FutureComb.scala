@@ -61,29 +61,40 @@ object FutureFallbackTo extends App {
   val result: Future[Int] = fZero.fallbackTo(defaultFuture)
   // can also write:
   // val result = fZero fallbackTo defaultFuture
+  println(Await.result(result, 10 minutes))
 
-  Future(readUrl(urls().head))
+  val result2 = Future(readUrl(urls().head))
     .fallbackTo(Future(readUrl(urls().take(2).head)))
     .fallbackTo(Future.successful("This is the default value"))
+  println(Await.result(result2, 10 minutes))
 }
 
 object FutureRecover extends App {
-  Future(6 / 2).recover { case e: ArithmeticException => 42 } // new Future value: 3
-  Future(6 / 0).recover { case e: ArithmeticException => 42 } // new Future value: 42
+  def show(msg:String, future: Future[Any]): Unit = println(s"$msg=" + Await.result(future, 10 minutes))
+
+  show("6 / 2", Future(6 / 2).recover { case e: ArithmeticException => 42 })
+  show("6 / 0, handle ArithmeticException, returning", Future(6 / 0).recover { case e: ArithmeticException => 42 })
   // new Future value: java.lang.ArithmeticException("/ by zero")
-  Future(6 / 0).recover { case e: NoSuchElementException => 42 }
-  Future(6 / 0)
+  try {
+    show("6 / 0, handle NoSuchElementException, returning", Future(6 / 0).recover { case e: NoSuchElementException => 42 })
+  } catch {
+    case e: Exception =>
+      println(s"Did not handle ${e.getClass.getName} exception")
+  }
+  show("6 / 0, handle 4 Exception types in 4 PartialFunctions, returning", Future(6 / 0)
+    .recover { case e: ArithmeticException => 41 }
     .recover { case e: NoSuchElementException => 42 }
     .recover { case e: java.io.IOException => 43 }
-    .recover { case e: java.net.MalformedURLException => 44 }
+    .recover { case e: java.net.MalformedURLException => 44 })
   // This next expression causes the compiler to issue a warning. I explain why in the Future Combinators lecture
   // http://trainingadmin2.herokuapp.com/student/showLecture/176
   // Feel free to correct this code
-  Future(6 / 0).recover {
+  show("6 / 0, handle 4 Exception types in one PartialFunction, returning", Future(6 / 0).recover {
+    case e: ArithmeticException => 42
     case e: NoSuchElementException => 42
     case e: java.io.IOException => 43
     case e: java.net.MalformedURLException => 44
-  }
+  })
 }
 
 object FutureRecoverWith extends App {
