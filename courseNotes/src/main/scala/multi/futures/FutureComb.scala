@@ -82,25 +82,36 @@ object FutureRecover extends App {
       println(s"Did not handle ${e.getClass.getName} exception")
   }
   show("6 / 0, handle 4 Exception types in 4 PartialFunctions, returning", Future(6 / 0)
-    .recover { case e: ArithmeticException => 41 }
-    .recover { case e: NoSuchElementException => 42 }
-    .recover { case e: java.io.IOException => 43 }
+    .recover { case e: ArithmeticException            => 41 }
+    .recover { case e: NoSuchElementException         => 42 }
+    .recover { case e: java.io.IOException            => 43 }
     .recover { case e: java.net.MalformedURLException => 44 })
   // This next expression causes the compiler to issue a warning. I explain why in the Future Combinators lecture
   // http://trainingadmin2.herokuapp.com/student/showLecture/176
   // Feel free to correct this code
   show("6 / 0, handle 4 Exception types in one PartialFunction, returning", Future(6 / 0).recover {
-    case e: ArithmeticException => 42
-    case e: NoSuchElementException => 42
-    case e: java.io.IOException => 43
+    case e: ArithmeticException            => 42
+    case e: NoSuchElementException         => 42
+    case e: java.io.IOException            => 43
     case e: java.net.MalformedURLException => 44
   })
 }
 
 object FutureRecoverWith extends App {
   val defaultFuture: Future[Int] = Future.successful(42)
-  Future(6 / 0).recoverWith { case e: ArithmeticException => defaultFuture}
-  Future(6 / 0).recoverWith { case e: NoSuchElementException => defaultFuture}
+  Future(6 / 0)
+    .recoverWith { case e: ArithmeticException            => defaultFuture }
+    .recoverWith { case e: NoSuchElementException         => defaultFuture }
+    .recoverWith { case e: java.io.IOException            => defaultFuture }
+    .recoverWith { case e: java.net.MalformedURLException => defaultFuture }
+
+  Future(6 / 0)
+    .recoverWith {
+      case e: ArithmeticException            => defaultFuture
+      case e: NoSuchElementException         => defaultFuture
+      case e: java.io.IOException            => defaultFuture
+      case e: java.net.MalformedURLException => defaultFuture
+  }
 
   val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
   val q = f5.collect {
