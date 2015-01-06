@@ -6,7 +6,6 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 object ForComp1 extends App {
-
   val list: List[BigInt] = for {
     x <- List(factorial(12345))
     y <- List(factorial(23456))

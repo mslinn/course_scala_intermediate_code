@@ -27,7 +27,7 @@ package object multi {
   }
 
   /** @return Future of first maxChars characters of web page at given url */
-  def readUrlFuture(urlStr: String): Future[String] = Future(readUrl(urlStr))
+  def readUrlFuture(urlStr: String, maxChars: Int=500): Future[String] = Future(readUrl(urlStr, maxChars))
 
   /** Measure execution time of the given block of code */
   def time[T](msg: String)(block: => T): T = {
