@@ -1,56 +1,49 @@
 package multi.futures
 
+import multi._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-import scala.util.Try
+import scala.concurrent.{Await, Future, Promise}
+import scala.util.{Try, Failure, Success}
 import scala.language.postfixOps
 
 object FutureAwait extends App {
-  def fetch(urlStr: String) = Future(io.Source.fromURL(urlStr).mkString)
-
-  val result: Future[String] = Await.ready(fetch("http://www.scalacourses.com"), 20 seconds)
-  Await.ready(fetch("http://scalacourses.com"), 1 hour)
+  Await.ready(readUrlFuture("http://www.scalacourses.com"), 20 seconds)
+  Await.ready(readUrlFuture("http://www.micronauticsresearch.com"), 1 hour)
   println("The future has completed within 1 hour")
 
-  Await.ready(fetch("http://scalacourses.com"), Duration.Inf)
-  println("The future has completed before infinity ended")
+  Await.ready(readUrlFuture("http://www.scalacourses.com"), Duration.Inf)
+  println("The future completed before the end of time")
 
   try {
-    Await.ready(fetch("http://scalacourses.com"), 1 nano)
+    Await.ready(readUrlFuture("http://www.scalacourses.com"), Duration.Zero)
   } catch {
     case te: java.util.concurrent.TimeoutException =>
-      println("The future did not complete within 1 nanosecond")
+      println("The future was not already complete")
   }
 }
 
 
 object FutureResult extends App {
-  import multi.futures.FutureAwait.fetch
+  val result = Await.result(readUrlFuture("http://www.scalacourses.com"), 2 hours)
+  println(s"The future completed within 2 hours with a result of ${result.length} characters.")
 
-  val result = Await.result(fetch("http://www.scalacourses.com"), 2 hours)
-  println("The future has completed within 2 hours.")
-
-  val result2 = Await.result(fetch("http://www.scalacourses.com"), 1 hour).substring(0, 500).trim
-  println("The future has completed within 1 hour.")
+  val result2 = Await.result(readUrlFuture("http://www.scalacourses.com"), 1 hour)
+  println(s"The future has completed within 1 hour with a result of ${result2.length} characters.")
 }
 
 
 object FutureBadHabits extends App {
-  val f = Future(io.Source.fromURL("http://www.scalacourses.com").mkString)
-  val fvalTry: Try[String] = f.value.get // throws Exception because Future has not completed yet
-  val fval: String = f.value.get.get
-  val x: String = f.value.get.get.mkString.substring(0, 500).trim
+  val future: Future[String] = readUrlFuture("http://www.scalacourses.com")
+  val fValueTry: Try[String] = future.value.get // throws Exception because Future has not completed yet
+  val futureValue: String = future.value.get.get
 }
 
 
 object WaitExitDemo extends App {
-  import scala.io.Source
-  import scala.util.{Failure, Success}
-
-  Future(Source.fromURL("http://www.scalacourses.com")) onComplete {
-    case Success(iterator) ⇒
-      println("\nFirst 500 characters of http://scalacourses.com:\n" + iterator.mkString.trim.substring(0, 500))
+  readUrlFuture("http://www.scalacourses.com") onComplete {
+    case Success(value) ⇒
+      println(s"\nFirst 500 characters of http://scalacourses.com:\n$value")
       System.exit(0)
 
     case Failure(throwable) ⇒
@@ -62,14 +55,10 @@ object WaitExitDemo extends App {
 }
 
 object SignalDemo extends App {
-  import scala.concurrent._
-  import scala.io.Source
-  import scala.util.{Failure, Success}
-
   val signal = Promise[String]()
-  Future(Source.fromURL("http://www.scalacourses.com")) onComplete {
-    case Success(iterator) ⇒
-      println("\nFirst 500 characters of http://scalacourses.com:\n" + iterator.mkString.trim.substring(0, 500))
+  readUrlFuture("http://www.scalacourses.com") onComplete {
+    case Success(value) ⇒
+      println("\nFirst 500 characters of http://scalacourses.com:\n$value")
       signal.complete(Success("All done"))
 
     case Failure(throwable) ⇒
@@ -77,5 +66,5 @@ object SignalDemo extends App {
       signal.complete(Failure(throwable))
   }
 
-  Await.ready(signal.future, duration.Duration.Inf)
+  Await.ready(signal.future, concurrent.duration.Duration.Inf)
 }

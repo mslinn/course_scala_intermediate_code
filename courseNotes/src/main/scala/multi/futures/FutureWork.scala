@@ -72,10 +72,10 @@ object FutureWork extends App {
 
 
   def urlSearch2(word: String, urls: List[String]): Unit = {
-    val readUrl: String => String = io.Source.fromURL(_: String).mkString
+    val readUrlFn: String => String = io.Source.fromURL(_: String).mkString
 
     val futures: List[Future[String]] = urls.map { url ⇒
-      Future(readUrl(url)).recoverWith {
+      Future(readUrlFn(url)).recoverWith {
         case e: Exception ⇒ Future.successful("") // catches all Exceptions
       }
     }

@@ -35,8 +35,7 @@ object ForComp1 extends App {
       println(s"Failure: ${ex.getMessage}")
       System.exit(0)
   }
-  synchronized {
-    wait() }
+  synchronized { wait() }
 }
 
 object ForComp2 extends App {
@@ -96,8 +95,10 @@ object ForComp5 extends App {
   val future4 = Future(factorial(12345)).withFilter {
     x => sky=="blue"
   }.flatMap { x =>
-    Future(factorial(23456)).flatMap{ y =>
-      Future(factorial(34567)).map { z => x + y + z }
+    Future(factorial(23456)).flatMap { y =>
+      val f = Future(factorial(34567)).map { z => x + y + z }
+      System.exit(0)
+      f
     }
   }
   synchronized { wait() }

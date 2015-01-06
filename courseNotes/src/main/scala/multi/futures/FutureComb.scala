@@ -3,7 +3,7 @@ package multi.futures
 import java.io.{FileNotFoundException, IOException}
 import java.util.concurrent.TimeoutException
 import java.net.{MalformedURLException, UnknownHostException}
-import multi.factorial
+import multi._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -25,7 +25,7 @@ object FutureFixtures {
   /** Print contents of web page at urlStr or whatever recoveryFn contains
    * @return Future of contents of web page at urlStr or recoverFn */
   def show(urlStr: String, msg: String)(recoveryFn: Future[String] => Future[String]): Future[String] = {
-    val future = recoveryFn(Future(readUrl(urlStr)))
+    val future = recoveryFn(readUrlFuture(urlStr))
     println(s"$urlStr; $msg, returning " + Await.result(future, 10 minutes))
     future
   }
@@ -34,15 +34,10 @@ object FutureFixtures {
     List(goodUrlStr1, goodUrlStr1) :::
     (if (includeBad) List(badHostUrlStr, badPageUrlStr, badProtocolUrlStr) else Nil)
 
-  /** @return first maxChars characters of web page at given url */
-  def readUrl(url: String, maxChars: Int=500): String = {
-    val contents = io.Source.fromURL(url).mkString.trim
-    contents.substring(0, math.min(contents.length, maxChars)) + (if (contents.length>maxChars) "..." else "")
-  }
 
   def urlSearch(word: String, urls: List[String]): Unit = {
     val futures2: List[Future[String]] = urls.map { url =>
-      Future(readUrl(url)).recover {
+      readUrlFuture(url).recover {
         case e: Exception =>
           println(s"Handling URL read exception on $url")
           ""
@@ -71,7 +66,7 @@ object FutureFixtures {
   }
 
   def listOfFutures(includeBad: Boolean = false): List[Future[String]] =
-    urls(includeBad).map { url => Future(readUrl(url))}
+    urls(includeBad).map { readUrlFuture }
 
   def futureOfList(includeBad: Boolean = false): Future[List[String]] = Future.sequence(listOfFutures(includeBad))
 }
@@ -190,22 +185,18 @@ object FutureCollect extends App {
       }
   }
 
-  Future(readUrl(urls().head))
+  readUrlFuture(urls().head)
     .collect { case value: String => value } // only performed if future succeeded
-    .fallbackTo(Future(readUrl(urls().take(2).head)))
+    .fallbackTo(readUrlFuture(urls().take(2).head))
     .collect { case value: String => value } // only performed if future succeeded
     .fallbackTo(Future.successful("This is the default value"))
 }
 
 object FutureFilter extends App {
   val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
-  val g: Future[Int] = f5 filter {
-    _ % 2 == 1
-  }
+  val g: Future[Int] = f5 filter { _ % 2 == 1 }
   // This future succeeded, contains 5
-  val h: Future[Int] = f5 filter {
-    _ % 2 == 0
-  }
+  val h: Future[Int] = f5 filter { _ % 2 == 0}
   // This future contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
   val r1 = Await.result(g, Duration.Zero)
   // evaluates to 5
@@ -227,25 +218,21 @@ object FutureFlatMap extends App {
     User("bogusName", Nil)
   }
 
-  val boostedUser: Future[User] = getUser.flatMap {
-    _.grantPrivilege("student")
-  }
-  boostedUser.andThen {
-    case Success(value) => println(s"Student privilege is now: $value")
-    case Failure(throwable) => println("Problem augmenting student privilege: " + throwable.getMessage)
-  }.andThen { case _ => System.exit(0) }
+  val boostedUser: Future[User] = getUser
+    .flatMap { _.grantPrivilege("student") }
+    .andThen {
+      case Success(value) => println(s"Student privilege is now: $value")
+      case Failure(throwable) => println("Problem augmenting student privilege: " + throwable.getMessage)
+    }
+    .andThen { case _ => System.exit(0) }
   synchronized { wait() }
 }
 
 object FutureForeach extends App {
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   Future(factorial(12345)).foreach(println)
 }
 
 object FutureMap extends App {
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   val x = Future(factorial(12345)).map { _ == 0 }
   println(s"x = $x")
 }
@@ -257,21 +244,16 @@ object FutureMapTo extends App {
 }
 
 object FutureTransform extends App {
-  import scala.concurrent.ExecutionContext.Implicits.global
-
-  Future(6/0).transform (
-    identity,
-    throwable => new Exception("Something went wrong", throwable)
-  ).andThen {
-    case Success(value) => println(value)
-    case Failure(throwable) => println(throwable.getMessage)
-  }.andThen { case _ => System.exit(0) }
+  Future(6/0)
+    .transform(identity, throwable => new Exception("Something went wrong", throwable)
+    ).andThen {
+      case Success(value) => println(value)
+      case Failure(throwable) => println(throwable.getMessage)
+    }.andThen { case _ => System.exit(0) }
   synchronized { wait() }
 }
 
 object FutureZip extends App {
-  import scala.language.postfixOps
-
   case class User(name: String, id: Long)
 
   def getUser: Future[User] = Future {
@@ -298,10 +280,12 @@ object FutureFind extends App {
   val f1 = Future(factorial(12345))
   val f2 = Future(factorial(23456))
   val f3 = Future(factorial(34567))
-  Future.find(List(f1, f2, f3)) { _ % 2 == 0 }.andThen {
-    case Success(result) => println(s"result = $result")
-    case Failure(throwable) => println(throwable.getMessage)
-  }.andThen { case _ => System.exit(0) }
+  Future
+    .find(List(f1, f2, f3)) { _ % 2 == 0 }
+    .andThen {
+      case Success(result) => println(s"result = $result")
+      case Failure(throwable) => println(throwable.getMessage)
+    }.andThen { case _ => System.exit(0) }
   synchronized { wait() }
 }
 
@@ -309,10 +293,12 @@ object FutureFirstCompletedOf extends App {
   val f1 = Future(factorial(12345))
   val f2 = Future(factorial(23456))
   val f3 = Future(factorial(34567))
-  Future.firstCompletedOf(List(f1, f2, f3)).andThen {
-    case Success(result) => println(s"result = $result")
-    case Failure(throwable) => println(throwable.getMessage)
-  }.andThen { case _ => System.exit(0) }
+  Future
+    .firstCompletedOf(List(f1, f2, f3))
+    .andThen {
+      case Success(result)    => println(s"result = $result")
+      case Failure(throwable) => println(throwable.getMessage)
+    }.andThen { case _ => System.exit(0) }
   synchronized { wait() }
 }
 
@@ -323,16 +309,20 @@ object FutureFold extends App {
   val futures = List(f1, f2, f3)
   val bigMax = (x: BigInt, y: BigInt) => if (x>y) x else y
 
-  Future.fold(futures)(BigInt(0))(_+_).andThen {
-    case Success(result) => println(s"fold addition result = $result")
-    case Failure(throwable) => println(throwable.getMessage)
-  }.andThen {
-    case _ =>
-      Future.fold(futures)(BigInt(0))(bigMax).andThen {
-        case Success(result) => println(s"fold max result = $result")
-        case Failure(throwable) => println(throwable.getMessage)
-      }.andThen { case _ => System.exit(0) }
-  }
+  Future
+    .fold(futures)(BigInt(0))(_+_)
+    .andThen {
+      case Success(result) => println(s"fold addition result = $result")
+      case Failure(throwable) => println(throwable.getMessage)
+    }.andThen {
+      case _ =>
+        Future
+          .fold(futures)(BigInt(0))(bigMax)
+          .andThen {
+            case Success(result) => println(s"fold max result = $result")
+            case Failure(throwable) => println(throwable.getMessage)
+          }.andThen { case _ => System.exit(0) }
+    }
   synchronized { wait() }
 }
 
@@ -343,15 +333,19 @@ object FutureReduce extends App {
   val futures = List(f1, f2, f3)
   val bigMax = (x: BigInt, y: BigInt) => if (x>y) x else y
 
-  Future.reduce(futures)(_+_).andThen {
+  Future
+    .reduce(futures)(_+_)
+    .andThen {
     case Success(result) => println(s"reduce addition result = $result")
     case Failure(throwable) => println(throwable.getMessage)
   }.andThen {
     case _ =>
-      Future.reduce(futures)(bigMax).andThen {
-        case Success(result) => println(s"reduce max result = $result")
-        case Failure(throwable) => println(throwable.getMessage)
-      }.andThen { case _ => System.exit(0) }
+      Future
+        .reduce(futures)(bigMax)
+        .andThen {
+          case Success(result) => println(s"reduce max result = $result")
+          case Failure(throwable) => println(throwable.getMessage)
+        }.andThen { case _ => System.exit(0) }
   }
   synchronized { wait() }
 }
@@ -362,10 +356,12 @@ object FutureSequence extends App {
   val f3 = Future(factorial(34567))
   val futures = List(f1, f2, f3)
 
-  Future.sequence(futures).andThen {
-    case Success(result) => println(s"reduce result = $result")
-    case Failure(throwable) => println(throwable.getMessage)
-  }.andThen { case _ => System.exit(0) }
+  Future
+    .sequence(futures)
+    .andThen {
+      case Success(result) => println(s"reduce result = $result")
+      case Failure(throwable) => println(throwable.getMessage)
+    }.andThen { case _ => System.exit(0) }
   synchronized { wait() }
 }
 
@@ -374,9 +370,11 @@ object FutureTraverse extends App {
   val f2 = Future(factorial(23456))
   val f3 = Future(factorial(34567))
   val list = List(1234, 2345, 3456)
-  Future.traverse(list) { x => Future(factorial(x)) }.andThen {
-    case Success(factorialList) => factorialList.foreach { result => println(s"traverse result = $result") }
-    case Failure(throwable) => println(throwable.getMessage)
-  }.andThen { case _ => System.exit(0) }
+  Future
+    .traverse(list) { x => Future(factorial(x)) }
+    .andThen {
+      case Success(factorialList) => factorialList.foreach { result => println(s"traverse result = $result") }
+      case Failure(throwable) => println(throwable.getMessage)
+    }.andThen { case _ => System.exit(0) }
   synchronized { wait() }
 }
