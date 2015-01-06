@@ -1,86 +1,123 @@
 package multi.futures
 
-import multi.factorial
+import multi._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-object ForComp1 extends App {
+object ForComp0 extends App {
+  for {
+    value <- readUrlFuture("http://scalacourses.com", 200)
+  } println(s"For loop: value.length=${value.length}")
+
+  val futureResult = for {
+    value <- readUrlFuture("http://scalacourses.com", 200)
+  } yield value
+  println(s"For comprehension: result=$futureResult")
+
+  synchronized { wait() }
+}
+
+object ForCompSerial1 extends App {
   val list: List[BigInt] = for {
-    x <- List(factorial(12345))
-    y <- List(factorial(23456))
-    z <- List(factorial(34567))
+    x <- List(factorial(123))
+    y <- List(factorial(234)) if y / 10 > x
+    z <- List(factorial(345)) if x % 2 == BigInt(0)
   } yield x + y + z
+  println(s"List=$list")
 
   val option: Option[BigInt] = for {
-    x <- Option(factorial(12345))
-    y <- Option(factorial(23456)) if y==x
-    z <- Option(4+5) if z>y
+    x <- Option(factorial(123))
+    y <- Option(factorial(234)) if y / 10 > x
+    z <- Option(factorial(345)) if x % 2 == BigInt(0)
   } yield x + y + z
+  println(s"Option=$option")
 
-  val f1 = Future(factorial(12345))
-  val f2 = Future(factorial(34567))
-  val f3 = Future(factorial(34567))
-  val future4: Future[BigInt] = for {
-    x <- f1
-    y <- f2
-    z <- f3
+  val futureResult: Future[BigInt] = for {
+    x <- Future(factorial(123))
+    y <- Future(factorial(234)) if y / 10 > x
+    z <- Future(factorial(345)) if x % 2 == BigInt(0)
   } yield x + y + z
-  future4 onComplete {
-    case Success(r) =>
-      println(s"Success: $r")
+  futureResult andThen {
+    case Success(value) ⇒
+      println(s"Future value=$value")
       System.exit(0)
-    case Failure(ex) =>
+
+    case Failure(ex) ⇒
       println(s"Failure: ${ex.getMessage}")
       System.exit(0)
   }
   synchronized { wait() }
 }
 
-object ForComp2 extends App {
+object ForCompSerial2 extends App {
   (for {
-    x <- Future(factorial(12345))
-    y <- Future(factorial(23456))
-    z <- Future(factorial(34567))
-  } yield x + y + z) onComplete {
-    case Success(r) =>
-      println(s"Success: $r")
+    x <- Future(factorial(123))
+    y <- Future(factorial(234)) if y/10>x
+    z <- Future(factorial(345)) if x%2==BigInt(0)
+  } yield x + y + z) andThen {
+    case Success(value) =>
+      println(s"Success: $value")
       System.exit(0)
+
     case Failure(ex) =>
       println(s"Failure: ${ex.getMessage}")
-      System.exit(0)
+      System.exit(1)
   }
   synchronized { wait() }
 }
 
-object ForComp3 extends App {
-  Future(factorial(12345)).flatMap { x =>
-    Future(factorial(23456)).flatMap { y =>
-      Future(factorial(34567)).map { z => x + y + z }
+object ForCompSerial3 extends App {
+  Future(factorial(123)).flatMap { x =>
+    Future(factorial(234)).flatMap { y =>
+      Future(factorial(345)).map { z => x + y + z }
     }
-  } onComplete {
-    case Success(r) =>
-      println(s"Success: $r")
+  } andThen {
+    case Success(value) =>
+      println(s"Success: $value")
       System.exit(0)
+
     case Failure(ex) =>
       println(s"Failure: ${ex.getMessage}")
+      System.exit(1)
+  }
+  synchronized { wait() }
+}
+
+object ForCompParallel extends App {
+  val futureX: Future[BigInt] = Future(factorial(123))
+  val futureY: Future[BigInt] = Future(factorial(345))
+  val futureZ: Future[BigInt] = Future(factorial(345))
+  val futureResult: Future[BigInt] = for {
+    x <- futureX
+    y <- futureY if y/10>x
+    z <- futureZ if x%2==BigInt(0)
+  } yield x + y + z
+  futureResult andThen {
+    case Success(value) =>
+      println(s"Success: $value")
       System.exit(0)
+
+    case Failure(ex) =>
+      println(s"Failure: ${ex.getMessage}")
+      System.exit(1)
   }
   synchronized { wait() }
 }
 
 object ForComp4 extends App {
   val sky = io.StdIn.readLine("What color is the sky? ").toLowerCase
-  val future4 = for {
-    x <- Future(factorial(12345))
-    y <- Future(factorial(23456))
-    z <- Future(factorial(34567))
+  val futureResult = for {
+    x <- Future(factorial(123))
+    y <- Future(factorial(234))
+    z <- Future(factorial(345))
     if sky == "blue"
   } yield x + y + z
-  future4 onComplete {
-    case Success(r) =>
-      println(s"Success: $r")
+  futureResult andThen {
+    case Success(value) =>
+      println(s"Success: $value")
       System.exit(0)
+
     case Failure(ex) =>
       println(s"Failure: $ex")
       System.exit(0)
@@ -91,14 +128,23 @@ object ForComp4 extends App {
 object ForComp5 extends App {
   print("What color is the sky? ")
   val sky = io.StdIn.readLine().toLowerCase
-  val future4 = Future(factorial(12345)).withFilter {
-    x => sky=="blue"
-  }.flatMap { x =>
-    Future(factorial(23456)).flatMap { y =>
-      val f = Future(factorial(34567)).map { z => x + y + z }
-      System.exit(0)
-      f
+  val futureResult = Future(factorial(123))
+    .withFilter { x => sky=="blue"}
+    .flatMap { x =>
+      Future(factorial(234)).flatMap { y =>
+        val future = Future(factorial(345)).map { z => x + y + z }
+        System.exit(0)
+        future
+      }
     }
+  futureResult andThen {
+    case Success(value) =>
+      println(s"Success: $value")
+      System.exit(0)
+
+    case Failure(ex) =>
+      println(s"Failure: $ex")
+      System.exit(0)
   }
   synchronized { wait() }
 }

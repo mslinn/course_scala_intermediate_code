@@ -66,7 +66,7 @@ object FutureFixtures {
   }
 
   def listOfFutures(includeBad: Boolean = false): List[Future[String]] =
-    urls(includeBad).map { readUrlFuture }
+    urls(includeBad).map { readUrlFuture(_) }
 
   def futureOfList(includeBad: Boolean = false): Future[List[String]] = Future.sequence(listOfFutures(includeBad))
 }
