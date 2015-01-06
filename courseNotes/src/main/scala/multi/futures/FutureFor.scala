@@ -88,11 +88,13 @@ object ForCompParallel extends App {
   val futureX: Future[BigInt] = Future(factorial(123))
   val futureY: Future[BigInt] = Future(factorial(345))
   val futureZ: Future[BigInt] = Future(factorial(345))
+  
   val futureResult: Future[BigInt] = for {
     x <- futureX
     y <- futureY if y/10>x
     z <- futureZ if x%2==BigInt(0)
   } yield x + y + z
+
   futureResult andThen {
     case Success(value) =>
       println(s"Success: $value")
@@ -101,50 +103,6 @@ object ForCompParallel extends App {
     case Failure(ex) =>
       println(s"Failure: ${ex.getMessage}")
       System.exit(1)
-  }
-  synchronized { wait() }
-}
-
-object ForComp4 extends App {
-  val sky = io.StdIn.readLine("What color is the sky? ").toLowerCase
-  val futureResult = for {
-    x <- Future(factorial(123))
-    y <- Future(factorial(234))
-    z <- Future(factorial(345))
-    if sky == "blue"
-  } yield x + y + z
-  futureResult andThen {
-    case Success(value) =>
-      println(s"Success: $value")
-      System.exit(0)
-
-    case Failure(ex) =>
-      println(s"Failure: $ex")
-      System.exit(0)
-  }
-  synchronized { wait() }
-}
-
-object ForComp5 extends App {
-  print("What color is the sky? ")
-  val sky = io.StdIn.readLine().toLowerCase
-  val futureResult = Future(factorial(123))
-    .withFilter { x => sky=="blue"}
-    .flatMap { x =>
-      Future(factorial(234)).flatMap { y =>
-        val future = Future(factorial(345)).map { z => x + y + z }
-        System.exit(0)
-        future
-      }
-    }
-  futureResult andThen {
-    case Success(value) =>
-      println(s"Success: $value")
-      System.exit(0)
-
-    case Failure(ex) =>
-      println(s"Failure: $ex")
-      System.exit(0)
   }
   synchronized { wait() }
 }
