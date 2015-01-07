@@ -48,8 +48,8 @@ object FutureCallback extends App {
   promiseStatuses("After Promises(1) Completed")
 
   promises(2).future andThen {
-    case Success(value) => println(s"promises(2) andThen success: promise3 value='$value'.")
-    case Failure(throwable) => println(s"promises(2) andThen exception message: '${throwable.getMessage}'.")
+    case Success(value) => println(s"promises(2) andThen success value='$value'.")
+    case Failure(throwable) => println(s"promises(2) andThen exception: '${throwable.getMessage}'.")
   } andThen {
     case _ => println("promises(2).andThen.andThen - Will that be all, master?")
   }

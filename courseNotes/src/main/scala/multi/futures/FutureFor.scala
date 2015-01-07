@@ -8,7 +8,7 @@ import scala.util.{Failure, Success}
 object ForComp0 extends App {
   for {
     value <- readUrlFuture("http://scalacourses.com", 200)
-  } println(s"For loop: value.length=${value.length}")
+  } println(s"For loop: value=$value")
 
   val futureResult = for {
     value <- readUrlFuture("http://scalacourses.com", 200)
@@ -88,7 +88,7 @@ object ForCompParallel extends App {
   val futureX: Future[BigInt] = Future(factorial(123))
   val futureY: Future[BigInt] = Future(factorial(345))
   val futureZ: Future[BigInt] = Future(factorial(345))
-  
+
   val futureResult: Future[BigInt] = for {
     x <- futureX
     y <- futureY if y/10>x
