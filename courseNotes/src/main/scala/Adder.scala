@@ -4,7 +4,7 @@ object Adder extends App {
 
   var total = 0
   1 to 3 foreach { _ =>
-    val input = Console.readLine("I need a number: ")
+    val input = io.StdIn.readLine("I need a number: ")
     val int = getInt(input)
     total = total + int
     println(s"Total: $total")
