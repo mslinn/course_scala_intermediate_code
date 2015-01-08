@@ -210,19 +210,26 @@ object FutureFlatMap extends App {
   }
 
   object User {
+    private val userMap = Map(
+      1L -> "Fred Flintstone",
+      2L -> "Wilma Flintstone",
+      3L -> "Barney Rubble",
+      4L -> "Betty Rubble"
+    )
+
     /** Simulate slow database access */
-    def apply(): Future[User] = Future {
+    def findById(id: Long): Future[User] = Future {
       Thread.sleep(random.nextInt(1000))
-      User("Fred Flintstone", Nil)
+      User(userMap(id), Nil)
     }
   }
 
   val signal = Promise[String]()
-  val user: Future[User] = User()
+  val user: Future[User] = User.findById(random.nextInt(4)+1)
     .flatMap { _.grantPrivilege("student") }
     .andThen {
       case Success(value)     => println(s"""${value.name}'s privilege is now: ${value.privilege.mkString(", ")}.""")
-      case Failure(throwable) => println("Problem augmenting student privilege: " + throwable.getMessage)
+      case Failure(throwable) => println(s"Problem augmenting student privilege: " + throwable.getMessage)
     }.andThen { case _ => signal.success("All done") }
   Await.ready(signal.future, 30 minutes)
 }
