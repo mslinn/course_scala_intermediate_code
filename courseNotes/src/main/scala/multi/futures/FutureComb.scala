@@ -229,7 +229,7 @@ object FutureFlatMap extends App {
     .flatMap { _.grantPrivilege("student") }
     .andThen {
       case Success(value)     => println(s"""${value.name}'s privilege is now: ${value.privilege.mkString(", ")}.""")
-      case Failure(throwable) => println(s"Problem augmenting student privilege: " + throwable.getMessage)
+      case Failure(throwable) => println(s"Problem augmenting student privilege: ${throwable.getMessage}")
     }.andThen { case _ => signal.success("All done") }
   Await.ready(signal.future, 30 minutes)
 }
