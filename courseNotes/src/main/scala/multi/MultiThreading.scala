@@ -1,3 +1,5 @@
+package multi
+
 object MultiThreading {
   import scala.concurrent.ExecutionContext
 
@@ -45,7 +47,7 @@ object MultiThreading {
       case a if a.isEmpty =>
         /* If you use concurrent.ExecutionContext.Implicits.global, daemon threads are used, so once the program has
          * reached the end of the main program any other threads still executing are terminated */
-      concurrent.ExecutionContext.Implicits.global
+        concurrent.ExecutionContext.Implicits.global
     }
   }
 }
