@@ -1,0 +1,36 @@
+import java.io.{FileNotFoundException, IOException}
+import java.util.concurrent.TimeoutException
+import java.net.{MalformedURLException, UnknownHostException}
+import concurrent.duration._
+import concurrent.duration.Duration._
+import concurrent._
+import concurrent.ExecutionContext.Implicits.global
+import language.postfixOps
+import multi._
+lazy val goodUrlStr1       = "http://www.scalacourses.com"
+lazy val goodUrlStr2       = "http://www.micronauticsresearch.com"
+lazy val badHostUrlStr     = "http://www.not-really-here.com"
+lazy val badPageUrlStr     = "http://scalacourses.com/noPageHere"
+lazy val badProtocolUrlStr = "blah://scalacourses.com"
+lazy val badHostFuture: Future[String]     = readUrlFuture(badHostUrlStr)
+lazy val badPageFuture: Future[String]     = readUrlFuture(badHostUrlStr)
+lazy val badProtocolFuture: Future[String] = readUrlFuture(badHostUrlStr)
+lazy val defaultFuture: Future[String]     = readUrlFuture(goodUrlStr1)
+lazy val badHostFuture: Future[String]     = readUrlFuture(badHostUrlStr)
+lazy val badPageFuture: Future[String]     = readUrlFuture(badHostUrlStr)
+lazy val badProtocolFuture: Future[String] = readUrlFuture(badHostUrlStr)
+lazy val defaultFuture: Future[String]     = readUrlFuture(goodUrlStr1)
+def show(urlStr: String, msg: String="")(recoveryFn: Future[String] => Future[String]): Future[String] = {
+  val future = recoveryFn(readUrlFuture(urlStr))
+  println(s"$urlStr; ${ if (msg.length>0) s"$msg," else "" }returning " + Await.result(future, 30 minutes))
+  future
+}
+val result2: Future[String] = badHostFuture fallbackTo defaultFuture
+Await.result(badHostFuture.fallbackTo(defaultFuture), 30 minutes)
+show(goodUrlStr1, "no problem") {
+  _.recover { case e: UnknownHostException => "Handled UnknownHostException" }
+}
+show(badHostUrlStr) {
+  _.recover { case e: UnknownHostException => "Handled UnknownHostException" }
+}
+

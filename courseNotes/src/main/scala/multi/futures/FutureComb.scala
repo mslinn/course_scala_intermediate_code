@@ -13,7 +13,7 @@ import scala.util.{Failure, Success}
 object FutureFixtures {
   lazy val goodUrlStr1       = "http://www.scalacourses.com"
   lazy val goodUrlStr2       = "http://www.micronauticsresearch.com"
-  lazy val badHostUrlStr     = "http://www.not_really_here.com"
+  lazy val badHostUrlStr     = "http://www.not-really-here.com"
   lazy val badPageUrlStr     = "http://scalacourses.com/noPageHere"
   lazy val badProtocolUrlStr = "blah://scalacourses.com"
 
@@ -29,7 +29,7 @@ object FutureFixtures {
    * @return Future of contents of web page at urlStr or recoverFn */
   def show(urlStr: String, msg: String="")(recoveryFn: Future[String] => Future[String]): Future[String] = {
     val future = recoveryFn(readUrlFuture(urlStr))
-    println(s"$urlStr; ${ if (msg.length>0) s"$msg," else "" }returning " + Await.result(future, 30 minutes))
+    println(s"$urlStr; ${ if (msg.length>0) s"$msg, " else "" }returning " + Await.result(future, 30 minutes))
     future
   }
 
@@ -77,10 +77,9 @@ object FutureFixtures {
 object FutureFallbackTo extends App {
   import multi.futures.FutureFixtures._
 
-  val result: Future[String] = badHostFuture.fallbackTo(defaultFuture)
+  println(Await.result(badHostFuture.fallbackTo(defaultFuture), 30 minutes))
   // can also write using infix notation:
-  // val result = badHostFuture fallbackTo defaultFuture
-  println(Await.result(result, 10 minutes))
+  println(Await.result(badHostFuture fallbackTo defaultFuture, 30 minutes))
 }
 
 object FutureRecover extends App {
