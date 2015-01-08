@@ -15,18 +15,21 @@ object FutureFixtures {
   lazy val goodUrlStr2       = "http://www.micronauticsresearch.com"
   lazy val badHostUrlStr     = "http://www.not_really_here.com"
   lazy val badPageUrlStr     = "http://scalacourses.com/noPageHere"
-  lazy val badProtocolUrlStr = "blah://scalacourses.com/noPageHere"
+  lazy val badProtocolUrlStr = "blah://scalacourses.com"
 
-  lazy val badHostFuture: Future[String]     = Future(readUrl(badHostUrlStr))
-  lazy val badPageFuture: Future[String]     = Future(readUrl(badHostUrlStr))
-  lazy val badProtocolFuture: Future[String] = Future(readUrl(badHostUrlStr))
-  lazy val defaultFuture: Future[String]     = Future.successful(readUrl(goodUrlStr1))
+  lazy val badHostFuture: Future[String]     = readUrlFuture(badHostUrlStr)
+  lazy val badPageFuture: Future[String]     = readUrlFuture(badHostUrlStr)
+  lazy val badProtocolFuture: Future[String] = readUrlFuture(badHostUrlStr)
+  lazy val defaultFuture: Future[String]     = readUrlFuture(goodUrlStr1)
 
-  /** Print contents of web page at urlStr or whatever recoveryFn contains
+  /** Blocks until contents of web page at urlStr or whatever recoveryFn contains becomes available, then prints contents.
+   * @param urlStr String passed to java.net.URL that specifies the URL of a web page
+   * @param msg Optional parameter that specifies a prefix message to be displayed before the web page contents
+   * @param recoveryFn Function1[Future[String], Future[String]] which is a pluggable recovery strategy for failed web pages
    * @return Future of contents of web page at urlStr or recoverFn */
-  def show(urlStr: String, msg: String)(recoveryFn: Future[String] => Future[String]): Future[String] = {
+  def show(urlStr: String, msg: String="")(recoveryFn: Future[String] => Future[String]): Future[String] = {
     val future = recoveryFn(readUrlFuture(urlStr))
-    println(s"$urlStr; $msg, returning " + Await.result(future, 10 minutes))
+    println(s"$urlStr; ${ if (msg.length>0) s"$msg," else "" }returning " + Await.result(future, 30 minutes))
     future
   }
 
@@ -75,8 +78,8 @@ object FutureFallbackTo extends App {
   import multi.futures.FutureFixtures._
 
   val result: Future[String] = badHostFuture.fallbackTo(defaultFuture)
-  // can also write this using infix notation:
-  // val result = fBad fallbackTo defaultFuture
+  // can also write using infix notation:
+  // val result = badHostFuture fallbackTo defaultFuture
   println(Await.result(result, 10 minutes))
 }
 
@@ -87,12 +90,12 @@ object FutureRecover extends App {
     _.recover { case e: UnknownHostException => "Handled UnknownHostException" }
   }
 
-  show(badHostUrlStr, "handle UnknownHostException") {
+  show(badHostUrlStr) {
     _.recover { case e: UnknownHostException => s"Handled UnknownHostException" }
   }
 
   try {
-    show(badHostUrlStr, "handle NoSuchElementException") {
+    show(badHostUrlStr) {
       _.recover {
         case e: NoSuchElementException => throw new Exception("Should not need to handle NoSuchElementException")
       }
@@ -102,6 +105,9 @@ object FutureRecover extends App {
       println(s"Did not handle ${e.getClass.getName} exception for $badHostUrlStr")
   }
 
+  // This next expression causes the compiler to issue a warning. I explain why in the Future Combinators lecture
+  // http://scalacourses.com/student/showLecture/176
+  // Feel free to correct this code
   show(badHostUrlStr, "handle 4 Exception types in 4 PartialFunctions using recover") {
     _.recover { case e: FileNotFoundException => "Handled FileNotFoundException" }
      .recover { case e: IOException           => "Handled IOException" }
@@ -185,11 +191,14 @@ object FutureCollect extends App {
       }
   }
 
+  val signal = concurrent.Promise[String]()
   readUrlFuture(urls().head)
     .collect { case value: String => value } // only performed if future succeeded
     .fallbackTo(readUrlFuture(urls().take(2).head))
     .collect { case value: String => value } // only performed if future succeeded
     .fallbackTo(Future.successful("This is the default value"))
+    .andThen { case _ => signal.success("All done") }
+  Await.result(signal.future, concurrent.duration.Duration.Inf)
 }
 
 object FutureFilter extends App {
@@ -200,7 +209,7 @@ object FutureFilter extends App {
   // This future contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
   val r1 = Await.result(g, Duration.Zero)
   // evaluates to 5
-  val r2 = Await.result(h.recover { case throwable: Throwable => 42}, Duration.Zero) // evaluates to 42
+  val r2 = Await.ready(h.recover { case throwable: Throwable => 42}, Duration.Zero) // evaluates to 42
 }
 
 object FutureFlatMap extends App {
