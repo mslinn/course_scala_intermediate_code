@@ -117,7 +117,7 @@ object FutureRecover extends App {
   // This next expression causes the compiler to issue a warning. I explain why in the Future Combinators lecture
   // http://scalacourses.com/student/showLecture/176
   // Feel free to correct this code
-  show(badHostUrlStr, "handle 4 Exception types in one PartialFunction") {
+  show(badHostUrlStr, "handle 4 Exception types in one PartialFunction using recover") {
     _.recover {
       case e: FileNotFoundException  => "Handled FileNotFoundException"
       case e: IOException            => "Handled IOException"
@@ -134,12 +134,12 @@ object FutureRecoverWith extends App {
     _.recoverWith { case e: UnknownHostException => Future.successful("Handled UnknownHostException") }
   }
 
-  show(badHostUrlStr, "handle UnknownHostException") {
+  show(badHostUrlStr) {
     _.recoverWith { case e: UnknownHostException => Future.successful("Handled UnknownHostException") }
   }
 
   try {
-    show(badHostUrlStr, "handle NoSuchElementException") {
+    show(badHostUrlStr) {
       _.recoverWith {
         case e: NoSuchElementException =>
           Future.failed(new Exception("Should not need to handle NoSuchElementException"))

@@ -25,12 +25,7 @@ def show(urlStr: String, msg: String="")(recoveryFn: Future[String] => Future[St
   println(s"$urlStr; ${ if (msg.length>0) s"$msg," else "" }returning " + Await.result(future, 30 minutes))
   future
 }
-val result2: Future[String] = badHostFuture fallbackTo defaultFuture
-Await.result(badHostFuture.fallbackTo(defaultFuture), 30 minutes)
-show(goodUrlStr1, "no problem") {
-  _.recover { case e: UnknownHostException => "Handled UnknownHostException" }
-}
 show(badHostUrlStr) {
-  _.recover { case e: UnknownHostException => "Handled UnknownHostException" }
+  _.recoverWith { case e: UnknownHostException => Future.successful("Handled UnknownHostException") }
 }
 
