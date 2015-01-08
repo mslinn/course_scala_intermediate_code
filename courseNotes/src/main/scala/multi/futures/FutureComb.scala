@@ -6,7 +6,7 @@ import java.net.{MalformedURLException, UnknownHostException}
 import multi._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, Future, Promise}
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
@@ -197,28 +197,34 @@ object FutureFilter extends App {
 }
 
 object FutureFlatMap extends App {
+  private val random = new util.Random()
+
   case class User(name: String, privilege: List[String]) {
+    /** simulate slow database access */
     def grantPrivilege(newPriv: String) = Future {
-      // simulate slow database access
-      Thread.sleep(149)
+      Thread.sleep(random.nextInt(1000))
+      if (System.currentTimeMillis % 3==0)
+        throw new Exception("Unlucky time to grant privilege, not gonna do it!")
       copy(privilege = newPriv :: privilege)
     }
   }
 
-  def getUser: Future[User] = Future {
-    // simulate slow database access
-    Thread.sleep(150)
-    User("bogusName", Nil)
+  object User {
+    /** Simulate slow database access */
+    def apply(): Future[User] = Future {
+      Thread.sleep(random.nextInt(1000))
+      User("Fred Flintstone", Nil)
+    }
   }
 
-  val boostedUser: Future[User] = getUser
+  val signal = Promise[String]()
+  val user: Future[User] = User()
     .flatMap { _.grantPrivilege("student") }
     .andThen {
-      case Success(value) => println(s"Student privilege is now: $value")
+      case Success(value)     => println(s"""${value.name}'s privilege is now: ${value.privilege.mkString(", ")}.""")
       case Failure(throwable) => println("Problem augmenting student privilege: " + throwable.getMessage)
-    }
-    .andThen { case _ => System.exit(0) }
-  synchronized { wait() }
+    }.andThen { case _ => signal.success("All done") }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureForeach extends App {
