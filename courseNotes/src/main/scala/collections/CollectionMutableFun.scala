@@ -1,3 +1,5 @@
+package collections
+
 import scala.collection._
 
 object CollectionMutableFun extends App {

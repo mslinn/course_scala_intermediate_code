@@ -1,3 +1,5 @@
+package collections
+
 import collection._
 import collection.JavaConverters._
 import java.util.{List => JList, Map => JMap, Set => JSet}

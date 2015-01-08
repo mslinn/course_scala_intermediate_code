@@ -1,3 +1,5 @@
+package collections
+
 import collection._
 
 object CollectionFun extends App {

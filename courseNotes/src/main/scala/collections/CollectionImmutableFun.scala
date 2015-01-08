@@ -1,3 +1,5 @@
+package collections
+
 object CollectionImmutableFun extends App {
   val list1 = List(1, 2, 3)
   val list2 = 4 :: 5 :: 6 :: Nil
