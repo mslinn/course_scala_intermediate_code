@@ -67,11 +67,6 @@ object FutureFixtures {
     }
     println()
   }
-
-  def listOfFutures(includeBad: Boolean = false): List[Future[String]] =
-    urls(includeBad).map { readUrlFuture(_) }
-
-  def futureOfList(includeBad: Boolean = false): Future[List[String]] = Future.sequence(listOfFutures(includeBad))
 }
 
 object FutureFallbackTo extends App {
@@ -165,39 +160,27 @@ object FutureRecoverWith extends App {
       case e: UnknownHostException  => defaultFuture
     }
   }
-
-  val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
-  val q = f5.collect {
-    case value: Int if value > 50 => value * 2
-  }.recover {
-    case throwable: Throwable => 42 // default value
-  }
 }
 
 object FutureCollect extends App {
   import multi.futures.FutureFixtures._
 
-  val allUrlsWithFutures: List[(String, Future[String])] = urls(includeBad = true) zip listOfFutures(includeBad = true)
+  val allUrlsWithFutures: List[(String, Future[String])] =
+    urls(includeBad = true) map { url => url -> readUrlFuture(url) }
+
   allUrlsWithFutures foreach {
     case tuple: (String, Future[String]) =>
       println(s"  Examining ${tuple._1}")
       tuple._2.collect {
-        // this is Future.collect
         case content: String if content.toLowerCase.contains("scala") =>
           println(s"  Using Future.collect, scala was found in ${tuple._1}")
-      }.recover { case throwable: Throwable =>
+      }.recover { case _ =>
         println(s"  Future for ${tuple._1} failed")
       }
   }
 
-  val signal = concurrent.Promise[String]()
-  readUrlFuture(urls().head)
-    .collect { case value: String => value } // only performed if future succeeded
-    .fallbackTo(readUrlFuture(urls().take(2).head))
-    .collect { case value: String => value } // only performed if future succeeded
-    .fallbackTo(Future.successful("This is the default value"))
-    .andThen { case _ => signal.success("All done") }
-  Await.result(signal.future, concurrent.duration.Duration.Inf)
+  val futures = Future.sequence(allUrlsWithFutures.map { _._2 })
+  Await.ready(futures, 30 minutes)
 }
 
 object FutureFilter extends App {
