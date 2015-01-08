@@ -235,12 +235,17 @@ object FutureFlatMap extends App {
 }
 
 object FutureForeach extends App {
-  Future(factorial(12345)).foreach(println)
+  val signal = Promise[String]()
+  Future(factorial(12345)).foreach { value =>
+    println(value)
+    signal.success("All done")
+  }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureMap extends App {
-  val x = Future(factorial(12345)).map { _ == 0 }
-  println(s"x = $x")
+  val x = Await.result(Future(factorial(12345)).map { _ == 0 }, 30 seconds)
+  println(s"""x is ${ if (x) "even" else "odd" }""")
 }
 
 object FutureMapTo extends App {
@@ -250,13 +255,21 @@ object FutureMapTo extends App {
 }
 
 object FutureTransform extends App {
-  Future(6/0)
-    .transform(identity, throwable => new Exception("Something went wrong", throwable)
-    ).andThen {
-      case Success(value) => println(value)
+  val f1 = Future.successful(new util.Random().nextInt(100))
+    .filter(_%2==0)
+    .transform(_/2, throwable => new Exception("Allergic to odd numbers... achoo!", throwable))
+    .andThen { case Success(value) => println(s"The (even) random number divided by 2 = $value") }
+
+  val f2 = Future(6/0)
+    .transform(identity, throwable => new Exception("Something went wrong.", throwable))
+
+  val signal = Promise[String]()
+  Future.sequence(List(f1, f2))
+    .andThen {
+      case Success(value)     => println(value)
       case Failure(throwable) => println(throwable.getMessage)
-    }.andThen { case _ => System.exit(0) }
-  synchronized { wait() }
+    }.andThen { case _ => signal.success("All done") }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureZip extends App {
