@@ -189,9 +189,9 @@ object FutureFilter extends App {
     val oddFuture: Future[Int] = future filter { _ % 2 == 1 }
     val evenFuture: Future[Int] = future filter { _ % 2 == 0}
     // Either oddFuture or evenFuture contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
-    val oddOr24 = Await.result(oddFuture.recover { case throwable: Throwable => 24}, 30 seconds)
-    val evenOr42 = Await.result(evenFuture.recover { case throwable: Throwable => 42}, 30 seconds)
-    val all = Await.result(evenFuture.recoverWith { case throwable: Throwable => oddFuture }, 30 seconds)
+    val oddOr24  = Await.result(oddFuture.recover      { case throwable: Throwable => 24},         30 seconds)
+    val evenOr42 = Await.result(evenFuture.recover     { case throwable: Throwable => 42},         30 seconds)
+    val all      = Await.result(evenFuture.recoverWith { case throwable: Throwable => oddFuture }, 30 seconds)
     println(f"$i%2.0f: oddOr24=$oddOr24; evenOr42=$evenOr42; all=$all")
   }
 }
