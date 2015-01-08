@@ -184,14 +184,16 @@ object FutureCollect extends App {
 }
 
 object FutureFilter extends App {
-  val f5: Future[Int] = Future.successful(new util.Random().nextInt(100))
-  val g: Future[Int] = f5 filter { _ % 2 == 1 }
-  // This future succeeded, contains 5
-  val h: Future[Int] = f5 filter { _ % 2 == 0}
-  // This future contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
-  val r1 = Await.result(g, Duration.Zero)
-  // evaluates to 5
-  val r2 = Await.ready(h.recover { case throwable: Throwable => 42}, Duration.Zero) // evaluates to 42
+  1 to 10 foreach { i =>
+    val future: Future[Int] = Future.successful(new util.Random().nextInt(100))
+    val oddFuture: Future[Int] = future filter { _ % 2 == 1 }
+    val evenFuture: Future[Int] = future filter { _ % 2 == 0}
+    // Either oddFuture or evenFuture contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
+    val oddOr24 = Await.result(oddFuture.recover { case throwable: Throwable => 24}, 30 seconds)
+    val evenOr42 = Await.result(evenFuture.recover { case throwable: Throwable => 42}, 30 seconds)
+    val all = Await.result(evenFuture.recoverWith { case throwable: Throwable => oddFuture }, 30 seconds)
+    println(f"$i%2.0f: oddOr24=$oddOr24; evenOr42=$evenOr42; all=$all")
+  }
 }
 
 object FutureFlatMap extends App {
