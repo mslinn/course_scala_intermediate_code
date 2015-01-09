@@ -73,9 +73,10 @@ object FutureFixtures {
 object FutureFallbackTo extends App {
   import multi.futures.FutureFixtures._
 
-  println(Await.result(badHostFuture.fallbackTo(defaultFuture), 30 minutes))
-  // can also write using infix notation:
-  println(Await.result(badHostFuture fallbackTo defaultFuture, 30 minutes))
+  println("Dot notation:\n" + Await.result(badHostFuture.fallbackTo(defaultFuture), 30 minutes))
+  println("\n\nInfix notation:\n" + Await.result(badHostFuture fallbackTo defaultFuture, 30 minutes))
+  println("\n\n")
+  Await.result(badHostFuture fallbackTo badPageFuture, 30 minutes)
 }
 
 object FutureRecover extends App {
