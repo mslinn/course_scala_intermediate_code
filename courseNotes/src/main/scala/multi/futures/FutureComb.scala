@@ -273,26 +273,26 @@ object FutureTransform extends App {
 }
 
 object FutureZip extends App {
+  private val random = new util.Random()
+
   case class User(name: String, id: Long)
 
-  def getUser: Future[User] = Future {
-    // simulate slow database access
-    Thread.sleep(150)
+  def getUser: Future[User] = Future { // simulate slow database access
+    Thread.sleep(random.nextInt(1000))
     User("Fred Flintstone", 123)
   }
 
-  def lotteryNumber: Future[Int] = Future {
-    // simulate slow database access
-    Thread.sleep(150)
-    new util.Random().nextInt()
+  def lotteryNumber: Future[Int] = Future { // simulate slow database access
+    Thread.sleep(random.nextInt(1000))
+    new util.Random().nextInt(1000000)
   }
 
-  val luckyUser: Future[(User, Int)] = getUser zip lotteryNumber
-  luckyUser.andThen {
-    case Success(value) => println(s"User lottery tuple: $value")
-    case Failure(throwable) => println("Problem: " + throwable.getMessage)
-  }.andThen { case _ => System.exit(0) }
-  synchronized { wait() }
+  val signal = Promise[String]()
+  getUser zip lotteryNumber andThen {
+    case Success(tuple) => println(s"User ${tuple._1.name} with id ${tuple._1.id} has lucky number ${tuple._2}.")
+    case Failure(throwable) => println(s"Problem: ${throwable.getMessage}")
+  } andThen { case _ => signal.success("All done") }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureFind extends App {
