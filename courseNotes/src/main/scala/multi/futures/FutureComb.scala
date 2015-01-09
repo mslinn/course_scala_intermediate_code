@@ -389,7 +389,7 @@ object FutureSequence extends App {
   Future
     .sequence(futures)
     .andThen {
-      case Success(result) => println(s"reduce result = $result")
+      case Success(result)    => println(s"Reduce result = $result")
       case Failure(throwable) => println(throwable.getMessage)
     }.andThen { case _ => signal.success("All done") }
   Await.ready(signal.future, 30 minutes)
