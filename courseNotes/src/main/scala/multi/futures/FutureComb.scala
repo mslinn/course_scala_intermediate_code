@@ -334,7 +334,7 @@ object FutureFold extends App {
   val f2 = Future(factorial(23456))
   val f3 = Future(factorial(34567))
   val futures = List(f1, f2, f3)
-  val bigMax = (x: BigInt, y: BigInt) => if (x>y) x else y
+  val bigMax: (BigInt, BigInt) => BigInt = (x: BigInt, y: BigInt) => if (x>y) x else y
   val signal = Promise[String]()
 
   Future
@@ -355,9 +355,9 @@ object FutureFold extends App {
 }
 
 object FutureReduce extends App {
-  val f1 = Future(factorial(12345))
-  val f2 = Future(factorial(23456))
-  val f3 = Future(factorial(34567))
+  val f1 = Future(factorial(123))
+  val f2 = Future(factorial(234))
+  val f3 = Future(factorial(345))
   val futures = List(f1, f2, f3)
   val bigMax = (x: BigInt, y: BigInt) => if (x>y) x else y
   val signal = Promise[String]()
@@ -365,14 +365,14 @@ object FutureReduce extends App {
   Future
     .reduce(futures)(_+_)
     .andThen {
-    case Success(result)    => println(s"reduce addition result = $result")
+    case Success(result)    => println(s"Reduce addition result = $result")
     case Failure(throwable) => println(throwable.getMessage)
   }.andThen {
     case _ =>
       Future
         .reduce(futures)(bigMax)
         .andThen {
-          case Success(result)    => println(s"reduce max result = $result")
+          case Success(result)    => println(s"Reduce max result = $result")
           case Failure(throwable) => println(throwable.getMessage)
         }.andThen { case _ => signal.success("All done") }
   }
@@ -380,33 +380,28 @@ object FutureReduce extends App {
 }
 
 object FutureSequence extends App {
-  val f1 = Future(factorial(12345))
-  val f2 = Future(factorial(23456))
-  val f3 = Future(factorial(34567))
+  val f1 = Future(factorial(123))
+  val f2 = Future(factorial(234))
+  val f3 = Future(factorial(345))
   val futures = List(f1, f2, f3)
   val signal = Promise[String]()
 
   Future
     .sequence(futures)
     .andThen {
-      case Success(result) => println(s"reduce result = $result")
+      case Success(result) => println(s"Sequence result = $result")
       case Failure(throwable) => println(throwable.getMessage)
     }.andThen { case _ => signal.success("All done") }
   Await.ready(signal.future, 30 minutes)
 }
 
 object FutureTraverse extends App {
-  val f1 = Future(factorial(12345))
-  val f2 = Future(factorial(23456))
-  val f3 = Future(factorial(34567))
-  val list = List(1234, 2345, 3456)
   val signal = Promise[String]()
-
-  Future
-    .traverse(list) { x => Future(factorial(x)) }
-    .andThen {
-      case Success(factorialList) => factorialList.foreach { result => println(s"traverse result = $result") }
-      case Failure(throwable)     => println(throwable.getMessage)
-    }.andThen { case _ => signal.success("All done") }
+  Future.traverse(List(12356, 234, 345)) { x =>
+    Future(factorial(x)) andThen { case Success(value) => println(s"""factorial($x)=$value""") }
+  }.andThen {
+    case Success(list)      => println(list.mkString("traverse results:\n  ", "\n  ", ""))
+    case Failure(throwable) => println(throwable.getMessage)
+  }.andThen { case _ => signal.success("All done") }
   Await.ready(signal.future, 30 minutes)
 }
