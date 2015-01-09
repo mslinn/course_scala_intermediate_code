@@ -37,6 +37,7 @@ object FutureFixtures {
     List(goodUrlStr1, goodUrlStr1) :::
     (if (includeBad) List(badHostUrlStr, badPageUrlStr, badProtocolUrlStr) else Nil)
 
+  val random = new util.Random()
 
   def urlSearch(word: String, urls: List[String]): Unit = {
     val futures2: List[Future[String]] = urls.map { url =>
@@ -184,8 +185,10 @@ object FutureCollect extends App {
 }
 
 object FutureFilter extends App {
+  import FutureFixtures.random
+
   1 to 10 foreach { i =>
-    val future: Future[Int] = Future.successful(new util.Random().nextInt(100))
+    val future: Future[Int] = Future.successful(random.nextInt(100))
     val oddFuture: Future[Int] = future filter { _ % 2 == 1 }
     val evenFuture: Future[Int] = future filter { _ % 2 == 0}
     // Either oddFuture or evenFuture contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
@@ -197,7 +200,7 @@ object FutureFilter extends App {
 }
 
 object FutureFlatMap extends App {
-  private val random = new util.Random()
+  import FutureFixtures.random
 
   case class User(name: String, privilege: List[String]) {
     /** simulate slow database access */
@@ -255,7 +258,9 @@ object FutureMapTo extends App {
 }
 
 object FutureTransform extends App {
-  val f1 = Future.successful(new util.Random().nextInt(100))
+  import FutureFixtures.random
+
+  val f1 = Future.successful(random.nextInt(100))
     .filter(_%2==0)
     .transform(_/2, throwable => new Exception("Allergic to odd numbers... achoo!", throwable))
     .andThen { case Success(value) => println(s"The (even) random number divided by 2 = $value") }
@@ -273,7 +278,7 @@ object FutureTransform extends App {
 }
 
 object FutureZip extends App {
-  private val random = new util.Random()
+  import FutureFixtures.random
 
   case class User(name: String, id: Long)
 
@@ -284,12 +289,12 @@ object FutureZip extends App {
 
   def lotteryNumber: Future[Int] = Future { // simulate slow database access
     Thread.sleep(random.nextInt(1000))
-    new util.Random().nextInt(1000000)
+    random.nextInt(1000000)
   }
 
   val signal = Promise[String]()
   getUser zip lotteryNumber andThen {
-    case Success(tuple) => println(s"User ${tuple._1.name} with id ${tuple._1.id} has lucky number ${tuple._2}.")
+    case Success(tuple)     => println(s"User ${tuple._1.name} with id ${tuple._1.id} has lucky number ${tuple._2}.")
     case Failure(throwable) => println(s"Problem: ${throwable.getMessage}")
   } andThen { case _ => signal.success("All done") }
   Await.ready(signal.future, 30 minutes)
@@ -299,26 +304,29 @@ object FutureFind extends App {
   val f1 = Future(factorial(12345))
   val f2 = Future(factorial(23456))
   val f3 = Future(factorial(34567))
+  val signal = Promise[String]()
   Future
     .find(List(f1, f2, f3)) { _ % 2 == 0 }
     .andThen {
-      case Success(result) => println(s"result = $result")
-      case Failure(throwable) => println(throwable.getMessage)
-    }.andThen { case _ => System.exit(0) }
-  synchronized { wait() }
+      case Success(Some(result)) => println(s"result = $result")
+      case Success(None)         => println(s"No result was even")
+      case Failure(throwable)    => println(throwable.getMessage)
+    }.andThen { case _ => signal.success("All done") }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureFirstCompletedOf extends App {
-  val f1 = Future(factorial(12345))
-  val f2 = Future(factorial(23456))
-  val f3 = Future(factorial(34567))
+  val f1 = Future(factorial(123))
+  val f2 = Future(factorial(234))
+  val f3 = Future(factorial(345))
+  val signal = Promise[String]()
   Future
     .firstCompletedOf(List(f1, f2, f3))
     .andThen {
       case Success(result)    => println(s"result = $result")
       case Failure(throwable) => println(throwable.getMessage)
-    }.andThen { case _ => System.exit(0) }
-  synchronized { wait() }
+    }.andThen { case _ => signal.success("All done") }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureFold extends App {
@@ -327,22 +335,23 @@ object FutureFold extends App {
   val f3 = Future(factorial(34567))
   val futures = List(f1, f2, f3)
   val bigMax = (x: BigInt, y: BigInt) => if (x>y) x else y
+  val signal = Promise[String]()
 
   Future
-    .fold(futures)(BigInt(0))(_+_)
+    .fold(futures)(BigInt(0))(_ + _)
     .andThen {
-      case Success(result) => println(s"fold addition result = $result")
+      case Success(result)    => println(s"fold addition result = $result")
       case Failure(throwable) => println(throwable.getMessage)
     }.andThen {
       case _ =>
         Future
           .fold(futures)(BigInt(0))(bigMax)
           .andThen {
-            case Success(result) => println(s"fold max result = $result")
+            case Success(result)    => println(s"fold max result = $result")
             case Failure(throwable) => println(throwable.getMessage)
-          }.andThen { case _ => System.exit(0) }
+          }.andThen { case _ => signal.success("All done") }
     }
-  synchronized { wait() }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureReduce extends App {
@@ -351,22 +360,23 @@ object FutureReduce extends App {
   val f3 = Future(factorial(34567))
   val futures = List(f1, f2, f3)
   val bigMax = (x: BigInt, y: BigInt) => if (x>y) x else y
+  val signal = Promise[String]()
 
   Future
     .reduce(futures)(_+_)
     .andThen {
-    case Success(result) => println(s"reduce addition result = $result")
+    case Success(result)    => println(s"reduce addition result = $result")
     case Failure(throwable) => println(throwable.getMessage)
   }.andThen {
     case _ =>
       Future
         .reduce(futures)(bigMax)
         .andThen {
-          case Success(result) => println(s"reduce max result = $result")
+          case Success(result)    => println(s"reduce max result = $result")
           case Failure(throwable) => println(throwable.getMessage)
-        }.andThen { case _ => System.exit(0) }
+        }.andThen { case _ => signal.success("All done") }
   }
-  synchronized { wait() }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureSequence extends App {
@@ -374,14 +384,15 @@ object FutureSequence extends App {
   val f2 = Future(factorial(23456))
   val f3 = Future(factorial(34567))
   val futures = List(f1, f2, f3)
+  val signal = Promise[String]()
 
   Future
     .sequence(futures)
     .andThen {
       case Success(result) => println(s"reduce result = $result")
       case Failure(throwable) => println(throwable.getMessage)
-    }.andThen { case _ => System.exit(0) }
-  synchronized { wait() }
+    }.andThen { case _ => signal.success("All done") }
+  Await.ready(signal.future, 30 minutes)
 }
 
 object FutureTraverse extends App {
@@ -389,11 +400,13 @@ object FutureTraverse extends App {
   val f2 = Future(factorial(23456))
   val f3 = Future(factorial(34567))
   val list = List(1234, 2345, 3456)
+  val signal = Promise[String]()
+
   Future
     .traverse(list) { x => Future(factorial(x)) }
     .andThen {
       case Success(factorialList) => factorialList.foreach { result => println(s"traverse result = $result") }
-      case Failure(throwable) => println(throwable.getMessage)
-    }.andThen { case _ => System.exit(0) }
-  synchronized { wait() }
+      case Failure(throwable)     => println(throwable.getMessage)
+    }.andThen { case _ => signal.success("All done") }
+  Await.ready(signal.future, 30 minutes)
 }

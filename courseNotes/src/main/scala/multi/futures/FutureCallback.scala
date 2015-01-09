@@ -2,6 +2,7 @@ package multi.futures
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
+import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.control.NoStackTrace
 import scala.util.{Failure, Success}
@@ -46,6 +47,35 @@ object FutureCallback extends App {
   promises(1).success("The tao that is knowable is not the true tao")
   //promises(1).complete(Success("The tao that is knowable is not the true tao")) // does same thing
   promiseStatuses("After Promises(1) Completed")
+
+  println("\nPartial Functions can have many cases")
+  val optionIntPromise1 = Promise[Option[Int]]()
+  optionIntPromise1.future onSuccess {
+    case Some(value) => println(s"The value $value only is matched if the future returns an Option")
+    case None => println(s"None could only be matched if the future returns an Option")
+  }
+  optionIntPromise1.success(Some(3))
+  Await.ready(optionIntPromise1.future, 30 minutes)
+
+  val optionFilePromise1 = Promise[Option[java.io.File]]()
+  optionFilePromise1.future onFailure {
+    case fnfe: java.io.FileNotFoundException => println(s"Hey, you are missing a file! ${fnfe.getMessage}")
+    case ioe: java.io.IOException => println(s"Could be burgler? ${ioe.getMessage}")
+    case throwable => println(s"optionFilePromise1 throwable message: '${throwable.getMessage}'.")
+  }
+  optionFilePromise1.failure(new java.io.IOException("Oh noes!"))
+  Await.ready(optionFilePromise1.future, 30 minutes)
+
+  val optionFilePromise2 = Promise[Option[java.io.File]]()
+  optionFilePromise2.future andThen {
+    case Success(Some(value)) => println(s"The value $value only is matched if the future returns an Option")
+    case Success(None) => println(s"None could only be matched if the future returns an Option")
+    case Failure(fnfe: java.io.FileNotFoundException) => println(s"Hey, you are missing a file! ${fnfe.getMessage}")
+    case Failure(ioe: java.io.IOException) => println(s"Could be burgler? ${ioe.getMessage}")
+    case Failure(throwable) => println(s"optionFilePromise2 exception message: '${throwable.getMessage}'.")
+  }
+  optionFilePromise2.failure(new java.io.IOException("Oh noes!"))
+  Await.ready(optionFilePromise2.future, 30 minutes)
 
   promises(2).future andThen {
     case Success(value) => println(s"promises(2) andThen success value='$value'.")
