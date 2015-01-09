@@ -82,12 +82,14 @@ object FutureFallbackTo extends App {
 object FutureRecover extends App {
   import multi.futures.FutureFixtures._
 
+  def doSomething(msg: String) = msg
+
   show(goodUrlStr1, "no problem") {
-    _.recover { case e: UnknownHostException => "Handled UnknownHostException" }
+    _.recover { case e: UnknownHostException => doSomething("Handled UnknownHostException") }
   }
 
   show(badHostUrlStr) {
-    _.recover { case e: UnknownHostException => s"Handled UnknownHostException" }
+    _.recover { case e: UnknownHostException => doSomething(s"Handled UnknownHostException") }
   }
 
   try {
@@ -105,10 +107,10 @@ object FutureRecover extends App {
   // http://scalacourses.com/student/showLecture/176
   // Feel free to correct this code
   show(badHostUrlStr, "handle 4 Exception types in 4 PartialFunctions using recover") {
-    _.recover { case e: FileNotFoundException => "Handled FileNotFoundException" }
-     .recover { case e: IOException           => "Handled IOException" }
-     .recover { case e: MalformedURLException => "Handled MalformedURLException" }
-     .recover { case e: UnknownHostException  => "Handled UnknownHostException" }
+    _.recover { case e: FileNotFoundException => doSomething("Handled FileNotFoundException") }
+     .recover { case e: IOException           => doSomething("Handled IOException") }
+     .recover { case e: MalformedURLException => doSomething("Handled MalformedURLException") }
+     .recover { case e: UnknownHostException  => doSomething("Handled UnknownHostException") }
   }
 
   // This next expression causes the compiler to issue a warning. I explain why in the Future Combinators lecture
@@ -116,10 +118,10 @@ object FutureRecover extends App {
   // Feel free to correct this code
   show(badHostUrlStr, "handle 4 Exception types in one PartialFunction using recover") {
     _.recover {
-      case e: FileNotFoundException  => "Handled FileNotFoundException"
-      case e: IOException            => "Handled IOException"
-      case e: MalformedURLException  => "Handled MalformedURLException"
-      case e: UnknownHostException   => "Handled UnknownHostException"
+      case e: FileNotFoundException  => doSomething("Handled FileNotFoundException")
+      case e: IOException            => doSomething("Handled IOException")
+      case e: MalformedURLException  => doSomething("Handled MalformedURLException")
+      case e: UnknownHostException   => doSomething("Handled UnknownHostException")
     }
   }
 }
