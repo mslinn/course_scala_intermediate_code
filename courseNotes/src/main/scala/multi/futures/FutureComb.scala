@@ -192,8 +192,8 @@ object FutureFilter extends App {
 
   1 to 10 foreach { i =>
     val future: Future[Int] = Future.successful(random.nextInt(100))
-    val oddFuture: Future[Int] = future filter { _ % 2 == 1 }
-    val evenFuture: Future[Int] = future filter { _ % 2 == 0}
+    val oddFuture: Future[Int]  = future filter { _ % 2 == 1 }
+    val evenFuture: Future[Int] = future filter { _ % 2 == 0 }
     // Either oddFuture or evenFuture contains Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied)
     val oddOr24  = Await.result(oddFuture.recover      { case throwable: Throwable => 24},         30 seconds)
     val evenOr42 = Await.result(evenFuture.recover     { case throwable: Throwable => 42},         30 seconds)
@@ -337,7 +337,6 @@ object FutureFold extends App {
   val f2 = Future(factorial(23456))
   val f3 = Future(factorial(34567))
   val futures = List(f1, f2, f3)
-  val bigMax: (BigInt, BigInt) => BigInt = (x: BigInt, y: BigInt) => if (x>y) x else y
   val signal = Promise[String]()
 
   Future
@@ -347,6 +346,7 @@ object FutureFold extends App {
       case Failure(throwable) => println(throwable.getMessage)
     }.andThen {
       case _ =>
+        val bigMax: (BigInt, BigInt) => BigInt = (x: BigInt, y: BigInt) => if (x>y) x else y
         Future
           .fold(futures)(BigInt(0))(bigMax)
           .andThen {
