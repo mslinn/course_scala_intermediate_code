@@ -22,5 +22,8 @@ object Trying extends App {
   println(s"failures=${failures(listOfTry).map(_.getMessage).mkString("; ")}")
   println(s"successes=${successes(listOfTry)}")
   println(s"sequence=${sequence(listOfTry)}")
-  println(s"sequenceWithFailures=${sequenceWithFailures(listOfTry)}")
+  val (successes, failures) = sequenceWithFailures(listOfTry)
+  println(s"""sequenceWithFailures:
+    successes=$successes
+    failures=$failures""")
 }
