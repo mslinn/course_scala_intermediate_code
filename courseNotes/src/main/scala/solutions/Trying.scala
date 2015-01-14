@@ -17,11 +17,10 @@ object Trying extends App {
     (failures(tries), successes(tries))
 
 
-val listOfTry = List(Try(6/0), Try("Happiness " * 3), Failure(new Exception("Drat!")), Try(99))
+  val listOfTry = List(Try(6/0), Try("Happiness " * 3), Failure(new Exception("Drat!")), Try(99))
 
-println(s"failures=${failures(listOfTry).map(_.getMessage).mkString("; ")}")
-println(s"successes=${successes(listOfTry)}")
-println(s"sequence=${sequence(listOfTry)}")
-println(s"sequenceWithFailures=${sequenceWithFailures(listOfTry)}")
-  ()
+  println(s"failures=${failures(listOfTry).map(_.getMessage).mkString("; ")}")
+  println(s"successes=${successes(listOfTry)}")
+  println(s"sequence=${sequence(listOfTry)}")
+  println(s"sequenceWithFailures=${sequenceWithFailures(listOfTry)}")
 }
