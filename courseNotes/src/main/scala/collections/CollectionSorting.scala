@@ -4,45 +4,45 @@ object CollectionOrdered extends App {
   println(s"""List(3, 7, 5, 2).sortWith((x, y) => x < y) = ${List(3, 7, 5, 2).sortWith((x, y) => x < y)}""")
   println(s"""List(3, 7, 5, 2).sortWith(_ < _) = ${List(3, 7, 5, 2).sortWith(_ < _)}""")
 
-  println(s"""thing1>thing2 = ${thing1 > thing2}""")
-  println(s"""thing1<thing2 = ${thing1 < thing2}""")
-  println(s"""thing1==Thing(1, "z") = ${thing1 == new Thing(1, "z")}""")
-  println(s"""thing1<=thing2 = ${thing1 <= thing2}""")
-  println(s"""thing1>=thing2 = ${thing1 >= thing2}""")
+  println(s"""thingOrdered1>thingOrdered2 = ${thingOrdered1 > thingOrdered2}""")
+  println(s"""thingOrdered1<thingOrdered2 = ${thingOrdered1 < thingOrdered2}""")
+  println(s"""thingOrdered1==ThingOrdered(1, "z") = ${thingOrdered1 == new ThingOrdered(1, "z")}""")
+  println(s"""thingOrdered1<=thingOrdered2 = ${thingOrdered1 <= thingOrdered2}""")
+  println(s"""thingOrdered1>=thingOrdered2 = ${thingOrdered1 >= thingOrdered2}""")
 
-  println(s"""things.sorted = ${things.sorted.mkString(", ")}""")
-  println(s"""things before quicksort = ${things.mkString(", ")}""")
-  util.Sorting.quickSort(things) // modifies things Array
-  println(s"""things after quicksort = ${things.mkString(", ")}""")
-  println(s"""things.sortWith((x, y) => x.i > y.i)=${things.sortWith((x, y) => x.i > y.i).mkString(", ")}""")
-  println(s"""things.sortWith((x, y) => x.s > y.s)=${things.sortWith((x, y) => x.s > y.s).mkString(", ")}""")
+  println(s"""thingsOrdered.sorted = ${thingsOrdered.sorted.mkString(", ")}""")
+  println(s"""thingsOrdered before quicksort = ${thingsOrdered.mkString(", ")}""")
+  util.Sorting.quickSort(thingsOrdered) // modifies things Array
+  println(s"""thingsOrdered after quicksort = ${thingsOrdered.mkString(", ")}""")
+  println(s"""thingsOrdered.sortWith((x, y) => x.i > y.i)=${thingsOrdered.sortWith((x, y) => x.i > y.i).mkString(", ")}""")
+  println(s"""thingsOrdered.sortWith((x, y) => x.s > y.s)=${thingsOrdered.sortWith((x, y) => x.s > y.s).mkString(", ")}""")
 }
 
 object CollectionOrdering extends App {
-  println(s"""things = ${things.mkString(", ")}""")
-  println(s"""things.sorted = ${things.sorted.mkString(", ")}""")
-  println(s"""things.sorted(Ordering[Thang]) = ${things.sorted(Ordering[Thing]).mkString(", ")}""")
+  println(s"""thingOrderings = ${thingOrderings.mkString(", ")}""")
+  println(s"""thingOrderings.sorted = ${thingOrderings.sorted.mkString(", ")}""")
+  println(s"""thingOrderings.sorted(Ordering[ThingOrdering]) = ${thingOrderings.sorted(Ordering[ThingOrdering]).mkString(", ")}""")
 
-  val orderByI: Ordering[Thing] = Ordering.by { _.i }
-  println(s"""things.sorted(orderByI) = ${things.sorted(orderByI).mkString(", ")}""")
+  val orderByI: Ordering[ThingOrdering] = Ordering.by { _.i }
+  println(s"""thingOrderings.sorted(orderByI) = ${thingOrderings.sorted(orderByI).mkString(", ")}""")
 
-  val orderByIReverse: Ordering[Thing] = orderByI.reverse
-  println(s"""things.sorted(orderByIReverse) = ${things.sorted(orderByIReverse).mkString(", ")}""")
+  val orderByIReverse: Ordering[ThingOrdering] = orderByI.reverse
+  println(s"""thingOrderings.sorted(orderByIReverse) = ${thingOrderings.sorted(orderByIReverse).mkString(", ")}""")
 
-  val orderByS: Ordering[Thing] = Ordering.by { _.s }
-  println(s"""things.sorted(orderByS) = ${things.sorted(orderByS).mkString(", ")}""")
+  val orderByS: Ordering[ThingOrdering] = Ordering.by { _.s }
+  println(s"""thingOrderings.sorted(orderByS) = ${thingOrderings.sorted(orderByS).mkString(", ")}""")
 
-  val orderBySReverse: Ordering[Thing] = orderByS.reverse
-  println(s"""things.sorted(orderBySReverse) = ${things.sorted(orderBySReverse).mkString(", ")}""")
+  val orderBySReverse: Ordering[ThingOrdering] = orderByS.reverse
+  println(s"""thingOrderings.sorted(orderBySReverse) = ${thingOrderings.sorted(orderBySReverse).mkString(", ")}""")
 
-  val orderBySandI: Ordering[Thing] = Ordering.by { x => (x.s, x.i) }
-  println(s"""things.sorted(orderBySandI) = ${things.sorted(orderBySandI).mkString(", ")}""")
+  val orderBySandI: Ordering[ThingOrdering] = Ordering.by { x => (x.s, x.i) }
+  println(s"""thingOrderings.sorted(orderBySandI) = ${thingOrderings.sorted(orderBySandI).mkString(", ")}""")
 
-  val orderByIandS: Ordering[Thing] = Ordering.by { x => (x.i, x.s) }
-  println(s"""things.sorted(orderByIandS) = ${things.sorted(orderByIandS).mkString(", ")}""")
+  val orderByIandS: Ordering[ThingOrdering] = Ordering.by { x => (x.i, x.s) }
+  println(s"""thingOrderings.sorted(orderByIandS) = ${thingOrderings.sorted(orderByIandS).mkString(", ")}""")
 
-  println(s"""things.sorted(orderBySandI.reverse) = ${things.sorted(orderBySandI.reverse).mkString(", ")}""")
-  println(s"""things.sorted(orderByIandS.reverse) = ${things.sorted(orderByIandS.reverse).mkString(", ")}""")
+  println(s"""thingOrderings.sorted(orderBySandI.reverse) = ${thingOrderings.sorted(orderBySandI.reverse).mkString(", ")}""")
+  println(s"""thingOrderings.sorted(orderByIandS.reverse) = ${thingOrderings.sorted(orderByIandS.reverse).mkString(", ")}""")
 
   val ordering = implicitly[Ordering[(Int, String)]]
   println(s"""ordering.compare( (1, "b"), (1, "a") ) = ${ordering.compare( (1, "b"), (1, "a") )}""")
