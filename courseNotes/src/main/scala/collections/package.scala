@@ -20,8 +20,8 @@ package collections {
   }
 
   object ThingOrdering {
-    implicit val ThingOrdering = Ordering.by { thang: ThingOrdering ⇒
-      (thang.i, thang.s)
+    implicit val defaultThingOrdering = Ordering.by { thing: ThingOrdering ⇒
+      (thing.i, thing.s)
     }
   }
 }
