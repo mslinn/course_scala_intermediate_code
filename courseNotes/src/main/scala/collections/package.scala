@@ -40,4 +40,7 @@ package object collections {
   val thingOrdering4 = new ThingOrdering(4, "m")
   val thingOrdering5 = new ThingOrdering(4, "n")
   val thingOrderings = Array(thingOrdering1, thingOrdering2, thingOrdering3, thingOrdering4, thingOrdering5)
+
+  val orderByI: Ordering[ThingOrdering] = Ordering.by { _.i } // cannot import if defined in App
+  val orderByS: Ordering[ThingOrdering] = Ordering.by { _.s } // cannot import if defined in App
 }

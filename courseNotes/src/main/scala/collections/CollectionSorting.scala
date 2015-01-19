@@ -23,13 +23,11 @@ object CollectionOrdering extends App {
   println(s"""thingOrderings.sorted = ${thingOrderings.sorted.mkString(", ")}""")
   println(s"""thingOrderings.sorted(Ordering[ThingOrdering]) = ${thingOrderings.sorted(Ordering[ThingOrdering]).mkString(", ")}""")
 
-  val orderByI: Ordering[ThingOrdering] = Ordering.by { _.i }
   println(s"""thingOrderings.sorted(orderByI) = ${thingOrderings.sorted(orderByI).mkString(", ")}""")
 
   val orderByIReverse: Ordering[ThingOrdering] = orderByI.reverse
   println(s"""thingOrderings.sorted(orderByIReverse) = ${thingOrderings.sorted(orderByIReverse).mkString(", ")}""")
 
-  val orderByS: Ordering[ThingOrdering] = Ordering.by { _.s }
   println(s"""thingOrderings.sorted(orderByS) = ${thingOrderings.sorted(orderByS).mkString(", ")}""")
 
   val orderBySReverse: Ordering[ThingOrdering] = orderByS.reverse
@@ -48,6 +46,28 @@ object CollectionOrdering extends App {
   println(s"""ordering.compare( (1, "b"), (1, "a") ) = ${ordering.compare( (1, "b"), (1, "a") )}""")
   println(s"""ordering.compare( (1, "b"), (1, "b") ) = ${ordering.compare( (1, "b"), (1, "b") )}""")
   println(s"""ordering.compare( (1, "b"), (1, "c") ) = ${ordering.compare( (1, "b"), (1, "c") )}""")
+}
+
+object PriorityQueueFun extends App {
+  import scala.collection.mutable
+
+  println(s"""The items in thingOrderings sorted by the natural ordering are: ${thingOrderings.sorted.mkString(", ")}""")
+  val pq1 = mutable.PriorityQueue(thingOrderings:_*)
+  println(s"""pq1.dequeue=${pq1.dequeue()}""")
+  println(s"""pq1.dequeue=${pq1.dequeue()}""")
+  println(s"""pq1.dequeue=${pq1.dequeue()}""")
+
+  println(s"""The items in thingOrderings sorted by the orderByI ordering are: ${thingOrderings.sorted(orderByI).mkString(", ")}""")
+  val pq2 = mutable.PriorityQueue(thingOrderings:_*)(orderByI)
+  println(s"""pq2.dequeue=${pq2.dequeue()}""")
+  println(s"""pq2.dequeue=${pq2.dequeue()}""")
+  println(s"""pq2.dequeue=${pq2.dequeue()}""")
+
+  println(s"""The items in thingOrderings sorted by the orderByS ordering are: ${thingOrderings.sorted(orderByS).mkString(", ")}""")
+  val pq3 = mutable.PriorityQueue(thingOrderings:_*)(orderByS)
+  println(s"""pq3.dequeue=${pq3.dequeue()}""")
+  println(s"""pq3.dequeue=${pq3.dequeue()}""")
+  println(s"""pq3.dequeue=${pq3.dequeue()}""")
 }
 
 object PersonSorting extends App {
