@@ -23,47 +23,37 @@ object CollectionOrdering extends App {
   println(s"""thingOrderings.sorted = ${thingOrderings.sorted.mkString(", ")}""")
   println(s"""thingOrderings.sorted(Ordering[ThingOrdering]) = ${thingOrderings.sorted(Ordering[ThingOrdering]).mkString(", ")}""")
 
-  println(s"""thingOrderings.sorted(orderByI) = ${thingOrderings.sorted(orderByI).mkString(", ")}""")
-
-  val orderByIReverse: Ordering[ThingOrdering] = orderByI.reverse
-  println(s"""thingOrderings.sorted(orderByIReverse) = ${thingOrderings.sorted(orderByIReverse).mkString(", ")}""")
-
-  println(s"""thingOrderings.sorted(orderByS) = ${thingOrderings.sorted(orderByS).mkString(", ")}""")
-
-  val orderBySReverse: Ordering[ThingOrdering] = orderByS.reverse
-  println(s"""thingOrderings.sorted(orderBySReverse) = ${thingOrderings.sorted(orderBySReverse).mkString(", ")}""")
-
-  val orderBySandI: Ordering[ThingOrdering] = Ordering.by { x => (x.s, x.i) }
-  println(s"""thingOrderings.sorted(orderBySandI) = ${thingOrderings.sorted(orderBySandI).mkString(", ")}""")
-
-  val orderByIandS: Ordering[ThingOrdering] = Ordering.by { x => (x.i, x.s) }
-  println(s"""thingOrderings.sorted(orderByIandS) = ${thingOrderings.sorted(orderByIandS).mkString(", ")}""")
-
+  println(s"""thingOrderings.sorted(orderByI) =             ${thingOrderings.sorted(orderByI).mkString(", ")}""")
+  println(s"""thingOrderings.sorted(orderByIReverse) =      ${thingOrderings.sorted(orderByIReverse).mkString(", ")}""")
+  println(s"""thingOrderings.sorted(orderByS) =             ${thingOrderings.sorted(orderByS).mkString(", ")}""")
+  println(s"""thingOrderings.sorted(orderBySReverse) =      ${thingOrderings.sorted(orderBySReverse).mkString(", ")}""")
+  println(s"""thingOrderings.sorted(orderBySandI) =         ${thingOrderings.sorted(orderBySandI).mkString(", ")}""")
+  println(s"""thingOrderings.sorted(orderByIandS) =         ${thingOrderings.sorted(orderByIandS).mkString(", ")}""")
   println(s"""thingOrderings.sorted(orderBySandI.reverse) = ${thingOrderings.sorted(orderBySandI.reverse).mkString(", ")}""")
   println(s"""thingOrderings.sorted(orderByIandS.reverse) = ${thingOrderings.sorted(orderByIandS.reverse).mkString(", ")}""")
 
-  val ordering = implicitly[Ordering[(Int, String)]]
-  println(s"""ordering.compare( (1, "b"), (1, "a") ) = ${ordering.compare( (1, "b"), (1, "a") )}""")
-  println(s"""ordering.compare( (1, "b"), (1, "b") ) = ${ordering.compare( (1, "b"), (1, "b") )}""")
-  println(s"""ordering.compare( (1, "b"), (1, "c") ) = ${ordering.compare( (1, "b"), (1, "c") )}""")
+  val implicitOrdering = implicitly[Ordering[(Int, String)]]
+  println(s"""implicitOrdering.compare( (1, "b"), (1, "a") ) = ${implicitOrdering.compare( (1, "b"), (1, "a") )}""")
+  println(s"""implicitOrdering.compare( (1, "b"), (1, "b") ) = ${implicitOrdering.compare( (1, "b"), (1, "b") )}""")
+  println(s"""implicitOrdering.compare( (1, "b"), (1, "c") ) = ${implicitOrdering.compare( (1, "b"), (1, "c") )}""")
 }
 
 object PriorityQueueFun extends App {
   import scala.collection.mutable
 
-  println(s"""The items in thingOrderings sorted by the natural ordering are: ${thingOrderings.sorted.mkString(", ")}""")
+  println(s"""The items in thingOrderings sorted by the natural implicitOrdering are: ${thingOrderings.sorted.mkString(", ")}""")
   val pq1 = mutable.PriorityQueue(thingOrderings:_*)
   println(s"""pq1.dequeue=${pq1.dequeue()}""")
   println(s"""pq1.dequeue=${pq1.dequeue()}""")
   println(s"""pq1.dequeue=${pq1.dequeue()}""")
 
-  println(s"""The items in thingOrderings sorted by the orderByI ordering are: ${thingOrderings.sorted(orderByI).mkString(", ")}""")
+  println(s"""The items in thingOrderings sorted by the orderByI implicitOrdering are: ${thingOrderings.sorted(orderByI).mkString(", ")}""")
   val pq2 = mutable.PriorityQueue(thingOrderings:_*)(orderByI)
   println(s"""pq2.dequeue=${pq2.dequeue()}""")
   println(s"""pq2.dequeue=${pq2.dequeue()}""")
   println(s"""pq2.dequeue=${pq2.dequeue()}""")
 
-  println(s"""The items in thingOrderings sorted by the orderByS ordering are: ${thingOrderings.sorted(orderByS).mkString(", ")}""")
+  println(s"""The items in thingOrderings sorted by the orderByS implicitOrdering are: ${thingOrderings.sorted(orderByS).mkString(", ")}""")
   val pq3 = mutable.PriorityQueue(thingOrderings:_*)(orderByS)
   println(s"""pq3.dequeue=${pq3.dequeue()}""")
   println(s"""pq3.dequeue=${pq3.dequeue()}""")
