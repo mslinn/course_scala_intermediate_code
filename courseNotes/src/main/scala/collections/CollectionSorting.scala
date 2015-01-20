@@ -56,11 +56,11 @@ object PriorityQueueFun extends App {
 
   println(s"""\nThe items in thingOrderings sorted by the orderByI implicitOrdering are: ${thingOrderings.sorted(orderByI).mkString(", ")}""")
   val pq2 = mutable.PriorityQueue(thingOrderings:_*)(orderByI)
-  pq2.dequeueAll.iterator.foreach { item => println(s"""pq2.dequeue=$item""") }
+  pq2.dequeueAll.foreach { item => println(s"""pq2.dequeue=$item""") }
 
   println(s"""\nThe items in thingOrderings sorted by the orderByS implicitOrdering are: ${thingOrderings.sorted(orderByS).mkString(", ")}""")
   val pq3 = mutable.PriorityQueue(thingOrderings:_*)(orderByS)
-  pq3.dequeueAll.iterator.foreach { item => println(s"""pq3.dequeue=$item""") }
+  (0 until pq3.length).foreach { _ => println(s"""pq3.dequeue=${pq3.dequeue()}""") }
 }
 
 object PersonSorting extends App {
