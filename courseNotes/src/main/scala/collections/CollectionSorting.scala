@@ -46,18 +46,21 @@ object PriorityQueueFun extends App {
   println(s"""pq1.dequeue=${pq1.dequeue()}""")
   println(s"""pq1.dequeue=${pq1.dequeue()}""")
   println(s"""pq1.dequeue=${pq1.dequeue()}""")
+  println(s"""pq1.dequeue=${pq1.dequeue()}""")
+  println(s"""pq1.dequeue=${pq1.dequeue()}""")
+  try {
+    println(s"""pq1.dequeue=${pq1.dequeue()}""")
+  } catch {
+    case e: Exception => println(s"${e.getClass.getName}: ${e.getMessage}")
+  }
 
-  println(s"""The items in thingOrderings sorted by the orderByI implicitOrdering are: ${thingOrderings.sorted(orderByI).mkString(", ")}""")
+  println(s"""\nThe items in thingOrderings sorted by the orderByI implicitOrdering are: ${thingOrderings.sorted(orderByI).mkString(", ")}""")
   val pq2 = mutable.PriorityQueue(thingOrderings:_*)(orderByI)
-  println(s"""pq2.dequeue=${pq2.dequeue()}""")
-  println(s"""pq2.dequeue=${pq2.dequeue()}""")
-  println(s"""pq2.dequeue=${pq2.dequeue()}""")
+  pq2.dequeueAll.iterator.foreach { item => println(s"""pq2.dequeue=$item""") }
 
-  println(s"""The items in thingOrderings sorted by the orderByS implicitOrdering are: ${thingOrderings.sorted(orderByS).mkString(", ")}""")
+  println(s"""\nThe items in thingOrderings sorted by the orderByS implicitOrdering are: ${thingOrderings.sorted(orderByS).mkString(", ")}""")
   val pq3 = mutable.PriorityQueue(thingOrderings:_*)(orderByS)
-  println(s"""pq3.dequeue=${pq3.dequeue()}""")
-  println(s"""pq3.dequeue=${pq3.dequeue()}""")
-  println(s"""pq3.dequeue=${pq3.dequeue()}""")
+  pq3.dequeueAll.iterator.foreach { item => println(s"""pq3.dequeue=$item""") }
 }
 
 object PersonSorting extends App {
