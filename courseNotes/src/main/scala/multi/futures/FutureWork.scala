@@ -84,7 +84,7 @@ object FutureRecovering extends App {
       }
     }
 
-    val sequence = Future.sequence(futures)
+    val sequence: Future[List[String]] = Future.sequence(futures)
     concurrent.Await.ready(sequence, 30 seconds) // block until all futures complete or timeout occurs
     println("sequence completed: " + sequence.isCompleted) // false if timeout occurred
 
