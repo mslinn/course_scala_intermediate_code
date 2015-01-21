@@ -8,8 +8,10 @@ import scala.language.postfixOps
 import scala.util._
 
 object FutureArtifacts {
+  val readUrl: String => String = io.Source.fromURL(_: String).mkString
+
   val futureContents: List[String] => List[Future[String]] =
-    (_: List[String]).map { url => Future(io.Source.fromURL(url).mkString) }
+    (_: List[String]).map { url => Future(readUrl(url)) }
 
   val futureTuples: List[String] => List[Future[(String, String)]] =
     (_: List[String]).map { url => Future((url, io.Source.fromURL(url).mkString)) }
