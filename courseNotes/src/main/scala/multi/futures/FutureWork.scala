@@ -36,7 +36,7 @@ object FutureWork extends App {
     futures
   }
 
-  Await.ready(Future.sequence(urlSearch("scala", urls(includeBad = true))), Duration.Inf)
+  Await.ready(Future.sequence(urlSearch("scala", urls(includeBad=true))), Duration.Inf)
 }
 
 object FutureSlow extends App {
