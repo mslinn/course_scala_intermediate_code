@@ -54,6 +54,9 @@ initialCommands := """
                    |import scala.util.{Try,Success,Failure}
                    |import concurrent.{Await, Future}
                    |import concurrent.duration._
+                   |import multi._
+                   |import multi.futures._
+                   |import multi.futures.FutureArtifacts._
                    |""".stripMargin
 
 // Only show warnings and errors on the screen for compilations.
