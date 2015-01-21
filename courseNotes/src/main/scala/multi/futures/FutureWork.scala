@@ -78,10 +78,8 @@ object FutureFailed extends App {
 
 object FutureRecovering extends App {
   def urlSearch(word: String, urls: List[String]): Unit = {
-    val readUrlFn: String => String = io.Source.fromURL(_: String).mkString
-
     val futures: List[Future[String]] = urls.map { url ⇒
-      Future(readUrlFn(url)).recoverWith {
+      Future(readUrl(url)).recoverWith {
         case e: Exception ⇒ Future.successful("") // catches all Exceptions
       }
     }
