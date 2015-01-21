@@ -1,6 +1,11 @@
 package object multi {
-  import concurrent.ExecutionContext.Implicits.global
-  import scala.concurrent.Future
+  lazy val goodUrlStr1       = "http://www.scalacourses.com"
+  lazy val goodUrlStr2       = "http://www.micronauticsresearch.com"
+  lazy val badHostUrlStr     = "http://www.not-really-here.com"
+  lazy val badPageUrlStr     = "http://scalacourses.com/noPageHere"
+  lazy val badProtocolUrlStr = "blah://scalacourses.com"
+
+  val random = new util.Random()
 
   val calculatePiFor: Int => Double = (decimals: Int) => {
     var acc = 0.0
@@ -26,9 +31,6 @@ package object multi {
     contents.substring(0, math.min(contents.length, maxChars)) + (if (contents.length>maxChars) "..." else "")
   }
 
-  /** @return Future of first maxChars characters of web page at given url */
-  def readUrlFuture(urlStr: String, maxChars: Int=500): Future[String] = Future(readUrl(urlStr, maxChars))
-
   /** Measure execution time of the given block of code */
   def time[T](msg: String)(block: => T): T = {
     val t0 = System.nanoTime
@@ -37,4 +39,8 @@ package object multi {
     println(s"  Elapsed time for $msg: " + elapsedMs + "ms")
     result
   }
+
+  def urls(includeBad: Boolean=false): List[String] =
+    List(goodUrlStr1, goodUrlStr2) :::
+      (if (includeBad) List(badHostUrlStr, badPageUrlStr, badProtocolUrlStr) else Nil)
 }

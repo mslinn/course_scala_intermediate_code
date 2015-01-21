@@ -11,17 +11,6 @@ import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
 object FutureFixtures {
-  lazy val goodUrlStr1       = "http://www.scalacourses.com"
-  lazy val goodUrlStr2       = "http://www.micronauticsresearch.com"
-  lazy val badHostUrlStr     = "http://www.not-really-here.com"
-  lazy val badPageUrlStr     = "http://scalacourses.com/noPageHere"
-  lazy val badProtocolUrlStr = "blah://scalacourses.com"
-
-  lazy val badHostFuture: Future[String]     = readUrlFuture(badHostUrlStr)
-  lazy val badPageFuture: Future[String]     = readUrlFuture(badHostUrlStr)
-  lazy val badProtocolFuture: Future[String] = readUrlFuture(badHostUrlStr)
-  lazy val defaultFuture: Future[String]     = readUrlFuture(goodUrlStr1)
-
   /** Blocks until contents of web page at urlStr or whatever recoveryFn contains becomes available, then prints contents.
    * @param urlStr String passed to java.net.URL that specifies the URL of a web page
    * @param msg Optional parameter that specifies a prefix message to be displayed before the web page contents
@@ -32,12 +21,6 @@ object FutureFixtures {
     println(s"$urlStr; ${ if (msg.length>0) s"$msg, " else "" }returning " + Await.result(future, 30 minutes))
     future
   }
-
-  def urls(includeBad: Boolean=false): List[String] =
-    List(goodUrlStr1, goodUrlStr1) :::
-    (if (includeBad) List(badHostUrlStr, badPageUrlStr, badProtocolUrlStr) else Nil)
-
-  val random = new util.Random()
 
   def urlSearch(word: String, urls: List[String]): Unit = {
     val futures2: List[Future[String]] = urls.map { url =>
@@ -71,8 +54,6 @@ object FutureFixtures {
 }
 
 object FutureFallbackTo extends App {
-  import multi.futures.FutureFixtures._
-
   println("Dot notation:\n" + Await.result(badHostFuture.fallbackTo(defaultFuture), 30 minutes))
   println("\n\nInfix notation:\n" + Await.result(badHostFuture fallbackTo defaultFuture, 30 minutes))
   println("\n\n")
@@ -167,8 +148,6 @@ object FutureRecoverWith extends App {
 }
 
 object FutureCollect extends App {
-  import multi.futures.FutureFixtures._
-
   val allUrlsWithFutures: List[(String, Future[String])] =
     urls(includeBad = true) map { url => url -> readUrlFuture(url) }
 
@@ -188,8 +167,6 @@ object FutureCollect extends App {
 }
 
 object FutureFilter extends App {
-  import FutureFixtures.random
-
   1 to 10 foreach { i =>
     val future: Future[Int] = Future.successful(random.nextInt(100))
     val oddFuture: Future[Int]  = future filter { _ % 2 == 1 }
@@ -203,8 +180,6 @@ object FutureFilter extends App {
 }
 
 object FutureFlatMap extends App {
-  import FutureFixtures.random
-
   case class User(name: String, privilege: List[String]) {
     /** simulate slow database access */
     def grantPrivilege(newPriv: String) = Future {
@@ -261,8 +236,6 @@ object FutureMapTo extends App {
 }
 
 object FutureTransform extends App {
-  import FutureFixtures.random
-
   val f1 = Future.successful(random.nextInt(100))
     .filter(_%2==0)
     .transform(_/2, throwable => new Exception("Allergic to odd numbers... achoo!", throwable))
@@ -281,8 +254,6 @@ object FutureTransform extends App {
 }
 
 object FutureZip extends App {
-  import FutureFixtures.random
-
   case class User(name: String, id: Long)
 
   def getUser: Future[User] = Future { // simulate slow database access
