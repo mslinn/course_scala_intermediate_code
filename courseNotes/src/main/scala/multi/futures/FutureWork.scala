@@ -27,19 +27,16 @@ object FutureArtifacts {
 object FutureWork extends App {
   import multi.futures.FutureArtifacts._
 
-  val futures: List[Future[String]] = futureContents(urls(includeBad = true))
-  println(s"futures=$futures")
-
   def urlSearch(word: String, urls: List[String]): List[Future[String]] = {
     val futures = futureContents(urls)
     for {
       (url, future) <- urls zip futures
-      contents <- future if contents.toLowerCase.contains(word)
+      contents      <- future if contents.toLowerCase.contains(word)
     } println(s"urlSearch: $url contains '$word'")
     futures
   }
 
-  Await.ready(Future.sequence(urlSearch("free", urls(includeBad = true))), Duration.Inf)
+  Await.ready(Future.sequence(urlSearch("scala", urls(includeBad = true))), Duration.Inf)
 }
 
 object FutureSlow extends App {
@@ -57,26 +54,28 @@ object FutureSlow extends App {
 object FutureFailed extends App {
   import FutureArtifacts._
 
-  val brokenUrlSearch: (String, List[String]) => Future[List[String]] =
-    (word: String, urls: List[String]) =>
-      Future.sequence(futureContents(urls)).collect {
-        case list: List[String] =>
-          val resultList = list.filter(_.toLowerCase.contains(word))
-          resultList.foreach { contents => println(s"containsFree: ${snippet(word, contents)}")}
-          resultList
-      } andThen {
-        case Success(list) =>
-          println("containsFree succeeded!")
+  class FailureTest {
+    val brokenUrlSearch: (String, List[String]) => Future[List[String]] =
+      (word: String, urls: List[String]) =>
+        Future.sequence(futureContents(urls)).collect {
+          case list: List[String] =>
+            val resultList = list.filter(_.toLowerCase.contains(word))
+            resultList.foreach { contents => println(s"containsFree: ${snippet(word, contents)}")}
+            resultList
+        } andThen {
+          case Success(list) =>
+            println("containsFree succeeded!")
 
-        case Failure(ex) =>
-          println("containsFree failed on URL " + ex.getMessage)
-      }
+          case Failure(ex) =>
+            println("containsFree failed on URL " + ex.getMessage)
+        }
+  }
 
-  Await.ready(brokenUrlSearch("free", urls(includeBad=true)), Duration.Inf)
+  Await.ready(new FailureTest().brokenUrlSearch("scala", urls(includeBad=true)), Duration.Inf)
 }
 
 object FutureRecovering extends App {
-  def urlSearch2(word: String, urls: List[String]): Unit = {
+  def urlSearch(word: String, urls: List[String]): Unit = {
     val readUrlFn: String => String = io.Source.fromURL(_: String).mkString
 
     val futures: List[Future[String]] = urls.map { url ⇒
@@ -95,7 +94,7 @@ object FutureRecovering extends App {
     } println(s"'$word' was found in $url")
   }
 
-  urlSearch2("scala", urls(includeBad=true))
+  urlSearch("scala", urls(includeBad=true))
   synchronized { wait() } // program hangs, not a very good design
 }
 
@@ -103,7 +102,7 @@ object FutureSelect extends App {
   import multi.futures.FutureArtifacts._
   import multi.futures.FuturesUtil.asapFutures
 
-  def urlSearch3(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
+  def urlSearch(word: String, urls: List[String])(whenDone: =>Unit={}): Unit = {
     asapFutures(futureTuples(urls)) {
       case Success((url, contents)) if contents.toLowerCase.contains(word) =>
         println(s"Found '$word' in $url:\n${snippet(word, contents)}\n")
@@ -117,21 +116,21 @@ object FutureSelect extends App {
   }
 
   val signal1 = Promise[String]()
-  urlSearch3("free", urls()) { signal1.success("done") }
+  urlSearch("free", urls()) { signal1.success("done") }
   Await.ready(signal1.future, duration.Duration.Inf)
 
   val signal2 = Promise[String]()
-  urlSearch3("free", Nil) { signal2.success("done") }
+  urlSearch("free", Nil) { signal2.success("done") }
   Await.ready(signal2.future, duration.Duration.Inf)
 
-  urlSearch3("free", Nil)()
+  urlSearch("free", Nil)()
   println("All done")
 }
 
 object FutureMixed extends App {
   import multi.futures.FutureArtifacts._
 
-  //def urlSearch4(word: String, urls: List[String]) = {
+  //def urlSearch(word: String, urls: List[String]) = {
   //  val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
   //  for {
   //    (url, future) <- urls zip futures
