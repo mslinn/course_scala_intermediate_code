@@ -1,5 +1,6 @@
 package multi.futures
 
+/** This code now lives in https://github.com/mslinn/futurePerfect so it can be used in actual projects */
 object FuturesUtil {
   import scala.concurrent._
   import scala.util.{Failure, Success, Try}
@@ -24,7 +25,7 @@ object FuturesUtil {
     }
 
     /** This method can be called multiple times */
-    val cancelMe = (msg: String) => {
+    val cancel = (msg: String) => {
       if (p.isCompleted) {
         None
       } else {
@@ -36,7 +37,7 @@ object FuturesUtil {
         Some(ex)
       }
     }
-    (future, cancelMe)
+    (future, cancel)
   }
 
   /** Immediately process future to complete in a collection;

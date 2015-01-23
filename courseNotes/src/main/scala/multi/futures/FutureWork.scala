@@ -26,7 +26,7 @@ object FutureArtifacts {
   }
 }
 
-object FutureWork extends App {
+object FutureWord extends App {
   import multi.futures.FutureArtifacts._
 
   def urlSearch(word: String, urls: List[String]): List[Future[String]] = {
@@ -34,23 +34,80 @@ object FutureWork extends App {
     for {
       (url, future) <- urls zip futures
       contents      <- future if contents.toLowerCase.contains(word)
-    } println(s"urlSearch: $url contains '$word'")
-    futures
+    } println(s"$url contains '$word'")
+    futures // program can terminate gracefully because Future.sequence waits for all futures to complete
   }
 
   Await.ready(Future.sequence(urlSearch("scala", urls(includeBad=true))), Duration.Inf)
 }
 
-object FutureSlow extends App {
-  def slowUrlSearch(word: String, urls: List[String]): Unit =
-    for {
-      url      <- urls
-      contents <- Future(io.Source.fromURL(url).mkString)
-                  if contents.toLowerCase.contains(word)
-    } println(s"slowUrlSearch: $url contains '$word'")
+object FutureLoopDetail extends App {
+  import java.util.concurrent.atomic.AtomicInteger
 
-  slowUrlSearch("free", urls(includeBad=true))
-  synchronized { wait() } // hangs; there is no good way to end this dumb program
+  def report(url: => String, i: Int): Future[(String, Int)] = Future {
+    println(s"$i + Starting $url future")
+    (readUrl(url), i)
+  }
+
+  def urlSearch(word: String, urls: List[String]): Unit = {
+    val count = new AtomicInteger(urls.size-1)
+    for {
+      (url, i)      <- urls.zipWithIndex
+      (contents, j) <- report(url, i).andThen { case Failure(e) =>
+                                                  println(s"$i - ${e.getClass.getName}: ${e.getMessage}")
+                                                  if (count.getAndDecrement==0) System.exit(0)
+                                              }
+    } {
+      if (contents.toLowerCase.contains(word))
+        println(s"$i - $url DOES contain '$word'")
+      else
+        if (contents.nonEmpty) println(s"$i - $url does NOT contain '$word'")
+      if (count.getAndDecrement==0) System.exit(0)
+    }
+  }
+  urlSearch("scala", urls(includeBad=true))
+  synchronized { wait() } // there is no good way to terminate this program so it hangs
+}
+
+object FutureWordCount extends App {
+  import multi.futures.FutureArtifacts._
+  import scala.collection.immutable.ListMap
+
+  def asyncReadUrl(url: => String): Future[String] = Future(readUrl(url))
+
+  def asyncWordCount(string: => String): Future[ListMap[String, Int]] = Future {
+    val rawWordCount: List[(String, Int)] = string.split(" ")
+                                          .foldLeft(ListMap.empty[String, Int] withDefaultValue 0) {
+                                            (m, x) => m + (x -> (1 + m(x)))
+                                          }.toList
+    val sortedWordCount = ListMap.empty[String, Int] ++ rawWordCount.sortBy(_._2).reverse
+    sortedWordCount.filterNot { case (key, value) => commonWords.contains(key) }
+  }
+
+  def asyncRemoveHtml(string: => String): Future[String] =
+    Future(string.replaceAll("[\\s]+", " ")
+                 .replaceAll("<style>.*?</style>", "")
+                 .replaceAll("<script>.*?</script>", "")
+                 .replaceAll("<(.*?)>", "")
+                 .replaceAll("&.*?;", "")
+                 .replaceAll("[^\\p{L} ]", " ")
+                 .replaceAll("[\\s]+", " ")
+                 .trim)
+
+  val commonWords = List("the", "to", "and", "of", "in", "a", "is", "are", "with", "for", "on", "at")
+
+  def mostCommonWords(url: => String, n: => Int): Future[ListMap[String, Int]] =
+    for {
+      html       <- asyncReadUrl(url)
+      contents   <- asyncRemoveHtml(html)
+      wordCounts <- asyncWordCount(contents.toLowerCase)
+    } yield wordCounts.take(n)
+
+  val done = mostCommonWords(goodUrlStr1, 10) andThen {
+    case Success(value) => println(value)
+    case Failure(ex)    => println(ex.getMessage)
+  }
+  Await.ready(done, Duration.Inf)
 }
 
 object FutureFailed extends App {
@@ -62,14 +119,14 @@ object FutureFailed extends App {
         Future.sequence(futureContents(urls)).collect {
           case list: List[String] =>
             val resultList = list.filter(_.toLowerCase.contains(word))
-            resultList.foreach { contents => println(s"containsFree: ${snippet(word, contents)}")}
+            resultList.foreach { contents => println(snippet(word, contents)) }
             resultList
         } andThen {
           case Success(list) =>
-            println("containsFree succeeded!")
+            println("Succeeded")
 
           case Failure(ex) =>
-            println("containsFree failed on URL " + ex.getMessage)
+            println("Failed on URL " + ex.getMessage)
         }
   }
 
@@ -179,14 +236,14 @@ object FutureCancel extends App {
   import scala.concurrent._
 
   val signal = Promise[String]()
-  val (future, cancel) = interruptableFuture(io.Source.fromURL("http://scalacourses.com").mkString)
+  val (future, cancel) = interruptableFuture(readUrl("http://scalacourses.com"))
   val wasCancelled = cancel("Die!")
   cancel("Die again!")
   println(s"Fetch of ScalaCourses.com wasCancelled: ${wasCancelled.isDefined}\n")
 
   // List of slow web sites: http://internetsupervision.com/scripts/urlcheck/report.aspx?reportid=slowest
   val urls = List("http://magarihub.com", "http://vitarak.com", "http://www.firstpersonmedical.com")
-  val iFutures = urls.map(url ⇒ interruptableFuture((url, io.Source.fromURL(url).mkString)))
+  val iFutures = urls.map(url => interruptableFuture((url, readUrl(url))))
 
   Future.firstCompletedOf(iFutures.map(_._1)).andThen { // cancel all the remaining futures
     case _ =>
