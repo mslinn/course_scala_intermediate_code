@@ -73,11 +73,11 @@ object FutureAsync extends App {
   import multi.futures.FutureArtifacts._
   import scala.collection.immutable.ListMap
 
-  object externalGateway {
+  object ExternalGateway {
     def asyncReadUrl(url: => String): Future[String] = Future(readUrl(url))
   }
 
-  object lexicalAnalyserService {
+  object LexicalAnalyserService {
     def asyncWordCount(string: => String): Future[ListMap[String, Int]] = Future {
       val rawWordCount: List[(String, Int)] = string.split(" ")
                                             .foldLeft(ListMap.empty[String, Int] withDefaultValue 0) {
@@ -88,7 +88,7 @@ object FutureAsync extends App {
     }
   }
 
-  object securityProxy {
+  object SecurityProxy {
     def asyncRemoveHtml(string: => String): Future[String] =
       Future(string.replaceAll("[\\s]+", " ")
                    .replaceAll("<style>.*?</style>", "")
@@ -104,9 +104,9 @@ object FutureAsync extends App {
 
   def mostCommonWords(url: => String, n: => Int): Future[ListMap[String, Int]] =
     for {
-      html       <- externalGateway.asyncReadUrl(url)
-      contents   <- securityProxy.asyncRemoveHtml(html)
-      wordCounts <- lexicalAnalyserService.asyncWordCount(contents.toLowerCase)
+      html       <- ExternalGateway.asyncReadUrl(url)
+      contents   <- SecurityProxy.asyncRemoveHtml(html)
+      wordCounts <- LexicalAnalyserService.asyncWordCount(contents.toLowerCase)
     } yield wordCounts.take(n)
 
   val n = 10
