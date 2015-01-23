@@ -69,45 +69,53 @@ object FutureLoopDetail extends App {
   synchronized { wait() } // there is no good way to terminate this program so it hangs
 }
 
-object FutureWordCount extends App {
+object FutureAsync extends App {
   import multi.futures.FutureArtifacts._
   import scala.collection.immutable.ListMap
 
-  def asyncReadUrl(url: => String): Future[String] = Future(readUrl(url))
-
-  def asyncWordCount(string: => String): Future[ListMap[String, Int]] = Future {
-    val rawWordCount: List[(String, Int)] = string.split(" ")
-                                          .foldLeft(ListMap.empty[String, Int] withDefaultValue 0) {
-                                            (m, x) => m + (x -> (1 + m(x)))
-                                          }.toList
-    val sortedWordCount = ListMap.empty[String, Int] ++ rawWordCount.sortBy(_._2).reverse
-    sortedWordCount.filterNot { case (key, value) => commonWords.contains(key) }
+  object externalGateway {
+    def asyncReadUrl(url: => String): Future[String] = Future(readUrl(url))
   }
 
-  def asyncRemoveHtml(string: => String): Future[String] =
-    Future(string.replaceAll("[\\s]+", " ")
-                 .replaceAll("<style>.*?</style>", "")
-                 .replaceAll("<script>.*?</script>", "")
-                 .replaceAll("<(.*?)>", "")
-                 .replaceAll("&.*?;", "")
-                 .replaceAll("[^\\p{L} ]", " ")
-                 .replaceAll("[\\s]+", " ")
-                 .trim)
+  object lexicalAnalyserService {
+    def asyncWordCount(string: => String): Future[ListMap[String, Int]] = Future {
+      val rawWordCount: List[(String, Int)] = string.split(" ")
+                                            .foldLeft(ListMap.empty[String, Int] withDefaultValue 0) {
+                                              (m, x) => m + (x -> (1 + m(x)))
+                                            }.toList
+      val sortedWordCount = ListMap.empty[String, Int] ++ rawWordCount.sortBy(_._2).reverse
+      sortedWordCount.filterNot { case (key, value) => commonWords.contains(key) }
+    }
+  }
+
+  object securityProxy {
+    def asyncRemoveHtml(string: => String): Future[String] =
+      Future(string.replaceAll("[\\s]+", " ")
+                   .replaceAll("<style>.*?</style>", "")
+                   .replaceAll("<script>.*?</script>", "")
+                   .replaceAll("<(.*?)>", "")
+                   .replaceAll("&.*?;", "")
+                   .replaceAll("[^\\p{L} ]", " ")
+                   .replaceAll("[\\s]+", " ")
+                   .trim)
+  }
 
   val commonWords = List("the", "to", "and", "of", "in", "a", "is", "are", "with", "for", "on", "at")
 
   def mostCommonWords(url: => String, n: => Int): Future[ListMap[String, Int]] =
     for {
-      html       <- asyncReadUrl(url)
-      contents   <- asyncRemoveHtml(html)
-      wordCounts <- asyncWordCount(contents.toLowerCase)
+      html       <- externalGateway.asyncReadUrl(url)
+      contents   <- securityProxy.asyncRemoveHtml(html)
+      wordCounts <- lexicalAnalyserService.asyncWordCount(contents.toLowerCase)
     } yield wordCounts.take(n)
 
-  val done = mostCommonWords(goodUrlStr1, 10) andThen {
-    case Success(value) => println(value)
+  val n = 10
+  val done = mostCommonWords(goodUrlStr1, n) andThen {
+    case Success(value) => println(value.mkString("\n"))
     case Failure(ex)    => println(ex.getMessage)
   }
-  Await.ready(done, Duration.Inf)
+  val result: ListMap[String, Int] = Await.result(done, Duration.Inf)
+  println(s"The $n most common words in $goodUrlStr1 are:\n${result.mkString("\n")}")
 }
 
 object FutureFailed extends App {
