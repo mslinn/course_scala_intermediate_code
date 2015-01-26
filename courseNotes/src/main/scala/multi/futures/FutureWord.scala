@@ -42,15 +42,13 @@ object FutureWord extends App {
 }
 
 object FutureLoopDetail extends App {
-  import java.util.concurrent.atomic.AtomicInteger
-
-  def report(url: => String, i: Int): Future[(String, Int)] = Future {
+  def report(url: => String, i: => Int): Future[(String, Int)] = Future {
     println(s"$i + Starting $url future")
     (readUrl(url), i)
   }
 
   def urlSearch(word: String, urls: List[String]): Unit = {
-    val count = new AtomicInteger(urls.size-1)
+    val count = new java.util.concurrent.atomic.AtomicInteger(urls.size-1)
     for {
       (url, i)      <- urls.zipWithIndex
       (contents, j) <- report(url, i).andThen { case Failure(e) =>
@@ -66,7 +64,7 @@ object FutureLoopDetail extends App {
     }
   }
   urlSearch("scala", urls(includeBad=true))
-  synchronized { wait() } // there is no good way to terminate this program so it hangs
+  synchronized { wait() }
 }
 
 object FutureAsync extends App {
@@ -110,11 +108,7 @@ object FutureAsync extends App {
     } yield wordCounts.take(n)
 
   val n = 10
-  val done = mostCommonWords(goodUrlStr1, n) andThen {
-    case Success(value) => println(value.mkString("\n"))
-    case Failure(ex)    => println(ex.getMessage)
-  }
-  val result: ListMap[String, Int] = Await.result(done, Duration.Inf)
+  val result: ListMap[String, Int] = Await.result(mostCommonWords(goodUrlStr1, n), Duration.Inf)
   println(s"The $n most common words in $goodUrlStr1 are:\n${result.mkString("\n")}")
 }
 
@@ -143,24 +137,32 @@ object FutureFailed extends App {
 
 object FutureRecovering extends App {
   def urlSearch(word: String, urls: List[String]): Unit = {
-    val futures: List[Future[String]] = urls.map { url ⇒
-      Future(readUrl(url)).recoverWith {
-        case e: Exception ⇒ Future.successful("") // catches all Exceptions
-      }
+    val count = new java.util.concurrent.atomic.AtomicInteger(urls.size-1)
+
+    val futures: List[Future[(String, Option[String])]] = urls.map { url =>
+      Future((url, Some(readUrl(url)))).recoverWith {
+        case e: Exception => Future.successful((url, None))
+      }.andThen { case _ => println(s"Completed $url") }
     }
 
-    val sequence: Future[List[String]] = Future.sequence(futures)
-    concurrent.Await.ready(sequence, 30 seconds) // block until all futures complete or timeout occurs
-    println("sequence completed: " + sequence.isCompleted) // false if timeout occurred
-
     for {
-      (url, future) <- urls zip futures
-      contents      <- future if contents.toLowerCase.contains(word)
-    } println(s"'$word' was found in $url")
+      future               <- futures
+      (url, maybeContents) <- future
+    } {
+      println(s"Failed: ${maybeContents.isEmpty} count: ${count.get}")
+      if (maybeContents.isEmpty && count.getAndDecrement==1) System.exit(0)
+      for {
+        contents <- maybeContents if contents.toLowerCase.contains(word)
+      } {
+        println(s"Succeeded: '$word' was found in $url")
+        if (count.getAndDecrement==1) System.exit(0)
+        println(s"Count: ${count.get}")
+      }
+    }
   }
 
   urlSearch("scala", urls(includeBad=true))
-  synchronized { wait() } // program hangs, not a very good design
+  synchronized { wait() }
 }
 
 object FutureSelect extends App {
@@ -239,39 +241,38 @@ object FutureMixed extends App {
   println(s"listOfTuples = ${listOfTuples("free")}")
 }
 
-object FutureCancel extends App {
-  import multi.futures.FuturesUtil.interruptableFuture
-  import scala.concurrent._
+object FutureCancel1 extends App {
+  import multi.futures.FuturesUtil.interruptibleFuture
 
-  val signal = Promise[String]()
-  val (future, cancel) = interruptableFuture(readUrl("http://scalacourses.com"))
+  val (future, cancel) = interruptibleFuture(readUrl("http://scalacourses.com"))
   val wasCancelled = cancel("Die!")
   cancel("Die again!")
   println(s"Fetch of ScalaCourses.com wasCancelled: ${wasCancelled.isDefined}\n")
+}
+
+object FutureCancel2 extends App {
+  import multi.futures.FuturesUtil.interruptibleFuture
+  import scala.concurrent._
 
   // List of slow web sites: http://internetsupervision.com/scripts/urlcheck/report.aspx?reportid=slowest
   val urls = List("http://magarihub.com", "http://vitarak.com", "http://www.firstpersonmedical.com")
-  val iFutures = urls.map(url => interruptableFuture((url, readUrl(url))))
+  val iFutures: List[(Future[(String, String)], (String) => Option[CancellationException])] =
+    urls.map(url => interruptibleFuture((url, readUrl(url))))
 
+  val signal = Promise[String]()
   Future.firstCompletedOf(iFutures.map(_._1)).andThen { // cancel all the remaining futures
     case _ =>
       iFutures.foreach {
         case iFuture if !iFuture._1.isCompleted =>
           val i = iFutures.indexOf(iFuture)
           iFuture._2(s"Cancelled fetch of ${urls(i)}")
+          println(s"${iFuture._1.value.get.failed.get.getMessage}")
 
-        case completedIFuture =>
+        case iFuture =>
+          val i = iFutures.indexOf(iFuture)
+          println(s"Fetched ${urls(i)} successfully")
       }
       signal.complete(Success("All done"))
-  }
-
-  iFutures foreach { case (iFuture, cancelThis) =>
-    iFuture.onComplete {
-      case Success((url, contents)) =>
-        println(s"Fetched $url successfully")
-
-      case Failure(throwable) => println(throwable)
-    }
   }
 
   Await.ready(signal.future, duration.Duration.Inf)
