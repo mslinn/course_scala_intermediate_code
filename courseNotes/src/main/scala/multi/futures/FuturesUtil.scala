@@ -12,7 +12,7 @@ object FuturesUtil {
     *         that contains the String passed to the function when the future was canceled.
     * @author Eric Pederson (@sourcedelica) http://stackoverflow.com/questions/16020964/cancellation-with-future-and-promise-in-scala
     * @author Mike Slinn */
-  def interruptableFuture[T](block: =>T)(implicit ex: ExecutionContext): (Future[T], String => Option[CancellationException]) = {
+  def interruptibleFuture[T](block: =>T)(implicit ex: ExecutionContext): (Future[T], String => Option[CancellationException]) = {
     val p = Promise[T]()
     val future = p.future
     val atomicReference = new java.util.concurrent.atomic.AtomicReference[Thread](null)
