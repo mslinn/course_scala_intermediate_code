@@ -1,11 +1,11 @@
-import solutions.DBOps
+package solutions
 
 object TypeAhead extends App with DBOps {
   import java.sql.Connection
 
   def createDB(implicit connection: Connection): Unit = {
-    insert("person", Map("id" -> 1, "name" -> "Fred Flintsone",  "age" -> 400002))
-    insert("person", Map("id" -> 2, "name" -> "Wilma Flintsone", "age" -> 400001))
+    insert("person", Map("id" -> 1, "name" -> "Fred Flintstone",  "age" -> 400002))
+    insert("person", Map("id" -> 2, "name" -> "Wilma Flintstone", "age" -> 400001))
     insert("person", Map("id" -> 3, "name" -> "Barney Rubble",   "age" -> 400004))
     insert("person", Map("id" -> 4, "name" -> "Betty Rubble",    "age" -> 400003))
   }

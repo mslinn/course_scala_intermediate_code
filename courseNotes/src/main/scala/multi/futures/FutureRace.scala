@@ -2,8 +2,7 @@ package multi.futures
 
 object FutureRace extends App {
   import java.util.concurrent.{ExecutorService, Executors}
-
-import scala.concurrent.duration.Duration
+  import scala.concurrent.duration.Duration
   import scala.concurrent.{Await, ExecutionContext, Future}
   import scala.util.{Failure, Success}
 
@@ -19,21 +18,21 @@ import scala.concurrent.duration.Duration
   val pool: ExecutorService = Executors.newFixedThreadPool(threadCount)
   implicit val ec = ExecutionContext.fromExecutor(pool)
 
-  @volatile var offset = 6 // @volatile does not affect race conditions
+  var offset = 6 // @volatile does not affect race conditions
   def accessor = offset
 
   val f1 = Future {
     2 + 3 + offset // will be executed asynchronously
   } andThen {
-    case Success(result)   => println("Race Scala result 1 : " + result)
-    case Failure(exception) => println("Race Scala exception 1: " + exception.getMessage)
+    case Success(result)   => println("Result 1 : " + result)
+    case Failure(exception) => println("Exception 1: " + exception.getMessage)
   }
 
   val f2 = Future {
     2 + 3 + accessor // will be executed asynchronously
   } andThen {
-    case Success(result)   => println("Race Scala result 2: " + result)
-    case Failure(exception) => println("Race Scala exception 2: " + exception.getMessage)
+    case Success(result)   => println("Result 2: " + result)
+    case Failure(exception) => println("Exception 2: " + exception.getMessage)
   }
   offset = 42
   println("End of mainline, offset = " + offset)

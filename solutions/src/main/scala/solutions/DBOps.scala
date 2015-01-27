@@ -2,7 +2,9 @@ package solutions
 
 trait DBOps extends Closeable {
   import java.sql.{Connection, DriverManager, ResultSet, Statement}
-  import collection.immutable.Map
+  import java.util.concurrent.atomic.AtomicReference
+
+import scala.collection.immutable.Map
 
   Class.forName("org.sqlite.JDBC")
 
@@ -22,7 +24,8 @@ trait DBOps extends Closeable {
     connection
   }
 
-  def insert(tableName: String, nameValueMap: Map[String, Any])(implicit conn: Connection) = {
+  /** Creates a new record for the specified table from name/value pairs  */
+  def insert(tableName: String, nameValueMap: Map[String, Any])(implicit conn: Connection): Int = {
     val keys = nameValueMap.keys.toList // nameValueMap.keys is an iterable, which can only be traversed once
     val names = keys.mkString(", ")
     val placeholders = keys.map { _ => "?" }.mkString(", ")
@@ -35,23 +38,21 @@ trait DBOps extends Closeable {
   }
 
   /** Required to support statement.cancel() */
-  private var maybeCurrentStatement: Option[Statement] = None
+  private val maybeCurrentStatement: AtomicReference[Option[Statement]] = new AtomicReference(None)
 
-  /** Must be run from another thread than execute */
-  def cancel(): Unit = {
-    maybeCurrentStatement.foreach(_.cancel())
-    maybeCurrentStatement = None
-  }
+  /** Can be run from another thread than execute() */
+  def cancel(): Unit = maybeCurrentStatement.getAndSet(None).foreach(_.cancel())
 
   /** Executes simple queries, which can be cancelled */
-  def execute(statementString:String)(body: ResultSet => Any)(implicit conn: Connection) = {
+  def execute(statementString: String)(body: ResultSet => Any)(implicit conn: Connection): Unit = {
     withCloseable(conn.createStatement) { statement =>
-      maybeCurrentStatement = Some(statement)
+      maybeCurrentStatement.set(Some(statement))
       val rs = statement.executeQuery(statementString)
       withCloseable(rs) { resultSet =>
         body(resultSet)
       }
-      maybeCurrentStatement = None
+      maybeCurrentStatement.set(None)
     }
   }
+  ()
 }

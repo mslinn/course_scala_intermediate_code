@@ -4,9 +4,9 @@ name := "Intermediate Scala Course Solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
-version := "2.11.4"
+version := "2.11.5"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.5"
 
 scalacOptions in (Compile, doc) <++= baseDirectory.map {
   (bd: File) => Seq[String](
@@ -26,8 +26,8 @@ scalacOptions in Test ++= Seq("-Yrangepos")
 libraryDependencies ++= Seq(
   "org.xerial"        %  "sqlite-jdbc"   % "3.7.2" withSources(),
   //
-  "org.scalatest"     %% "scalatest"     % "2.2.0"  % "test" withSources(),
-  "junit"             %  "junit"         % "4.11"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
+  "org.scalatest"     %% "scalatest"     % "2.2.3"  % "test" withSources(),
+  "junit"             %  "junit"         % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
 )
 
 // Optional settings from https://github.com/harrah/xsbt/wiki/Quick-Configuration-Examples follow

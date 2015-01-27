@@ -7,10 +7,10 @@ object FutureDB extends App with DBOps {
   import scala.concurrent.{Await, Future}
 
   withCloseable(connectTable("jdbc:sqlite:person.db")) { implicit conn: Connection =>
-    insert("person", Map("id" -> 1, "name" -> "Fred Flintsone",  "age" -> 400002))
-    insert("person", Map("id" -> 2, "name" -> "Wilma Flintsone", "age" -> 400001))
-    insert("person", Map("id" -> 3, "name" -> "Barney Rubble",   "age" -> 400004))
-    insert("person", Map("id" -> 4, "name" -> "Betty Rubble",    "age" -> 400003))
+    insert("person", Map("id" -> 1, "name" -> "Fred Flintstone",  "age" -> 400002))
+    insert("person", Map("id" -> 2, "name" -> "Wilma Flintstone", "age" -> 400001))
+    insert("person", Map("id" -> 3, "name" -> "Barney Rubble",    "age" -> 400004))
+    insert("person", Map("id" -> 4, "name" -> "Betty Rubble",     "age" -> 400003))
 
     Await.result(Future(execute("select * from person order by id") { resultSet =>
       Future(cancel()) // comment this line to see entire result set
