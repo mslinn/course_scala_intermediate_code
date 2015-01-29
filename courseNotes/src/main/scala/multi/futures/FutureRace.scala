@@ -24,7 +24,7 @@ object FutureRace extends App {
   val f1 = Future {
     2 + 3 + offset // will be executed asynchronously
   } andThen {
-    case Success(result)   => println("Result 1 : " + result)
+    case Success(result)   => println("Result 1: " + result)
     case Failure(exception) => println("Exception 1: " + exception.getMessage)
   }
 
