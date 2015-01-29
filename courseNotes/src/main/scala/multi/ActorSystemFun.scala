@@ -5,14 +5,18 @@ import com.typesafe.config.ConfigFactory
 
 object ActorSystemFun1 extends App {
   implicit val system = ActorSystem("MySystem")
-  system.shutdown()
+  implicit val executor = system.dispatcher
+  futures.readUrlFuture(goodUrlStr1) andThen {
+    case _ =>
+      println("Future completed :)")
+      system.shutdown()
+  }
 }
 
 object ActorSystemFun2 extends App {
   val configString = """
     akka {
-      // dumps out configuration onto console when enabled and
-      // loglevel >= "INFO"
+      // dumps out configuration onto console when enabled and loglevel >= "INFO"
       logConfigOnStart=on
       stdout-loglevel = "WARNING" # startup log level
       loglevel = "INFO" # loglevel once ActorSystem is started
@@ -26,24 +30,46 @@ object ActorSystemFun2 extends App {
       }
     }"""
   implicit val system = ActorSystem("actorSystem", ConfigFactory.parseString(configString))
-  system.shutdown()
+  implicit val executor = system.dispatcher
+  futures.readUrlFuture(goodUrlStr1) andThen {
+    case _ =>
+      println("Future completed :)")
+      system.shutdown()
+  }
 }
 
 object ActorSystemFun3 extends App {
   implicit val system = ActorSystem("default", ConfigFactory.defaultReference)
-  system.shutdown()
+  implicit val executor = system.dispatcher
+  futures.readUrlFuture(goodUrlStr1) andThen {
+    case _ =>
+      println("Future completed :)")
+      system.shutdown()
+  }
 }
 
 object ActorSystemFun4 extends App {
   val configString = "akka { daemonic = on }"
   implicit val system = ActorSystem("default", ConfigFactory.parseString(configString))
-  system.shutdown()
+  implicit val executor = system.dispatcher
+  futures.readUrlFuture(goodUrlStr1) andThen {
+    case _ =>
+      println("Future completed :)")
+      system.shutdown()
+  }
+  synchronized { wait() }
 }
 
 object ActorSystemFun5 extends App {
   val configString = "akka { daemonic = on }"
   implicit val system = ActorSystem("default", ConfigFactory.parseResources("blah.conf").withFallback(ConfigFactory.parseString(configString)))
-  system.shutdown()
+  implicit val executor = system.dispatcher
+  futures.readUrlFuture(goodUrlStr1) andThen {
+    case _ =>
+      println("Future completed :)")
+      system.shutdown()
+  }
+  synchronized { wait() }
 }
 
 object ActorSystemFun6 extends App {
