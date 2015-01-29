@@ -20,7 +20,7 @@ trait Timeable[T] {
   * For 13000000L iterations, specify -Xmx2g.
   * For that many iterations, you should only expect 3 characters to match in about a minute on a fast machine.
   * This naive implementation' computational effort increases geometrically with the number of iterations. */
-object FutureMonkey extends App with Timeable[Future[String]]{
+object FutureMonkey extends App with Timeable[Future[String]] {
   val iterations: Long = 13000000L
   val singleFutureTimeout = Duration(20, "seconds")
 
