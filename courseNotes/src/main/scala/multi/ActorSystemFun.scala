@@ -79,6 +79,6 @@ object ActorSystemFun6 extends App {
   println(s"Before shutdown: isTerminated=${system.isTerminated}")
   system.shutdown() // allow System.exit()
   println(s"After shutdown: isTerminated=${system.isTerminated}")
-  Thread.sleep(500)
-  println("After isTerminated=" + system.isTerminated)
+  time("awaitTermination")(system.awaitTermination())
+  println("After awaitTermination(), isTerminated=" + system.isTerminated)
 }
