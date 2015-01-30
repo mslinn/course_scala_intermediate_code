@@ -3,10 +3,40 @@ package multi
 import akka.actor._
 import akka.pattern._
 import akka.util.Timeout
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.postfixOps
 import scala.util.{Failure, Random, Success}
 
+object ActorFun1 extends App {
+  class MyActor extends Actor {
+      def receive = {
+        case msg =>
+          println(s"MyActor got '$msg'")
+          sender ! "Got the message" // reply to sender
+      }
+    }
+
+    val system = ActorSystem("myActorSystem")
+    val myActor1 = system.actorOf(Props[MyActor], name="myActor1")
+    val aMessage = "This is a message"
+    implicit val timeout = Timeout(60 seconds)
+    val response: Future[Any] = myActor1 ? aMessage
+
+    val result1 = Await.result(myActor1 ? aMessage, 5 seconds)
+    println(s"result1=$result1 (${result1.getClass.getName})")
+
+    val result2 = Await.result((myActor1 ? aMessage).mapTo[String], 5 seconds)
+    println(s"result2=$result2 (${result2.getClass.getName})")
+
+    myActor1 ? aMessage map ( result3 => println(s"result3=$result3 (${result3.getClass.getName})") )
+
+    myActor1 ? aMessage foreach ( result4 => println(s"result4=$result4 (${result4.getClass.getName})") )
+    myActor1 ? aMessage onComplete ( result5 => println(s"result5=$result5 (${result5.getClass.getName})") )
+}
+
+object ActorExercise {
 case class ChunkerMsg(numWorkers: Int, tries: Int, text: String)
 
 case class PersistenceMsg(attemptCount: Int, text: String)
@@ -70,7 +100,7 @@ class Persistence extends Actor {
 
     case msg: PersistenceMsg =>
       //println(s"Persistence actor got $msg")
-      val matching = ActorFun.matchSubstring(msg.text, targetString)
+      val matching = ActorFun2.matchSubstring(msg.text, targetString)
       if (matching.length>bestMatchString.length) {
         bestMatchString = matching
         //println(s"Matched $matching")
@@ -86,8 +116,11 @@ class Persistence extends Actor {
       println(s"Invalid message $msg of type ${msg.getClass.getName} received by Persistence actor")
   }
 }
+}
 
-object ActorFun extends App {
+object ActorFun2 extends App {
+  import ActorExercise._
+
   def matchSubstring(str1: String, str2: String): String =
     str1.view.zip(str2).takeWhile(Function.tupled(_ == _)).map(_._1).mkString
 

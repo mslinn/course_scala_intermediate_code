@@ -34,15 +34,17 @@ libraryDependencies ++= Seq(
 updateOptions := updateOptions.value.withCachedResolution(true)
 
 // set the initial commands when entering 'console' or 'consoleQuick', but not 'consoleProject'
-initialCommands in console := """import java.io.File
+initialCommands in console := """import akka.actor._
+                                |import akka.pattern.ask
+                                |import akka.util.Timeout
+                                |import java.io.File
                                 |import java.net.URL
-                                |import scala.sys.process._
                                 |import concurrent._
+                                |import concurrent.duration._
                                 |import concurrent.ExecutionContext.Implicits.global
+                                |import scala.sys.process._
                                 |import scala.util.control.NoStackTrace
                                 |import scala.util.{Try,Success,Failure}
-                                |import concurrent.{Await, Future}
-                                |import concurrent.duration._
                                 |import multi._
                                 |import multi.futures._
                                 |import multi.futures.FutureArtifacts._
