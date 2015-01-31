@@ -7,9 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 
 @RunWith(classOf[JUnitRunner])
-class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
-    with ShouldMatchers with WordSpecLike with BeforeAndAfterAll  {
-
+class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender with ShouldMatchers with WordSpecLike with BeforeAndAfterAll {
   import multi._
   import ActorExercise._
 
@@ -17,14 +15,14 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
   val workerMsg1 = WorkerMsg(10, 10)
   val persistenceMsg = PersistenceMsg(10, "Bloop")
 
-  val chunker1ActorRef = TestActorRef[Chunker]("chunker1")
-  val chunker1Actor = chunker1ActorRef.underlyingActor
+  val chunker1ActorRef: TestActorRef[Chunker] = TestActorRef[Chunker]("chunker1")
+  val chunker1Actor: Chunker = chunker1ActorRef.underlyingActor
 
   val worker1ActorRef: TestActorRef[Worker] = TestActorRef(Props[Worker], chunker1ActorRef, "worker1")
-  val worker1Actor = worker1ActorRef.underlyingActor
+  val worker1Actor: Worker = worker1ActorRef.underlyingActor
 
   val persistenceActorRef: TestActorRef[Persistence] = TestActorRef(Props[Persistence], chunker1ActorRef, "persistence")
-  val persistenceActor = persistenceActorRef.underlyingActor
+  val persistenceActor: Persistence = persistenceActorRef.underlyingActor
 
   def this() = this {
     val confStr = """
@@ -38,8 +36,8 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
 
   "ActorPaths" should {
     "behave" in {
-      assertResult("akka://myApp/user/chunker1",    "chunker1 path")(chunker1ActorRef.path.toString)
-      assertResult("akka://myApp/user/chunker1/worker1",     "worker1 path")(worker1ActorRef.path.toString)
+      assertResult("akka://myApp/user/chunker1",             "chunker1 path")   (chunker1ActorRef.path.toString)
+      assertResult("akka://myApp/user/chunker1/worker1",     "worker1 path")    (worker1ActorRef.path.toString)
       assertResult("akka://myApp/user/chunker1/persistence", "persistence path")(persistenceActorRef.path.toString)
     }
   }
@@ -47,6 +45,6 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
   override def afterAll(): Unit = {
     println("Shutting down ActorSystem")
     system.shutdown()
-    Thread.sleep(300) // give ActorSystem time to shut down
+    system.awaitTermination()
   }
 }

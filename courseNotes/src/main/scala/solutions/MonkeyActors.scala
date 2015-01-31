@@ -5,7 +5,7 @@ import concurrent.ExecutionContext.Implicits.global
 import concurrent.duration._
 import scala.util.Random
 
-object MonkeySim2 extends App {
+object MonkeyActors extends App {
   /** Alphabet defining allowable characters */
   val allowableChars = """ !.,;'""" + (('a' to 'z').toList ::: ('A' to 'Z').toList ::: (0 to 9).toList).mkString
 
@@ -23,7 +23,7 @@ object MonkeySim2 extends App {
 
   val target = "I thought I saw a lolcat! I did, I did see a lolcat!"
 
-  implicit val system = ActorSystem("MonkeySim2")
+  implicit val system = ActorSystem("MonkeyActors")
 
   print("Monkey Simulation running ")
   val bookKeeper = system.actorOf(Props(classOf[BookKeeper], numSims, showProgress, system), name="bookKeeper")
