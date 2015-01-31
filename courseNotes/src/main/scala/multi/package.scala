@@ -25,6 +25,9 @@ package object multi {
     fact(1, number)
   }
 
+  def matchSubstring(str1: String, str2: String): String =
+    str1.view.zip(str2).takeWhile(Function.tupled(_ == _)).map(_._1).mkString
+
   /** @return up to first maxChars characters of web page at given url */
   def readUrl(url: String, maxChars: Int=500): String = {
     val contents = io.Source.fromURL(url).mkString.trim

@@ -11,6 +11,7 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
     with ShouldMatchers with WordSpecLike with BeforeAndAfterAll  {
 
   import multi._
+  import ActorExercise._
 
   val chunkerMsg1 = ChunkerMsg(10, 10, "Ain't this grand?")
   val workerMsg1 = WorkerMsg(10, 10)
