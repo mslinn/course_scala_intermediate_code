@@ -1,4 +1,4 @@
-package solutions
+package multi
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.pattern._
@@ -95,6 +95,8 @@ class BookKeeper(numSims: Int, showProgress: Boolean=true) extends Actor with Ac
       nSimsLeftPercent = nSimsLeft / 100
       parent = sender()
 
+      def longestStr(s1: String, s2: String) = if (s1.length >= s2.length) s1 else s2
+
       /** Function1 that finds the longest common substring where the target is matched against each segment of monkeyString */
       val longestCommonSubstring: (String) => String = (monkeyString: String) =>
         (0 to monkeyString.length - target.length)
@@ -103,7 +105,7 @@ class BookKeeper(numSims: Int, showProgress: Boolean=true) extends Actor with Ac
 
       val monkeyProps = Props(classOf[Monkey], target.length, allowableChars, longestCommonSubstring)
       1 to numMonkeyActors foreach { i =>
-        context.actorOf(monkeyProps, name=s"monkey-$i")  // create a Monkey from monkeyProps and the name s"monkey-$i"
+        // create a Monkey from monkeyProps and the name s"monkey-$i"
       }
 
     case MonkeyReady(monkey) =>
@@ -111,13 +113,10 @@ class BookKeeper(numSims: Int, showProgress: Boolean=true) extends Actor with Ac
       respondToMonkey(monkey)
 
     case MonkeyResult(result, monkey) =>
-      //if (result.length>0)
-        log.debug(s"BookKeeper got MonkeyResult message '$result' from ${monkey.path}")
+      log.debug(s"BookKeeper got MonkeyResult message '$result' from ${monkey.path}")
       respondToMonkey(monkey)
       handleResult(result)
   }
-
-  def longestStr(s1: String, s2: String) = if (s1.length >= s2.length) s1 else s2
 
   def matchSubstring(str1: String, str2: String): String =
     str1.view.zip(str2).takeWhile(Function.tupled(_ == _)).map(_._1).mkString
@@ -136,37 +135,40 @@ class BookKeeper(numSims: Int, showProgress: Boolean=true) extends Actor with Ac
       nSimsLeft -= 1
     if (nSimsLeft < 1) {
       log.debug(s"\nLongest common substring: '$bestResult'; nSimsLeft=$nSimsLeft")
-      context.children.foreach { monkey => context.stop(monkey) } // shut down all Monkey children
-      parent ! BestResult(bestResult) // send BestResult message back to calling context
-      context.stop(self) // shut down this BookKeeper Actor
+      // shut down all Monkey children
+      // send BestResult message back to calling context
+      // shut down this BookKeeper Actor
     }
   }
 
   /** Keep asking the given Monkey to type until nSimsLeft reaches zero. */
   def respondToMonkey(monkey: ActorRef) = {
-    if (nSimsLeft > 0) monkey ! DoSimulation(random.nextInt())
-    else context.stop(monkey)
+    if (nSimsLeft > 0) {
+      // send the monkey a DoSimulation message with a random seed
+    } else {
+      // shut down the monkey that sent the message
+    }
   }
 }
 
 /** @param strLen number of characters to generate during a simulation
-  * @param alphabet alphabet to use when generating characters
-  * @param scoringFn opaque scoring function that receives the generated string by this monkey simulation and returns the longest matching substring */
+ * @param alphabet alphabet to use when generating characters
+ * @param scoringFn opaque scoring function that receives the generated string by this monkey simulation and returns the longest matching substring */
 class Monkey(strLen: Int, alphabet: String, scoringFn: String => String) extends Actor with ActorLogging {
-  protected[solutions] val random = new Random()
-  protected[solutions] val alphabetLength = alphabet.length
+  val random = new Random()
+  val alphabetLength = alphabet.length
 
-  override def preStart() = context.parent ! MonkeyReady(self) // send MonkeyReady message to BookKeeper supervisor
+  override def preStart() = ??? // send MonkeyReady message to BookKeeper supervisor
 
   def receive = {
     case DoSimulation(seed) =>
       log.debug(s"Monkey ${self.path} got DoSimulation message")
       val resultStr = scoringFn(randomString)
-      sender ! MonkeyResult(resultStr, self) // reply to DoSimulation message with a MonkeyResult message
+      // reply to DoSimulation message with a MonkeyResult message
   }
 
   /** Generate a string of length n of random characters taken from alphabet */
-  protected[solutions] def randomString: String = (1 to strLen).map { _ =>
+  def randomString: String = (1 to strLen).map { _ =>
     val index = random.nextInt(alphabetLength)
     alphabet(index)
   }.mkString
