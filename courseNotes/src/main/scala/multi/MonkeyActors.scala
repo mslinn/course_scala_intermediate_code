@@ -74,7 +74,7 @@ case class MonkeyReady(monkey: ActorRef)
 /** A Monkey reports its results from running a simulation by sending this message */
 case class MonkeyResult(result: String, monkey: ActorRef)
 
-/** A Monkey reports its results from running a simulation by sending this message */
+/** BookKeeper reports the best match from running the simulation by sending this message */
 case class BestResult(result: String)
 
 
@@ -142,13 +142,12 @@ class BookKeeper(numSims: Int, showProgress: Boolean=true) extends Actor with Ac
   }
 
   /** Keep asking the given Monkey to type until nSimsLeft reaches zero. */
-  def respondToMonkey(monkey: ActorRef) = {
+  def respondToMonkey(monkey: ActorRef) =
     if (nSimsLeft > 0) {
       // send the monkey a DoSimulation message with a random seed
     } else {
       // shut down the monkey that sent the message
     }
-  }
 }
 
 /** @param strLen number of characters to generate during a simulation

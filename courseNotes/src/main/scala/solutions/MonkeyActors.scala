@@ -74,7 +74,7 @@ case class MonkeyReady(monkey: ActorRef)
 /** A Monkey reports its results from running a simulation by sending this message */
 case class MonkeyResult(result: String, monkey: ActorRef)
 
-/** A Monkey reports its results from running a simulation by sending this message */
+/** BookKeeper reports the best match from running the simulation by sending this message */
 case class BestResult(result: String)
 
 
