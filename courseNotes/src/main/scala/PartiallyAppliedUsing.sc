@@ -1,3 +1,13 @@
+object UnlessRevisited {
+  def unless(cond: Boolean)(body: => Unit): Unit = if (!cond) body
+
+  val guardAgainstZero = unless(x == 0) _
+  x = 1
+  guardAgainstZero { println(s"I can divide by x because I'm guarded: ${3 / x}") }
+  x = 0
+  guardAgainstZero { println(s"I can divide by x because I'm guarded: ${3 / x}") }
+}
+
 object PartiallyApplliedUsing {
   import java.io._
   import scala.util.{Failure, Success, Try}

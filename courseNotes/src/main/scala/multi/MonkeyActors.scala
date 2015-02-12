@@ -103,7 +103,7 @@ class BookKeeper(numSims: Int, showProgress: Boolean=true) extends Actor with Ac
           .map(j => matchSubstring(monkeyString.drop(j), target))
           .foldLeft("")(longestStr)
 
-      val monkeyProps = Props(classOf[Monkey], target.length, allowableChars, longestCommonSubstring)
+      val monkeyProps: Props = Props(classOf[Monkey], target.length, allowableChars, longestCommonSubstring)
       1 to numMonkeyActors foreach { i =>
         // create a Monkey from monkeyProps and the name s"monkey-$i"
       }
