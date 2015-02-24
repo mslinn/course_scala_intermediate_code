@@ -33,3 +33,57 @@ object EnhanceMyLibrary extends App {
   println(s"""dog.fetch(new Stick) => ${dog.fetch(new Stick)}""")
   println(s"""dog.fetch(new Ball("green")) => ${dog.fetch(new Ball("green"))}""")
 }
+
+object Rates extends App {
+  import SymbolToCurrency._
+
+  println('CAD(100.0))
+  println('USD(100.0))
+  println('JPY(100.0))
+  println('BLA(100.0))
+}
+
+object SymbolToCurrency {
+  /** See https://openexchangerates.org/quick-start */
+  implicit class SymbolLookup(val symbol: Symbol) extends AnyVal {
+    @inline def apply(value: Double): String = try {
+      val convertedValue = value * rateMap(symbol)
+      s"$convertedValue ${symbol.name}"
+    } catch {
+      case nsee: NoSuchElementException =>
+        println(s"Currency ${symbol.name} unknown. Available currencies are: ${rateMap.keys.map(_.name).toSeq.sorted.mkString(", ")}")
+        ""
+    }
+  }
+
+  // define open exchange key as an environment variable before runnin this (bogus key shown):
+  // export OPEN_EXCHANGE_KEY=7364734638483498732987423
+  protected val openExchangeKey = sys.env("OPEN_EXCHANGE_KEY")
+  protected val urlStr = s"http://openexchangerates.org/api/latest.json?app_id=$openExchangeKey"
+  protected val latestRates: String = io.Source.fromURL(urlStr).mkString
+  protected val RateRegex = """(?s)rates.: \{(.*?)\}""".r.unanchored
+  protected val RateRegex(rates) = latestRates
+
+  protected val rateTuples: List[(Symbol, Double)] = (for {
+    rateStr <- rates.split(",").toList
+  } yield {
+    rateStr.replaceAll("[ \n\"]", "").split(":") match {
+      case Array(k, v) =>
+        try {
+          Some(Symbol(k) -> v.toDouble)
+        } catch {
+          case e: Exception =>
+            println(s"${e.getClass.getName} while parsing $v: ${e.getMessage}; ignored")
+            None
+        }
+
+      case wat =>
+        println(s"$wat could not be parsed, ignored")
+        None
+    }
+  }).flatten
+
+  protected val rateMap: Map[Symbol, Double] = rateTuples.toMap
+
+  def apply(symbol: Symbol): Double = rateMap(symbol)
+}
