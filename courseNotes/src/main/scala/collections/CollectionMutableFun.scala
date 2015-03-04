@@ -73,7 +73,7 @@ object CMap extends App {
   println(s"cmap5 = $cmap5")
 }
 
-object Memo extends App with Memoize {
+object Memo extends App with MemoizeBaby {
 
   /** method to be memoized */
   def method1(i: Int): Int = {
@@ -105,8 +105,9 @@ object Memo extends App with Memoize {
   }
 }
 
-trait Memoize {
-  /** Transform given Function1 instance into another Function1 instance backed by a WeakHashMap for memoization of parameter/result pairs.
+trait MemoizeBaby {
+  /** Version just for learning.
+    * Transform given Function1 instance into another Function1 instance backed by a WeakHashMap for memoization of parameter/result pairs.
     * @param f Must be Function1 (single argument)
     * @param name displayed for this memoized Function, only used for debugging; remove for production code */
   def memoize[Key, Value](f: Key => Value, name: String="") = {
@@ -118,3 +119,17 @@ trait Memoize {
     }
   }
 }
+
+trait Memoize {
+  /** Transform given Function1 instance into another Function1 instance backed by a WeakHashMap for memoization of parameter/result pairs.
+    * @param f Must be Function1 (single argument)
+    * @param name displayed for this memoized Function, only used for debugging; remove for production code */
+  def memoize[Key, Value](f: Key => Value) = {
+    /** Each memoized Function has its own cache */
+    val cache = collection.mutable.WeakHashMap.empty[Key, Value]
+    (key: Key) => {
+      cache.getOrElseUpdate(key, f(key))
+    }
+  }
+}
+
