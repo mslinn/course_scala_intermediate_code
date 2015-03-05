@@ -1,22 +1,6 @@
 package solutions
 
-class Memoize[T, R](f: T => R) {
-  private[this] val vals = collection.mutable.Map.empty[T, R]
-
-  def apply(x: T): R =
-    if (vals.keySet.contains(x)) {
-      vals(x)
-    } else {
-      val y = f(x)
-      vals += x -> y
-      y
-    }
-}
-
-object Memoize {
-  def apply[T, R](f: T => R) = new Memoize(f)
-}
-
+import moar.Memoizer
 
 object MemoDemo extends App {
   val calculatePiFor: Int => Double = (decimals: Int) => {
@@ -35,7 +19,7 @@ object MemoDemo extends App {
     result
   }
 
-  val piMemoized = Memoize(calculatePiFor)
+  val piMemoized = Memoizer(calculatePiFor)
 
   def doIt(n: Int): Double = time(s"pi to $n decimals")(piMemoized(n))
 

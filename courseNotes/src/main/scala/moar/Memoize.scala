@@ -58,7 +58,41 @@ trait Memoize {
   }
 }
 
-object MemoizeCurry extends App with Memoize {
+class Memoizer[T, R](f: T => R) {
+  private[this] val vals = collection.mutable.Map.empty[T, R]
+
+  def apply(x: T): R =
+    if (vals.keySet.contains(x)) {
+      vals(x)
+    } else {
+      val y = f(x)
+      vals += x -> y
+      y
+    }
+}
+
+object Memoizer {
+  def apply[T, R](f: T => R) = new Memoizer(f)
+}
+
+
+object MemoizeTuple extends App with Memoize {
+  import scala.language.postfixOps
+
+  def dupChop(string: String, times: Int, maxLength: Int): String = {
+    val result = string * times
+    result.substring(0, math.min(result.length, maxLength))
+  }
+
+  val tupledDupChop = dupChop _ tupled
+
+  val tuple = ("hi ", 3, 10)
+  tupledDupChop(tuple)
+  val tdc = memoize(tupledDupChop)
+  tdc(tuple)
+}
+
+object MemoizePF extends App with Memoize {
   /** method to be memoized */
   def method(i: Int, string: String): String = string * i
 
