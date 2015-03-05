@@ -1,8 +1,10 @@
 package solutions
 
 object MemoProd extends App with moar.Memoize {
-  val f1: Int => Int = memoize(moar.Memo.method1)
-  val f2: Int => Int = memoize(moar.Memo.method2)
+  import moar.Memo.{method1, method2}
+
+  val f1: Int => Int = memoize(method1)
+  val f2: Int => Int = memoize(method2)
 
   // Compute values; side effect: memoizes results into caches
   1 to 3 foreach { i =>
