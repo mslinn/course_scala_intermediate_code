@@ -58,10 +58,10 @@ trait Memoize {
   }
 }
 
-class Memoizer[T, R](f: T => R) {
-  private[this] val vals = collection.mutable.Map.empty[T, R]
+class Memoizer[Key, Value](f: Key => Value) {
+  private[this] val vals = collection.mutable.Map.empty[Key, Value]
 
-  def apply(x: T): R =
+  def apply(x: Key): Value =
     if (vals.keySet.contains(x)) {
       vals(x)
     } else {
@@ -72,7 +72,7 @@ class Memoizer[T, R](f: T => R) {
 }
 
 object Memoizer {
-  def apply[T, R](f: T => R) = new Memoizer(f)
+  def apply[Key, Value](function1: Key => Value) = new Memoizer(function1)
 }
 
 
