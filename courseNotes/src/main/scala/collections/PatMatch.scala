@@ -12,7 +12,7 @@ object IsEmpty extends App {
 
   println(s"List(1, 2, 3).isEmpty=${List(1, 2, 3).isEmpty}")
   println(s"Array(1, 2).isEmpty=${Array(1, 2).isEmpty}")
-  println(s"List.empty.isEmpty=${List.empty.isEmpty}")
+  println(s"Vector.empty.isEmpty=${Vector.empty.isEmpty}")
 }
 
 object HasLeadingZero extends App {
