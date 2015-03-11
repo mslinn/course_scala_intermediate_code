@@ -16,20 +16,41 @@ object IsEmpty extends App {
 }
 
 object HasLeadingZero extends App {
-  def hasLeadingZero(seq: Seq[Int]) =
+  def hasLeadingZero(seq: Seq[Int]): Boolean =
     seq match {
       case Seq(0, _*) => true
+      case _ ⇒ false
+    }
+
+  def hasLeadingZero(array: Array[Int]): Boolean =
+    array match {
+      case Array(0, _*) => true
+      case _ ⇒ false
+    }
+
+  def hasLeadingZero2(seq: Seq[Int]): Boolean =
+    seq match {
+      case Seq(0, remainder) => true
       case _ ⇒ false
     }
 
   println(s"hasLeadingZero(List(0, 1, 2))=${hasLeadingZero(List(0, 1, 2))}")
   println(s"hasLeadingZero(List(1, 2, 3)) = ${hasLeadingZero(List(1, 2, 3))}")
 
+  println(s"hasLeadingZero(Array(0, 1, 2))=${hasLeadingZero(Array(0, 1, 2))}")
+  println(s"hasLeadingZero(Array(1, 2, 3)) = ${hasLeadingZero(Array(1, 2, 3))}")
 
-  def hasLeading0(seq: Seq[Int]) = seq.headOption.contains(0)
+  println(s"hasLeadingZero2(List(0, 1, 2))=${hasLeadingZero(List(0, 1, 2))}")
+  println(s"hasLeadingZero2(List(1, 2, 3)) = ${hasLeadingZero(List(1, 2, 3))}")
+
+
+  def hasLeading0(seq: Seq[Int]): Boolean = seq.headOption.contains(0)
 
   println(s"hasLeading0(List(0, 1, 2))=${hasLeading0(List(0, 1, 2))}")
   println(s"hasLeading0(List(1, 2, 3)) = ${hasLeading0(List(1, 2, 3))}")
+
+  println(s"hasLeading0(Array(0, 1, 2))=${hasLeading0(Array(0, 1, 2))}")
+  println(s"hasLeading0(Array(1, 2, 3)) = ${hasLeading0(Array(1, 2, 3))}")
 }
 
 object MatchAlias extends App {
@@ -56,12 +77,26 @@ object MatchAlias extends App {
 }
 
 object ListExtractAnyLen extends App {
-  val result = "one two three blah blah".split(" ").toList match {
+  def extract[T](list: List[T]): String = list match {
     case x1 :: x2 :: x3 :: rest => s"x1=$x1, x2=$x2, x3=$x3"
     case _ => "Nope"
   }
 
-  println(result)
+  def extract[T](array: Array[T]): String = extract(array.toList)
+
+  def extract2[T](list: List[T]): String = list match {
+      case List(x1, x2, x3, _*) => s"x1=$x1, x2=$x2, x3=$x3"
+      case _ => "Nope"
+    }
+
+  def extract2[T](array: Array[T]): String = array match {
+    case Array(x1, x2, x3, _*) => s"x1=$x1, x2=$x2, x3=$x3"
+    case _ => "Nope"
+  }
+
+  println(s"""extract("one two three blah blah".split(" ")=${extract("one two three blah blah".split(" "))}""")
+  println(s"""extract2("one two three blah blah".split(" ").toList=${extract2("one two three blah blah".split(" ").toList)}""")
+  println(s"""extract2("one two three blah blah".split(" ")=${extract2("one two three blah blah".split(" "))}""")
 }
 
 object ListExtractAssertLen extends App {
@@ -70,7 +105,13 @@ object ListExtractAssertLen extends App {
     case _ => "Nope"
   }
 
+  val result2 = "one two three".split(" ") match {
+    case Array(x1, x2, x3) => s"x1=$x1, x2=$x2, x3=$x3"
+    case _ => "Nope"
+  }
+
   println(result)
+  println(result2)
 }
 
 object VectorHeadTail extends App {

@@ -1,8 +1,8 @@
 package solutions
 
 object ExtractFileType extends App {
-  def findExtension(s: String): Option[String] = s.reverse.split("\\.").toList match {
-    case ext :: remainder if ext.nonEmpty => Some(ext.reverse)
+  def findExtension(s: String): Option[String] = s.reverse.split("\\.") match {
+    case Array(ext, _*) if ext.nonEmpty => Some(ext.reverse)
     case _ => None
   }
 
