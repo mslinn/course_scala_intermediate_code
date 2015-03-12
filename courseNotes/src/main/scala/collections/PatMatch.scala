@@ -64,27 +64,47 @@ object HasLeadingZero extends App {
   println(s"hasLeading0(Array(1, 2, 3)) = ${hasLeading0(Array(1, 2, 3))}")
 }
 
+/** Your mission: eat dessert.
+  * Meals with only 1 course do not have dessert, so you can only eat dessert as part of a 3 course meal.
+  * You can feed the first course to the dog if you don't like it, but the dog cannot eat spinach since that is poisonous to dogs. */
 object MatchAlias extends App {
-  def isReadme(string: String): Boolean = string.toLowerCase.startsWith("readme")
-
-  val mergeStrategy = List("a", "b", "README.md")
-
-  val result = mergeStrategy match {
-    case Seq("reference.conf") => Some("MergeStrategy.concat")
-    case Seq(ps @ _*) if isReadme(ps.last) => Some("MergeStrategy.rename")
-    case _ => None
+  case class Food(name: String, calories: Int, yumminess: Int) {
+    def dogCanEat = name!="Spinach"
   }
 
-  println(s"result=$result")
+  case class Menu(foods: Food*) {
+    def totalCalories = foods.map(_.calories).sum
 
+    def mostYucky = foods.sortBy(_.yumminess).head
 
-  val result2 = mergeStrategy match {
-    case Seq("reference.conf") => Some("MergeStrategy.concat")
-    case ps: Seq[String] if isReadme(ps.last) => Some("MergeStrategy.rename")
-    case _ => None
+    def mostTasty = foods.sortBy(_.yumminess).reverse.head
+
+    def isWorthOrdering: Boolean = {
+      //println(s"totalCalories=$totalCalories; mostYucky.yumminess=${mostYucky.yumminess}; mostTasty.yumminess=${mostTasty.yumminess}")
+      totalCalories<200 || (mostYucky.yumminess>=3 && mostTasty.yumminess>=9)
+    }
+
+    override def toString = s"${foods.map(_.name).mkString("_")}: totalCalories=$totalCalories; mostYucky=${mostYucky.name}; mostTasty=${mostTasty.name}"
   }
 
-  println(s"result2=$result2")
+  val course1a = Food("Spinach",  10,  2)
+  val course2a = Food("Turnips",  10,  1)
+  val course1b = Food("Peas",     50,  5)
+  val course2b = Food("Potatoes", 110, 6)
+  val dessert  = Food("BelgianChocolate", 135, 9)
+
+  val menu1 = Menu(course1a)
+  val menu2 = Menu(course1a, course2a)
+  val menu3 = Menu(course1a, course2a, dessert)
+  val menu4 = Menu(course1b, course2a, dessert)
+  val menu5 = Menu(course1b, course2b, dessert)
+
+  val result = List(menu1, menu2, menu3, menu4, menu5) filter {
+    case menu @ Menu(c1, c2, c3) if menu.isWorthOrdering || c1.dogCanEat => true
+    case _ => false
+  }
+
+  println(result.mkString("\n"))
 }
 
 object ListExtractAnyLen extends App {
