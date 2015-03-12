@@ -81,7 +81,7 @@ object MatchAlias extends App {
 
     def isWorthOrdering: Boolean = {
       //println(s"totalCalories=$totalCalories; mostYucky.yumminess=${mostYucky.yumminess}; mostTasty.yumminess=${mostTasty.yumminess}")
-      totalCalories<200 || (mostYucky.yumminess>=3 && mostTasty.yumminess>=9)
+      totalCalories<200 || mostTasty.yumminess>=9
     }
 
     override def toString = s"${foods.map(_.name).mkString("_")}: totalCalories=$totalCalories; mostYucky=${mostYucky.name}; mostTasty=${mostTasty.name}"
