@@ -34,8 +34,19 @@ object HasLeadingZero extends App {
       case _ ⇒ false
     }
 
+  def hasLeadingZero2(array: Array[Int]): Boolean =
+    array match {
+      case Array(0, remainder) => true
+      case _ ⇒ false
+    }
+
+  def hasLeading0(seq: Seq[Int]): Boolean = seq.headOption.contains(0)
+
   println(s"hasLeadingZero(List(0, 1, 2))=${hasLeadingZero(List(0, 1, 2))}")
   println(s"hasLeadingZero(List(1, 2, 3)) = ${hasLeadingZero(List(1, 2, 3))}")
+
+  println(s"hasLeadingZero(List(0))=${hasLeadingZero(List(0))}")
+  println(s"hasLeadingZero(List(1)) = ${hasLeadingZero(List(1))}")
 
   println(s"hasLeadingZero(Array(0, 1, 2))=${hasLeadingZero(Array(0, 1, 2))}")
   println(s"hasLeadingZero(Array(1, 2, 3)) = ${hasLeadingZero(Array(1, 2, 3))}")
@@ -43,8 +54,8 @@ object HasLeadingZero extends App {
   println(s"hasLeadingZero2(List(0, 1, 2))=${hasLeadingZero(List(0, 1, 2))}")
   println(s"hasLeadingZero2(List(1, 2, 3)) = ${hasLeadingZero(List(1, 2, 3))}")
 
-
-  def hasLeading0(seq: Seq[Int]): Boolean = seq.headOption.contains(0)
+  println(s"hasLeadingZero2(Array(0, 1, 2))=${hasLeadingZero(Array(0, 1, 2))}")
+  println(s"hasLeadingZero2(Array(1, 2, 3)) = ${hasLeadingZero(Array(1, 2, 3))}")
 
   println(s"hasLeading0(List(0, 1, 2))=${hasLeading0(List(0, 1, 2))}")
   println(s"hasLeading0(List(1, 2, 3)) = ${hasLeading0(List(1, 2, 3))}")
@@ -94,9 +105,18 @@ object ListExtractAnyLen extends App {
     case _ => "Nope"
   }
 
+  def extract3[T](list: List[T]): String = list match {
+      case List(x1, x2, x3, remainder) => s"x1=$x1, x2=$x2, x3=$x3"
+      case _ => "Nope"
+    }
+
+  def extract3[T](array: Array[T]): String = extract3(array.toList)
+
   println(s"""extract("one two three blah blah".split(" ")=${extract("one two three blah blah".split(" "))}""")
   println(s"""extract2("one two three blah blah".split(" ").toList=${extract2("one two three blah blah".split(" ").toList)}""")
   println(s"""extract2("one two three blah blah".split(" ")=${extract2("one two three blah blah".split(" "))}""")
+  println(s"""extract3("one two three blah blah".split(" ").toList=${extract3("one two three blah blah".split(" ").toList)}""")
+  println(s"""extract3("one two three blah blah".split(" ")=${extract3("one two three blah blah".split(" "))}""")
 }
 
 object ListExtractAssertLen extends App {
