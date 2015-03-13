@@ -64,49 +64,6 @@ object HasLeadingZero extends App {
   println(s"hasLeading0(Array(1, 2, 3)) = ${hasLeading0(Array(1, 2, 3))}")
 }
 
-/** Your mission: eat dessert.
-  * Meals with only 1 course do not have dessert, so you can only eat dessert as part of a 3 course meal.
-  * You can feed the first course to the dog if you don't like it, but the dog cannot eat spinach since that is poisonous to dogs. */
-object MatchAlias extends App {
-  case class Food(name: String, calories: Int, yumminess: Int) {
-    def dogCanEat = name!="Spinach"
-  }
-
-  case class Menu(foods: Food*) {
-    def totalCalories = foods.map(_.calories).sum
-
-    def mostYucky = foods.sortBy(_.yumminess).head
-
-    def mostTasty = foods.sortBy(_.yumminess).last
-
-    def isWorthOrdering: Boolean = {
-      //println(s"totalCalories=$totalCalories; mostYucky.yumminess=${mostYucky.yumminess}; mostTasty.yumminess=${mostTasty.yumminess}")
-      totalCalories<200 || mostTasty.yumminess>=9
-    }
-
-    override def toString = s"${foods.map(_.name).mkString("_")}: totalCalories=$totalCalories; mostYucky=${mostYucky.name}; mostTasty=${mostTasty.name}"
-  }
-
-  val course1a = Food("Spinach",  10,  2)
-  val course2a = Food("Turnips",  10,  1)
-  val course1b = Food("Peas",     50,  5)
-  val course2b = Food("Potatoes", 110, 6)
-  val dessert  = Food("BelgianChocolate", 135, 9)
-
-  val menu1 = Menu(course1a)
-  val menu2 = Menu(course1a, course2a)
-  val menu3 = Menu(course1a, course2a, dessert)
-  val menu4 = Menu(course1b, course2a, dessert)
-  val menu5 = Menu(course1b, course2b, dessert)
-
-  val result = List(menu1, menu2, menu3, menu4, menu5) filter {
-    case menu @ Menu(c1, c2, c3) if menu.isWorthOrdering || c1.dogCanEat => true
-    case _ => false
-  }
-
-  println(result.mkString("\n"))
-}
-
 object ListExtractAnyLen extends App {
   def extract[T](list: List[T]): String = list match {
     case x1 :: x2 :: x3 :: rest => s"x1=$x1, x2=$x2, x3=$x3"
@@ -167,11 +124,54 @@ object VectorHeadTail extends App {
 
 object VectorInitLast extends App {
   def maybeInitLast[A](vector: Vector[A]): Option[(Vector[A], A)] = vector match {
-    case head :+ last => Some(head -> last)
+    case init :+ last => Some(init -> last)
     case _ => None
   }
 
   println(s"maybeInitLast(Vector(1, 2, 3, 4))=${maybeInitLast(Vector(1, 2, 3, 4))}")
   println(s"maybeInitLast(Vector(1))=${maybeInitLast(Vector(1))}")
   println(s"maybeInitLast(Vector())=${maybeInitLast(Vector())}")
+}
+
+/** Your mission: eat dessert.
+  * Meals with only 1 course do not have dessert, so you can only eat dessert as part of a 3 course meal.
+  * You can feed the first course to the dog if you don't like it, but the dog cannot eat spinach since that is poisonous to dogs. */
+object MatchAlias extends App {
+  case class Food(name: String, calories: Int, yumminess: Int) {
+    def dogCanEat = name!="Spinach"
+  }
+
+  case class Menu(foods: Food*) {
+    def totalCalories = foods.map(_.calories).sum
+
+    def mostYucky = foods.sortBy(_.yumminess).head
+
+    def mostTasty = foods.sortBy(_.yumminess).last
+
+    def isWorthOrdering: Boolean = {
+      //println(s"totalCalories=$totalCalories; mostYucky.yumminess=${mostYucky.yumminess}; mostTasty.yumminess=${mostTasty.yumminess}")
+      totalCalories<200 || mostTasty.yumminess>=9
+    }
+
+    override def toString = s"${foods.map(_.name).mkString("_")}: totalCalories=$totalCalories; mostYucky=${mostYucky.name}; mostTasty=${mostTasty.name}"
+  }
+
+  val course1a = Food("Spinach",  10,  2)
+  val course2a = Food("Turnips",  10,  1)
+  val course1b = Food("Peas",     50,  5)
+  val course2b = Food("Potatoes", 110, 6)
+  val dessert  = Food("BelgianChocolate", 135, 9)
+
+  val menu1 = Menu(course1a)
+  val menu2 = Menu(course1a, course2a)
+  val menu3 = Menu(course1a, course2a, dessert)
+  val menu4 = Menu(course1b, course2a, dessert)
+  val menu5 = Menu(course1b, course2b, dessert)
+
+  val result = List(menu1, menu2, menu3, menu4, menu5) filter {
+    case menu @ Menu(c1, c2, c3) if menu.isWorthOrdering || c1.dogCanEat => true
+    case _ => false
+  }
+
+  println(result.mkString("\n"))
 }
