@@ -77,7 +77,7 @@ object MatchAlias extends App {
 
     def mostYucky = foods.sortBy(_.yumminess).head
 
-    def mostTasty = foods.sortBy(_.yumminess).reverse.head
+    def mostTasty = foods.sortBy(_.yumminess).last
 
     def isWorthOrdering: Boolean = {
       //println(s"totalCalories=$totalCalories; mostYucky.yumminess=${mostYucky.yumminess}; mostTasty.yumminess=${mostTasty.yumminess}")
