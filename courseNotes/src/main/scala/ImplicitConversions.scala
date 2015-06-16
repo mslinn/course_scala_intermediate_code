@@ -1,3 +1,5 @@
+import scala.language.implicitConversions
+
 object ImplicitConversions extends App {
   implicit val defaultMultiplier = Multiplier3(2)
 

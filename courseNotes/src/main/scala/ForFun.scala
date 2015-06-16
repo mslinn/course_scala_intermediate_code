@@ -156,9 +156,6 @@ object ForFunMonads extends App {
 
 object EitherFun extends App {
   val a: Either[Int, Int] = Right(1)
-  val b: Either[Int, Int] = Left(1)
-
-  val a: Either[Int, Int] = Right(1)
   val b: Either[Int, Int] = Left(2)
   val c: Either[Int, Int] = Left(3)
 
