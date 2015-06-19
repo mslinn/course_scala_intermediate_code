@@ -39,6 +39,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 initialCommands in console := """import akka.actor._
                                 |import akka.pattern.ask
                                 |import akka.util.Timeout
+                                |import scala.language.postfixOps
                                 |import java.io.File
                                 |import java.net.URL
                                 |import concurrent._
