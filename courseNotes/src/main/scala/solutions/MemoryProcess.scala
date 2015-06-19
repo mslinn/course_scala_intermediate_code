@@ -8,11 +8,6 @@ object MemoryProcess extends App {
   val os = new java.io.ByteArrayOutputStream
   p #> os !;
   os.toString.split(" ") foreach { w =>
-    val word = w.length match {
-      case 0 => ""
-      case 1 => w.toUpperCase
-      case _ => w.substring(0, 1).toUpperCase + w.substring(1)
-    }
-    print(s" $word")
+    print(s" ${w.capitalize}")
   }
 }
