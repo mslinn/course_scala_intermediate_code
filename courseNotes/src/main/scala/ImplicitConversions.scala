@@ -89,6 +89,8 @@ object ImplicitCoercion extends App {
   implicit def doubleToComplex(d: Double): Complex = Complex(d, 0)
 
   println(s"""Complex(2.0, 5.0) + 5.0 = ${Complex(2.0, 5.0) + 5.0}""")
+  println(s"""Complex(2.0, 5.0) + 6 = ${Complex(2.0, 5.0) + 6}""")
+  println(s"""Complex(2.0, 5) + 6f = ${Complex(2.0, 5.0) + 6f}""")
   println(s"""5.0 + Complex(1.0, -2.0) = ${5.0 + Complex(1.0, -2.0)}""")
 }
 
