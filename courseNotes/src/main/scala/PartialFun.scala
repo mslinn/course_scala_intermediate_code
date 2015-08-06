@@ -184,7 +184,7 @@ object PartialFun2 extends App {
 object PartialFun3 extends App {
   import scala.util.{Failure, Success, Try}
 
-  def handleTry[A](theTry: Try[String]): Unit = theTry match {
+  def handleTry(theTry: Try[String]): Unit = theTry match {
     case Success(word) if word.toLowerCase.contains("secret") =>
       println(s"You typed the secret word!")
 
