@@ -180,3 +180,26 @@ object PartialFun2 extends App {
     println(s"You know $yourKnowledge")
   }
 }
+
+object PartialFun3 extends App {
+  import scala.util.{Failure, Success, Try}
+
+  def handleTry[A](theTry: Try[String]): Unit = theTry match {
+    case Success(word) if word.toLowerCase.contains("secret") =>
+      println(s"You typed the secret word!")
+
+    case Success(value) if value.trim.nonEmpty =>
+      println(s"Found an unexpected word: '$value'")
+
+    case Success(whatever) =>
+      println(s"Got an empty string")
+
+    case Failure(err) =>
+      println(s"Error: ${err.getMessage}")
+  }
+
+  handleTry(Success("blah"))
+  handleTry(Failure(new Exception("blah")))
+  handleTry(Try("I know your secret"))
+  handleTry(Try("  "))
+}
