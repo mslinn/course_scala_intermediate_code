@@ -92,13 +92,13 @@ class TimedCache[Key<:Object, Value<:Object](val concurrencyLevel: Int=4, val ti
   import com.google.common.cache.{Cache, CacheBuilder}
   import scala.concurrent.Future
 
-  lazy val gCache: Cache[Key, Value] = CacheBuilder.newBuilder()
+  lazy val underlying: Cache[Key, Value] = CacheBuilder.newBuilder()
     .concurrencyLevel(concurrencyLevel)
     .softValues()
-    .expireAfterWrite(timeoutMinutes, TimeUnit.MINUTES)
+    .expireAfterAccess(timeoutMinutes, TimeUnit.MINUTES)
     .build[Key, Value]
 
-  @inline def getWithDefault(key: Key, defaultValue: => Value): Value = gCache.get(key,
+  @inline def getWithDefault(key: Key, defaultValue: => Value): Value = underlying.get(key,
     new Callable[Value] {
       override def call: Value = defaultValue
     }
@@ -107,9 +107,9 @@ class TimedCache[Key<:Object, Value<:Object](val concurrencyLevel: Int=4, val ti
   @inline def getAsyncWithDefault(key: Key, defaultValue: => Value): Future[Value] =
     Future { getWithDefault(key, defaultValue) }
 
-  @inline def put(key: Key, value: Value): Unit = gCache.put(key, value)
+  @inline def put(key: Key, value: Value): Unit = underlying.put(key, value)
 
-  @inline def putAsync(key: Key, value: => Value): Future[Unit] = Future { gCache.put(key, value) }
+  @inline def putAsync(key: Key, value: => Value): Future[Unit] = Future { underlying.put(key, value) }
 }
 
 object TimedCache {
