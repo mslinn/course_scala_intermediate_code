@@ -1,7 +1,7 @@
 package solutions
 
-object MemoProd extends App with moar.Memoize {
-  import moar.Memo.{method1, method2}
+object MemoProd extends App with cache.Memoize {
+  import cache.Memo.{method1, method2}
 
   val f1: Int => Int = memoize(method1)
   val f2: Int => Int = memoize(method2)

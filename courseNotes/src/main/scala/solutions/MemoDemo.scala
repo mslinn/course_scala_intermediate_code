@@ -1,6 +1,6 @@
 package solutions
 
-import moar.Memoizer
+import cache.Memoizer
 
 object MemoDemo extends App {
   val calculatePiFor: Int => Double = (decimals: Int) => {

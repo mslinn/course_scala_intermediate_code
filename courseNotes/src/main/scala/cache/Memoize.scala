@@ -1,4 +1,4 @@
-package moar
+package cache
 
 object Memo extends App with MemoizeBaby {
   /** method to be memoized */
