@@ -73,3 +73,47 @@ object CMap extends App {
   println(s"cmap5 = $cmap5")
 }
 
+object GMap extends App {
+  import scala.concurrent.ExecutionContext.Implicits._
+  type Key = String
+  type Value = String
+
+  def defaultValue(key: Key): Value = s"$key value"
+
+  val gCache = TimedCache[Key, Value]()
+
+  val x: Value = gCache.getWithDefault("2", defaultValue("2")) // computes defaultValue
+  val y: Value = gCache.getWithDefault("2", defaultValue("2")) // uses cached defaultValue
+}
+
+class TimedCache[Key<:Object, Value<:Object](val concurrencyLevel: Int=4, val timeoutMinutes: Int=5)
+                                            (implicit ec: scala.concurrent.ExecutionContext) {
+  import java.util.concurrent.{Callable, TimeUnit}
+  import com.google.common.cache.{Cache, CacheBuilder}
+  import scala.concurrent.Future
+
+  lazy val underlying: Cache[Key, Value] = CacheBuilder.newBuilder()
+    .concurrencyLevel(concurrencyLevel)
+    .softValues()
+    .expireAfterAccess(timeoutMinutes, TimeUnit.MINUTES)
+    .build[Key, Value]
+
+  @inline def getWithDefault(key: Key, defaultValue: => Value): Value = underlying.get(key,
+    new Callable[Value] {
+      override def call: Value = defaultValue
+    }
+  )
+
+  @inline def getAsyncWithDefault(key: Key, defaultValue: => Value): Future[Value] =
+    Future { getWithDefault(key, defaultValue) }
+
+  @inline def put(key: Key, value: Value): Unit = underlying.put(key, value)
+
+  @inline def putAsync(key: Key, value: => Value): Future[Unit] = Future { underlying.put(key, value) }
+}
+
+object TimedCache {
+  @inline def apply[Key<:Object, Value<:Object](concurrencyLevel: Int=4, timeoutMinutes: Int=5)
+                                               (implicit ec: scala.concurrent.ExecutionContext) =
+    new TimedCache[Key, Value](concurrencyLevel, timeoutMinutes){}
+}

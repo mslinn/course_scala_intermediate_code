@@ -1,7 +1,8 @@
-import sys.process._
+import scala.language.postfixOps
+import scala.sys.process._
 
 object ProcessIO extends App {
-  val passwds = "cat /etc/passwd" !!;
+  val passwds = "ps -u" !!;
   println(s"passwds=$passwds")
 
   val fileNames = "ls" !!;
@@ -48,20 +49,22 @@ object ComposedPBuilders extends App {
   import java.io.File
   import java.net.URL
 
-  def readUrlPBuilder(url: String, fileName: String): ProcessBuilder = new URL(url) #> new File(fileName) cat
-
-  readUrlPBuilder("http://scalacourses.com", "scalaCourses.html") !;
-  println("cat scalaCourses.html" !)
-
-  try {
-    readUrlPBuilder("http://n_o_s_u_c_h.com", "nosuch.html") !
+  /** Reads the contents of the web page at `url` and saves into `fileName` */
+  def readUrlPBuilder(urlStr: String, fileName: String): ProcessBuilder = try {
+    val url = new URL(urlStr)
+    url.openConnection().connect() // Might trigger an Exception in the current thread
+    url #> new File(fileName) cat  // should not fail in other thread
   } catch {
-    case e: Exception => println(e.getMessage)
+    case e: Exception =>
+      println(s"${e.getClass.getName}: ${e.getMessage}")
+      Process(false)  // return a failed Process
   }
 
-  val yes = readUrlPBuilder("http://scalacourses.com", "scalacourses.html") #&& "echo yes" !!;
-  println(s"yes=$yes")
+  readUrlPBuilder("http://scalacourses.com", "scalaCourses.html") !; // note the semicolon
+  val wc = ("cat scalaCourses.html" #> "wc" !!) split " |\r|\n" filter(_.nonEmpty)
+  println(s"scalacourses.com has ${wc(0)} lines, ${wc(1)} words and ${wc(2)} characters.")
 
-  val no = readUrlPBuilder("http://n_o_s_u_c_h.com", "nosuch.html") #|| "echo no" !!;
-  println(s"no=$no")
+  readUrlPBuilder("http://n_o_s_u_c_h.com", "nosuch.html")
+  readUrlPBuilder("http://scalacourses.com", "scalacourses.html") #&& "echo yes" !; // note the semicolon
+  readUrlPBuilder("http://n_o_s_u_c_h.com", "nosuch.html") #|| "echo no" !
 }

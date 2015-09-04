@@ -153,3 +153,133 @@ object ForFunMonads extends App {
   } yield j*i
   println(reps(List(1, 2, 3), Some("a")))
 }
+
+object EitherFun extends App {
+  val a: Either[Int, Int] = Right(1)
+  val b: Either[Int, Int] = Left(2)
+  val c: Either[Int, Int] = Left(3)
+
+  val r1a = for {
+    x <- a.right
+  } yield x
+  println(s"r1a=$r1a")
+
+  val r1b = for {
+    x <- a.left
+  } yield x
+  println(s"r1b=$r1b")
+
+  val r2a = for {
+    x <- a.right
+    y <- b.right
+  } yield y
+  println(s"r2a=$r2a")
+
+  val r2b = for {
+    x <- a.right
+    y <- b.left
+  } yield y
+  println(s"r2b=$r2b")
+
+  val r2c = for {
+    x <- a.left
+    y <- b.right
+  } yield y
+  println(s"r2c=$r2c")
+
+  val r2d = for {
+    x <- a.left
+    y <- b.left
+  } yield y
+  println(s"r2d=$r2d")
+
+  val r3a = for {
+    x <- a.right
+    y <- b.right
+    z <- c.right
+  } yield z
+  println(s"r3a=$r3a")
+
+  val r3b = for {
+    x <- a.right
+    y <- b.right
+    z <- c.left
+  } yield z
+  println(s"r3b=$r3b")
+
+  val r3c = for {
+    x <- a.right
+    y <- b.left
+    z <- c.right
+  } yield z
+  println(s"r3c=$r3c")
+
+  val r3d = for {
+    x <- a.right
+    y <- b.left
+    z <- c.left
+  } yield z
+  println(s"r3d=$r3d")
+
+  val r3e = for {
+    x <- a.left
+    y <- b.right
+    z <- c.right
+  } yield z
+  println(s"r3e=$r3e")
+
+  val r3f = for {
+    x <- a.left
+    y <- b.right
+    z <- c.left
+  } yield z
+  println(s"r3f=$r3f")
+
+  val r3g = for {
+    x <- a.left
+    y <- b.left
+    z <- c.right
+  } yield z
+  println(s"r3g=$r3g")
+
+  val r3h = for {
+    x <- a.left
+    y <- b.left
+    z <- c.left
+  } yield z
+  println(s"r3h=$r3h")
+
+  val r4a = for {
+    x <- a.right.toOption
+  } yield x
+  println(s"r4a=$r4a")
+
+  val r4b = for {
+    x <- a.left.toOption
+  } yield x
+  println(s"r4b=$r4b")
+
+  val r4c = for {
+    x <- a.right.toOption
+    y <- b.right.toOption
+  } yield y
+  println(s"r4c=$r4c")
+
+  val r4d = for {
+    x <- a.right.toOption
+    y <- b.left.toOption
+  } yield y
+  println(s"r4d=$r4d")
+
+  val r4e = for {
+    x <- a.left.toOption
+    y <- b.right.toOption
+  } yield y
+  println(s"r4e=$r4e")
+
+  val r4f = for {
+    x <- a.left.toOption
+    y <- b.left.toOption
+  } yield y
+  println(s"r4f=$r4f")
+}

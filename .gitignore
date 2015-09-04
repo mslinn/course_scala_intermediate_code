@@ -1,4 +1,5 @@
 logs
+nosuch.html
 *.swp
 *.class
 *.sublime*
@@ -6,7 +7,6 @@ out/
 /doc
 bin/*.class
 *.out
-conf/evolutions/backup/slinnbooks_*.sql
 *.log
 .idea*
 *.iml
@@ -22,12 +22,7 @@ tmp
 .history
 dist
 *~
-AwsCredentials.properties
-BBCredentials.properties
 logs
-conf/cdnDev.conf
-txLogs/
-txLogs/*
 .DS_Store
 .svn/
 cvs/

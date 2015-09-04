@@ -22,15 +22,16 @@ scalacOptions in Test ++= Seq("-Yrangepos")
 libraryDependencies ++= {
   val akkaV = "2.3.9"
   Seq(
-  "com.typesafe.akka"            %% "akka-actor"   % akkaV   withSources(),
-  "com.beachape.filemanagement"  %% "schwatcher"   % "0.1.5",
-  "com.typesafe"                 %  "config"       % "1.2.1" withSources(),
-  "org.scalautils"               %% "scalautils"   % "2.1.7" withSources(),
+  "com.typesafe.akka"            %% "akka-actor"       % akkaV   withSources(),
+  "com.beachape.filemanagement"  %% "schwatcher"       % "0.1.5",
+  "com.google.guava"             %  "guava"            % "18.0" withSources(),
+  "com.typesafe"                 %  "config"           % "1.2.1" withSources(),
+  "org.scalautils"               %% "scalautils"       % "2.1.7" withSources(),
   //
-  "com.typesafe.akka"            %% "akka-testkit" % akkaV    % "test" withSources(),
-  "org.specs2"                   %% "specs2"       % "2.3.12" % "test" withSources(), // do not update, sensitive!
-  "org.scalatest"                %% "scalatest"    %  "2.2.3" % "test" withSources(),
-  "junit"                        %  "junit"        % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
+  "com.typesafe.akka"            %% "akka-testkit"     % akkaV    % "test" withSources(),
+  "org.specs2"                   %% "specs2"           % "2.3.12" % "test" withSources(), // do not update, sensitive!
+  "org.scalatest"                %% "scalatest"        %  "2.2.3" % "test" withSources(),
+  "junit"                        %  "junit"            % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
   )
 }
 updateOptions := updateOptions.value.withCachedResolution(true)
@@ -39,6 +40,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 initialCommands in console := """import akka.actor._
                                 |import akka.pattern.ask
                                 |import akka.util.Timeout
+                                |import scala.language.postfixOps
                                 |import java.io.File
                                 |import java.net.URL
                                 |import concurrent._
