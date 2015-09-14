@@ -1,8 +1,8 @@
 object UnlessRevisited {
   def unless(cond: Boolean)(body: => Unit): Unit = if (!cond) body
 
-  val guardAgainstZero = unless(x == 0) _
   x = 1
+  val guardAgainstZero = unless(x == 0) _
   guardAgainstZero { println(s"I can divide by x because I'm guarded: ${3 / x}") }
   x = 0
   guardAgainstZero { println(s"I can divide by x because I'm guarded: ${3 / x}") }
@@ -16,7 +16,10 @@ object PartiallyApplliedUsing {
   def fileInputStream = new FileInputStream(file)
   //
   def read(inputStream: InputStream): String =
-    Iterator.continually(inputStream.read).takeWhile(_ != -1).map(_.toChar).mkString
+    Iterator.continually(inputStream.read)
+            .takeWhile(_ != -1)
+            .map(_.toChar)
+            .mkString
   //
   def first2lines(msg: String, inputStream: InputStream): String = {
     val string = read(inputStream)
@@ -24,6 +27,7 @@ object PartiallyApplliedUsing {
   }
   //
   def withT[T, U](t: T)(operation: T => U): U = operation(t)
+  //
   withT(new java.util.Date) { println }
   //
   def withCloseable[C <: Closeable, T](factory: => C)(operation: C ⇒ T): Try[T] = {
@@ -39,7 +43,7 @@ object PartiallyApplliedUsing {
       }
     }
   //
-  withCloseable(fileInputStream)(fis ⇒ first2lines("withCloseable example 1", fis))
+  withCloseable(fileInputStream)(fis => first2lines("withCloseable example 1", fis))
   withCloseable(fileInputStream)(first2lines("withCloseable example 2", _))
   //
   val tryContents1: Try[String] = withCloseable(fileInputStream) { first2lines("tryContents1", _) }
