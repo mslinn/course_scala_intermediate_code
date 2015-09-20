@@ -1,3 +1,4 @@
+import java.awt.Point
 import java.io.{FileInputStream, File, Closeable, InputStream}
 import scala.util.{Failure, Success, Try}
 
@@ -20,10 +21,13 @@ object UnlessRevisited extends App {
     @inline def doesNotNeedShaking: Boolean =
       maybeWhenLastShaken.exists(new Date().getTime - _.getTime <= secondsBetweenShakes * 1000)
 
-    @inline def doIfNonEmpty(action: SprayCan => Unit) =
-      if (nonEmpty) action(this) else println("Sorry, paint can is empty")
+    @inline def doIfNonEmpty(origin: Point)(scale: Double)(action: (Point, Double, SprayCan) => Unit): Unit =
+      if (nonEmpty) action(origin, scale, this) else println("Sorry, paint can is empty")
 
     @inline def isEmpty: Boolean = capacityRemaining==0
+
+    @inline def moveTo(origin: Point) =
+      println(f"Moving nozzle to ${origin.getX}%.1f, ${origin.getY}%.1f")
 
     @inline def needsShaking = !doesNotNeedShaking
 
@@ -46,25 +50,24 @@ object UnlessRevisited extends App {
     }
   }
 
-  val greenSprayCan = SprayCan("green", 355, 6.3)
-
-  greenSprayCan.doIfNonEmpty { self =>
-    self.spray(3, 45)
-    self.shake()
-    self.spray(3, -45)
-    self.spray(3, 180)
-    if (self.nonEmpty)
-      println(f"Spray can has ${self.capacityRemaining}%.1f milliliters remaining and can spray ${self.distanceRemaining}%.1f meters more.")
+  case class PatternArtist(sprayCan: SprayCan) {
+    val drawTriangle = sprayCan.doIfNonEmpty(_: Point)(_: Double) { (origin, scale, self) =>
+      self.shake()
+      self.moveTo(new Point((origin.getX*scale).toInt, (origin.getY*scale).toInt))
+      self.spray(scale, 45)
+      self.spray(scale, -45)
+      self.spray(scale, 180)
+      if (self.nonEmpty)
+        println(f"Spray can has ${self.capacityRemaining}%.1f milliliters remaining and can spray ${self.distanceRemaining}%.1f meters more.")
+    }
   }
 
-  greenSprayCan.doIfNonEmpty { self =>
-    self.shake()
-    self.spray(3, 45)
-    self.spray(3, -45)
-    self.spray(3, 180)
-    if (self.nonEmpty)
-      println(f"Spray can has ${self.capacityRemaining}%.1f milliliters remaining and can spray ${self.distanceRemaining}%.1f meters more.")
-  }
+  // draw concentric green triangles
+  val greenArtist = PatternArtist(SprayCan("green", 355, 6.3))
+  val origin = new Point(0, 0)
+  greenArtist.drawTriangle(origin, 1.0)
+  greenArtist.drawTriangle(origin, 2.0)
+  greenArtist.drawTriangle(origin, 3.0)
 }
 
 object PartiallyAppliedStuff {
