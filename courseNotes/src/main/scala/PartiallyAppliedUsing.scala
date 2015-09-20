@@ -9,7 +9,7 @@ object UnlessRevisited extends App {
     * @param capacityRemaining milliliters of paint remaining in this can
     * @param gramsPerMeter amount of paint required to spray a line one meter long
     * @param maybeWhenLastShaken Some(Date) of when the can was last shaken, defaults to None which means never shaken */
-  case class SprayCan(
+  case class SprayPaint(
     color: String,
     var capacityRemaining: Double,
     gramsPerMeter: Double,
@@ -21,7 +21,7 @@ object UnlessRevisited extends App {
     @inline def doesNotNeedShaking: Boolean =
       maybeWhenLastShaken.exists(new Date().getTime - _.getTime <= secondsBetweenShakes * 1000)
 
-    @inline def doIfNonEmpty(origin: Point)(scale: Double)(action: (Point, Double, SprayCan) => Unit): Unit =
+    @inline def doIfNonEmpty(origin: Point)(scale: Double)(action: (Point, Double, SprayPaint) => Unit): Unit =
       if (nonEmpty) action(origin, scale, this) else println("Sorry, paint can is empty")
 
     @inline def isEmpty: Boolean = capacityRemaining==0
@@ -50,7 +50,7 @@ object UnlessRevisited extends App {
     }
   }
 
-  case class PatternArtist(sprayCan: SprayCan) {
+  case class PatternArtist(sprayCan: SprayPaint) {
     val drawTriangle = sprayCan.doIfNonEmpty(_: Point)(_: Double) { (origin, scale, self) =>
       self.shake()
       self.moveTo(new Point((origin.getX*scale).toInt, (origin.getY*scale).toInt))
@@ -63,7 +63,7 @@ object UnlessRevisited extends App {
   }
 
   // draw concentric green triangles
-  val greenArtist = PatternArtist(SprayCan("green", 355, 6.3))
+  val greenArtist = PatternArtist(SprayPaint("green", 355, 6.3))
   val origin = new Point(0, 0)
   greenArtist.drawTriangle(origin, 1.0)
   greenArtist.drawTriangle(origin, 2.0)
