@@ -1,75 +1,5 @@
-import java.awt.Point
 import java.io.{FileInputStream, File, Closeable, InputStream}
 import scala.util.{Failure, Success, Try}
-
-object UnlessRevisited extends App {
-  import java.util.Date
-
-  /** @param color pigment color of this spray can of paint
-    * @param capacityRemaining milliliters of paint remaining in this can
-    * @param gramsPerMeter amount of paint required to spray a line one meter long
-    * @param maybeWhenLastShaken Some(Date) of when the can was last shaken, defaults to None which means never shaken */
-  case class SprayPaint(
-    color: String,
-    var capacityRemaining: Double,
-    gramsPerMeter: Double,
-    secondsBetweenShakes: Long=15,
-    var maybeWhenLastShaken: Option[Date]=None
-  ) {
-    @inline def distanceRemaining: Double = capacityRemaining / gramsPerMeter
-
-    @inline def doesNotNeedShaking: Boolean =
-      maybeWhenLastShaken.exists(new Date().getTime - _.getTime <= secondsBetweenShakes * 1000)
-
-    @inline def doIfNonEmpty(origin: Point)(scale: Double)(action: (Point, Double, SprayPaint) => Unit): Unit =
-      if (nonEmpty) action(origin, scale, this) else println("Sorry, paint can is empty")
-
-    @inline def isEmpty: Boolean = capacityRemaining==0
-
-    @inline def moveTo(origin: Point) =
-      println(f"Moving nozzle to ${origin.getX}%.1f, ${origin.getY}%.1f")
-
-    @inline def needsShaking = !doesNotNeedShaking
-
-    @inline def nonEmpty: Boolean = !isEmpty
-
-    @inline def shake(): Unit = maybeWhenLastShaken = {
-      println("Can is ready to spray")
-      Some(new Date)
-    }
-
-    @inline def spray(distance: Double, degrees: Double) = {
-      if (needsShaking) println("Cannot spray, need to shake the paint can")
-      else {
-        val remaining = distanceRemaining
-        if (remaining<distance) println (f"Spraying $distance%.1f meters @ $degrees%.1f degrees.")
-        else println (f"Spraying $remaining%.1f meters @ $degrees%.1f degrees.")
-        capacityRemaining = math.max(0, capacityRemaining-gramsPerMeter*distance)
-        if (isEmpty) println("Can is empty.")
-      }
-    }
-  }
-
-  case class PatternArtist(sprayCan: SprayPaint) {
-    val drawTriangle = sprayCan.doIfNonEmpty(_: Point)(_: Double) { (origin, scale, self) =>
-      self.shake()
-      self.moveTo(new Point((origin.getX*scale).toInt, (origin.getY*scale).toInt))
-      self.spray(scale, 45)
-      self.spray(scale, -45)
-      self.spray(scale, 180)
-      if (self.nonEmpty)
-        println(f"Spray can has ${self.capacityRemaining}%.1f milliliters remaining and can spray ${self.distanceRemaining}%.1f meters more.")
-    }
-  }
-
-  // draw concentric green triangles
-  val greenArtist = PatternArtist(SprayPaint("green", 355, 6.3))
-  val origin = new Point(0, 0)
-  greenArtist.drawTriangle(origin, 1.0)
-  greenArtist.drawTriangle(origin, 2.0)
-  greenArtist.drawTriangle(origin, 3.0)
-}
-
 object PartiallyAppliedStuff {
   def read(inputStream: InputStream): String =
     Iterator.continually(inputStream.read)
@@ -160,4 +90,74 @@ object PartiallyAppliedUsing extends App {
   val xyHuh = concatStringsAndFnValue("x")("y") _
   def u2v3(u: String, v: String): String = (u.length * 2 + v.length * 3).toString
   xyHuh { u2v3 }
+}
+
+
+object Banksy extends App {
+  import java.awt.Point
+  import java.util.Date
+
+  /** @param color pigment color of this spray can of paint
+    * @param capacityRemaining milliliters of paint remaining in this can
+    * @param gramsPerMeter amount of paint required to spray a line one meter long
+    * @param maybeWhenLastShaken Some(Date) of when the can was last shaken, defaults to None which means never shaken */
+  case class SprayPaint(
+    color: String,
+    var capacityRemaining: Double,
+    gramsPerMeter: Double,
+    secondsBetweenShakes: Long=15,
+    var maybeWhenLastShaken: Option[Date]=None
+  ) {
+    @inline def distanceRemaining: Double = capacityRemaining / gramsPerMeter
+
+    @inline def doesNotNeedShaking: Boolean =
+      maybeWhenLastShaken.exists(new Date().getTime - _.getTime <= secondsBetweenShakes * 1000)
+
+    @inline def doIfNonEmpty(origin: Point)(scale: Double)(action: (Point, Double, SprayPaint) => Unit): Unit =
+      if (nonEmpty) action(origin, scale, this) else println("Sorry, paint can is empty")
+
+    @inline def isEmpty: Boolean = capacityRemaining==0
+
+    @inline def moveTo(origin: Point) =
+      println(f"Moving nozzle to ${origin.getX}%.1f, ${origin.getY}%.1f")
+
+    @inline def needsShaking = !doesNotNeedShaking
+
+    @inline def nonEmpty: Boolean = !isEmpty
+
+    @inline def shake(): Unit = maybeWhenLastShaken = {
+      println("Can is ready to spray")
+      Some(new Date)
+    }
+
+    @inline def spray(distance: Double, degrees: Double) = {
+      if (needsShaking) println("Cannot spray, need to shake the paint can")
+      else {
+        val remaining = distanceRemaining
+        if (remaining<distance) println (f"Spraying $distance%.1f meters @ $degrees%.1f degrees.")
+        else println (f"Spraying $remaining%.1f meters @ $degrees%.1f degrees.")
+        capacityRemaining = math.max(0, capacityRemaining-gramsPerMeter*distance)
+        if (isEmpty) println("Can is empty.")
+      }
+    }
+  }
+
+  case class PatternArtist(sprayPaint: SprayPaint) {
+    val drawTriangle = sprayPaint.doIfNonEmpty(_: Point)(_: Double) { (origin, scale, self) =>
+      self.shake()
+      self.moveTo(new Point((origin.getX*scale).toInt, (origin.getY*scale).toInt))
+      self.spray(scale, 45)
+      self.spray(scale, -45)
+      self.spray(scale, 180)
+      if (self.nonEmpty)
+        println(f"Spray paint can has ${self.capacityRemaining}%.1f milliliters remaining and can spray ${self.distanceRemaining}%.1f meters more.")
+    }
+  }
+
+  // draw concentric green triangles
+  val greenArtist = PatternArtist(SprayPaint("green", 355, 6.3))
+  val origin = new Point(0, 0)
+  greenArtist.drawTriangle(origin, 1.0)
+  greenArtist.drawTriangle(origin, 2.0)
+  greenArtist.drawTriangle(origin, 3.0)
 }
