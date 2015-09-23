@@ -107,17 +107,15 @@ object PartialFunCompColl extends App {
 
 object PartialFunCaseSeq extends App {
   val list = List(Some(1), None, Some(3))
-  val result1 = list map { item ⇒
+  val result1 = list collect { item => // IntelliJ IDEA flags this as a syntax error but it is legal and will run
     item match {
       case Some(x) ⇒ x
-      case None ⇒ 0
     }
   }
+  println(s"result1=$result1")
 
-  val result2 = list map {
-    case Some(x) ⇒ x
-    case None ⇒ 0
-  }
+  val result2 = list collect { case Some(x) ⇒ x }
+  println(s"result2=$result2")
 
   def doSomething[T](data: T)(operation: T => T) = try {
      operation(data)
