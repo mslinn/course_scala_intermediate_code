@@ -100,3 +100,17 @@ object ImplicitlyConversion extends App {
 
   println(s"""implicitly[Int => Long].apply(5)=${implicitly[Int => Long].apply(5)}""")
 }
+
+object MethodsImplicitValues extends App {
+  def multiply(value: Int)(implicit multiplier: Multiplier): Int = value * multiplier.value
+
+  case class Factor(value: Int)
+
+  implicit def factorToMultiplier(implicit factor: Factor): Multiplier = Multiplier(factor.value)
+
+  implicit val defaultFactor: Factor = Factor(3)
+
+  val result = multiply(3)
+
+  println(s"result=$result")
+}

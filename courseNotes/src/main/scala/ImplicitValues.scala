@@ -70,20 +70,6 @@ object ImplicitValues4 extends App {
   println(s"divide(9)=${divide(9)}")
 }
 
-object MethodsImplicitValues extends App {
-  def multiply(value: Int)(implicit multiplier: Multiplier): Int = value * multiplier.value
-
-  case class Factor(value: Int)
-
-  implicit def factorToMultiplier(implicit factor: Factor): Multiplier = Multiplier(factor.value)
-
-  implicit val defaultFactor: Factor = Factor(3)
-
-  val result = multiply(3)
-
-  println(s"result=$result")
-}
-
 object With2 extends App {
   case class Blarg(i: Int, s: String)
 
