@@ -1,10 +1,12 @@
+import scala.language.reflectiveCalls
+
 object Ducks1 extends App {
   case class Mallard(age: Double) {
     def quack(count: Int): Unit = println("Quack! " * count)
   }
 
   case class FrenchDuck(weight: Double) {
-    def quack(count: Int): Unit = println("Le quack! " * count)
+    def quack(count: Int): Unit = println("Le quack !  " * count)
   }
 
   val mallard: { def quack(count: Int): Unit } = Mallard(4)
@@ -24,7 +26,7 @@ object Ducks2 extends App {
   }
 
   case class FrenchDuck(weight: Double) {
-    def quack(count: Int): Unit = println("FrenchDuck: " + "Le quack! " * count)
+    def quack(count: Int): Unit = println("FrenchDuck: " + "Le quack !  " * count)
   }
 
   val mallard: Duck = Mallard(4)
@@ -48,7 +50,7 @@ object Ducks3 extends App {
   }
 
   case class FrenchDuck(weight: Double) {
-    def quack(count: Int): Unit = println(s"FrenchDuck has $color feathers: " + "Le quack! " * count)
+    def quack(count: Int): Unit = println(s"Le canard français a des plumes $color : " + "Le quack !  " * count)
 
     val color = "blue"
   }
