@@ -2,7 +2,10 @@ import com.typesafe.config.{ConfigObject, ConfigList, ConfigFactory}
 import java.util.concurrent.TimeUnit._
 
 object ConfigFun extends App {
-  val confDemo = ConfigFactory.parseResources("demo.properties")
+
+  import com.typesafe.config.{ConfigRenderOptions, Config}
+
+  val confDemo: Config = ConfigFactory.parseResources("demo.properties")
   val string1 = confDemo.getString("string1")
   val int1 = confDemo.getInt("int1")
   val double1 = confDemo.getDouble("double1")
@@ -19,6 +22,12 @@ object ConfigFun extends App {
   println(s"""elapsedSeconds=$elapsedSeconds""")
   println(s"""bytes1=$bytes1""")
   println(s"""bytes2=$bytes2""")
+
+  val options = ConfigRenderOptions.concise.setJson(true).setFormatted(true)
+  val json = confDemo.root.render(options)
+  println(s"""demo.properties converted to JSON: $json""")
+
+  println()
 
   val confDemo2 = ConfigFactory.parseResources("demo2.properties").withFallback(confDemo)
   val string1b = confDemo2.getString("string1")

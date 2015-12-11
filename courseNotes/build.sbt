@@ -25,12 +25,12 @@ libraryDependencies ++= {
   "com.typesafe.akka"            %% "akka-actor"       % akkaV   withSources(),
   "com.beachape.filemanagement"  %% "schwatcher"       % "0.1.5",
   "com.google.guava"             %  "guava"            % "18.0" withSources(),
-  "com.typesafe"                 %  "config"           % "1.2.1" withSources(),
+  "com.typesafe"                 %  "config"           % "1.3.0" withSources(),
   "org.scalautils"               %% "scalautils"       % "2.1.7" withSources(),
   //
   "com.typesafe.akka"            %% "akka-testkit"     % akkaV    % "test" withSources(),
   "org.specs2"                   %% "specs2"           % "2.3.12" % "test" withSources(), // do not update, sensitive!
-  "org.scalatest"                %% "scalatest"        %  "2.2.3" % "test" withSources(),
+  "org.scalatest"                %% "scalatest"        % "2.2.3"  % "test" withSources(),
   "junit"                        %  "junit"            % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
   )
 }
