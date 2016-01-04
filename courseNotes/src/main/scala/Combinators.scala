@@ -47,10 +47,9 @@ object Combinators extends App {
   val vector2 = Vector(Some(1), None, Some(3), Some(4))
   println(s"""vector2.flatten = ${Vector(Some(1), None, Some(3), Some(4)).flatten}""")
 
-  println(s"""vector2.filter(_.isDefined).flatMap(v => Some(v.get*2)) = ${vector2.filter(_.isDefined).flatMap(v => Some(v.get*2))}""")
-  println(s"""vector2.filter(_.isDefined).map(v => Some(v.get*2)) = ${vector2.filter(_.isDefined).map(v => Some(v.get*2))}""")
-  //println(s"""vector2.flatMap(v => Some(v.get*2)) = ${vector2.flatMap(v => Some(v.get*2))}""")
-  //println(s"""vector2.filter(_.isDefined).flatMap(Some(_.get*2)) = ${vector2.filter(_.isDefined).flatMap(Some(_.get*2))}""")
+  println(s"""vector2.flatMap { _.map(_*2) } = ${vector2.flatMap { _.map(_*2) }}""")
+  println(s"""for { v <- vector2; u <- v } yield u * 2 = ${for { v <- vector2; u <- v } yield u * 2}""")
+  println(s"""vector2.map { _.map(_*2) } = ${vector2.map { _.map(_*2) }}""")
 
   println(s"""vector.filter( _%2==0 ) = ${vector.filter( _%2==0 )}""")
   println(s"""vector.filterNot( _%2==0 ) = ${vector.filterNot( _%2==0 )}""")
