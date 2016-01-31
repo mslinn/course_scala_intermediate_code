@@ -146,6 +146,27 @@ object ForFun2 extends App {
   println(output)
 }
 
+object ForFunQuasi extends App {
+  val universe: scala.reflect.runtime.universe.type = scala.reflect.runtime.universe
+  import universe._
+
+  val result = q"""
+  def foo(n: Int, v: Int) =
+    for (i <- 0 until n;
+      j <- i until n if i + j == v) yield (i, j)
+  """
+  println(result.toString())
+
+  def foo(n: Int, v: Int) =
+    0 until n flatMap { i =>
+      i until n withFilter { j =>
+        i + j == v
+      } map { j =>
+        (i, j)
+      }
+    }
+}
+
 object ForFunMonads extends App {
   def reps(list: List[Int], maybeString: Option[String]): List[String] = for {
     j <- maybeString.toList

@@ -27,6 +27,7 @@ libraryDependencies ++= {
   "com.google.guava"             %  "guava"            % "18.0" withSources(),
   "com.typesafe"                 %  "config"           % "1.3.0" withSources(),
   "org.scalautils"               %% "scalautils"       % "2.1.7" withSources(),
+  "org.scala-lang"               %  "scala-reflect"    % scalaVersion.value,
   //
   "com.typesafe.akka"            %% "akka-testkit"     % akkaV    % "test" withSources(),
   "org.specs2"                   %% "specs2"           % "2.3.12" % "test" withSources(), // do not update, sensitive!
