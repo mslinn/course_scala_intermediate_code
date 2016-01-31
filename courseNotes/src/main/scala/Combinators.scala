@@ -7,6 +7,8 @@ object BoundAndGagged extends App {
 
   import OtherContext.externallyBoundVar
 
+  import scala.language.postfixOps
+
   case class BadContainer(blarg: Blarg) {
     /** This function is not a combinator because it accesses boundVar, which is external state. BAD! */
     def unpredictable(f: Blarg => Blarg): Blarg =
