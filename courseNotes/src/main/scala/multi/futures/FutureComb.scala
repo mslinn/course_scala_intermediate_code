@@ -325,7 +325,7 @@ object FutureFold extends App {
             case Failure(throwable) => println(throwable.getMessage)
           }.andThen { case _ => signal.success("All done") }
     }
-  Await.ready(signal.future, 30 minutes)
+  Await.result(signal.future, 30 minutes)
 }
 
 object FutureReduce extends App {
