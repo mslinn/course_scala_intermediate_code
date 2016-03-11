@@ -96,6 +96,8 @@ package parametricSimulation {
 }
 
 object Ternary1 extends App {
+  import scala.language.implicitConversions
+
   class TernaryThen(predicate: => Boolean) {
     def ?[A](thenClause: => A) = new TernaryEval(thenClause)
 
@@ -104,12 +106,12 @@ object Ternary1 extends App {
     }
   }
 
-  implicit def toTernaryThen(predicate: => Boolean) = new TernaryThen(predicate)
+  implicit def toTernaryThen(predicate: => Boolean): TernaryThen = new TernaryThen(predicate)
 
-  println(s"""(4*4 > 14) ? "Yes" | "No" = ${(4*4 > 14) ? "Yes" | "No"}""")
+  println(s"""util.Random.nextBoolean ? "Yes" | "No" = ${ util.Random.nextBoolean ? "Yes" | "No" }""")
 
-  val x = (4*4 > 14) ? "Yup"
-  println(s"""(4*4 > 14) ? "Yup" | "Nope" = ${x | "Nope"}""")
+  val x: TernaryThen#TernaryEval[String] = util.Random.nextBoolean ? "Yup"
+  println(s"""util.Random.nextBoolean ? "Yup" | "Nope" = ${ x | "Nope" }""")
 }
 
 object Ternary2 extends App {
@@ -119,8 +121,8 @@ object Ternary2 extends App {
     }
   }
 
-  println(s"""(4*4 > 14) ? "Yes" | "No" = ${(4*4 > 14) ? "Yes" | "No"}""")
-  val result = (4*4 > 14).?("Yes").|("No")
+  println(s"""util.Random.nextBoolean ? "Yes" | "No" = ${ util.Random.nextBoolean ? "Yes" | "No" }""")
+  val result = util.Random.nextBoolean.?("Yes").|("No")
 }
 
 object RichInterface extends App {
