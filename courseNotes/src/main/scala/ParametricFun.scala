@@ -116,8 +116,8 @@ object Ternary1 extends App {
 
 object Ternary2 extends App {
   implicit def boolToOperator(predicate: Boolean) = new {
-    def ?[A](trueClause: => A) = new {
-      def |(falseClause: => A) = if (predicate) trueClause else falseClause
+    def ?[A](thenClause: => A) = new {
+      def |(elseClause: => A) = if (predicate) thenClause else elseClause
     }
   }
 
