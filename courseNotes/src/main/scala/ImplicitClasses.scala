@@ -1,11 +1,15 @@
 object ImplicitClasses extends App {
-  implicit class randomName(int: Int) { def length: Int = int.toString.length }
+  implicit class randomName(int: Int) {
+    val length: Int = int.toString.length
+  }
 
   println(s"5.length=${5.length}")
 }
 
 object ImplicitValueClass extends App {
-  implicit class randomName2(val long: Long) extends AnyVal { def length: Int = long.toString.length }
+  implicit class randomName2(val long: Long) extends AnyVal {
+    @inline def length: Int = long.toString.length
+  }
 
   println(s"5L.length=${5L.length}")
 }
