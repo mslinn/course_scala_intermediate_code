@@ -89,3 +89,29 @@ object With2 extends App {
     println(triple)
   }
 }
+
+object SLS7_1 extends App {
+  case class Blarg(i: Int, s: String) {
+    override def toString = s"$i $s"
+  }
+
+  class Sls71(a: Int, implicit val blarg: Blarg) {
+    def double(implicit blarg: Blarg): Blarg = blarg.copy(i=blarg.i*2, s=blarg.s*2)
+    def triple(implicit blarg: Blarg): Blarg = blarg.copy(i=blarg.i*3, s=blarg.s*3)
+
+    val bigBlarg = if (a<10) double else triple
+  }
+
+  print("> ")
+  Iterator.continually(io.StdIn.readLine()).takeWhile(_ != null).foreach { line =>
+    try {
+      val i = line.toInt
+      val blarg = Blarg(i, "nom ")
+      val sls71 = new Sls71(i, blarg)
+      println(sls71.bigBlarg.s)
+      print("> ")
+    } catch {
+      case ignored: Exception => sys.exit
+    }
+  }
+}
