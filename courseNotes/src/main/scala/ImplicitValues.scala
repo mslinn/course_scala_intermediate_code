@@ -95,7 +95,7 @@ object SLS7_1 extends App {
     override def toString = s"$i $s"
   }
 
-  class Sls71(a: Int, implicit val blarg: Blarg) {
+  class Sls71(a: Int, private implicit val blarg: Blarg) {
     def double(implicit blarg: Blarg): Blarg = blarg.copy(i=blarg.i*2, s=blarg.s*2)
     def triple(implicit blarg: Blarg): Blarg = blarg.copy(i=blarg.i*3, s=blarg.s*3)
 
