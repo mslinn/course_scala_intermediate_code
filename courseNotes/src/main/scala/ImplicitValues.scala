@@ -103,7 +103,9 @@ object SLS7_1 extends App {
   }
 
   print("> ")
-  Iterator.continually(io.StdIn.readLine()).takeWhile(_ != null).foreach { line =>
+  Iterator.continually(io.StdIn.readLine())
+          .takeWhile(_ != null)
+          .foreach { line =>
     try {
       val i = line.toInt
       val blarg = Blarg(i, "nom ")
