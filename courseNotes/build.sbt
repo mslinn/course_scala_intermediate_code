@@ -1,5 +1,5 @@
 organization := "com.micronautics"
-name := "IntermediateScalaCourse"
+name := "Intermediate_scala_course"
 description := "Core Scala - Intermediate Scala Course Notes"
 version := "2.11.8"
 
@@ -7,17 +7,30 @@ scalaVersion := "2.11.8"
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) <++= baseDirectory.map {
   (bd: File) => Seq[String](
-     "-deprecation",
-	   "-encoding", "UTF-8",
-	   "-unchecked",
-     "-feature",
-	   "-target:jvm-1.7",
-     "-sourcepath", bd.getAbsolutePath,
-	   "-Ywarn-adapted-args",
-     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/coursenotes€{FILE_PATH}.scala"
+    "-deprecation", 
+    "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/coursenotes€{FILE_PATH}.scala",
+    "-encoding", "UTF-8", 
+    "-feature", 
+    "-target:jvm-1.7", 
+    "-unchecked",
+    "-Ywarn-adapted-args",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-unused",
+    "-Ywarn-value-discard",
+    "-Xfuture",
+    "-Xlint"
   )
 }
 scalacOptions in Test ++= Seq("-Yrangepos")
+
+javacOptions ++= Seq(
+  "-Xlint:deprecation", 
+  "-Xlint:unchecked", 
+  "-source", "1.7", 
+  "-target", "1.7", 
+  "-g:vars"
+)
 
 libraryDependencies ++= {
   val akkaV = "2.3.9"
@@ -58,3 +71,4 @@ initialCommands in console := """import akka.actor._
 logLevel := Level.Info
 logLevel in test := Level.Info // Level.Info is needed to see detailed output when running tests
 logLevel in compile := Level.Info
+
