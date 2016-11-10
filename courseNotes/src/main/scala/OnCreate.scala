@@ -90,9 +90,9 @@ object OnCreate extends App {
   println(s"Watching $watchedDirectory")
 
   fileMonitorActor ! RegisterCallback(
-    ENTRY_CREATE,
+    event = ENTRY_CREATE,
     modifier = None,
     recursive = true,
     path = watchedFile.toPath,
-    createCallback)
+    callback = createCallback)
 }

@@ -4,12 +4,20 @@ organization := "com.micronautics"
 
 name := "onCreate"
 
-version := "0.1.2"
+version := "0.1.3"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.0"
 
-scalacOptions ++= Seq("-deprecation", "-encoding", "UTF-8", "-feature", "-target:jvm-1.7", "-unchecked",
-    "-Ywarn-adapted-args", "-Ywarn-value-discard", "-Xlint")
+scalacOptions ++= Seq(
+  "-deprecation", 
+  "-encoding", "UTF-8", 
+  "-feature", 
+  "-target:jvm-1.8", 
+  "-unchecked",
+  "-Ywarn-adapted-args", 
+  "-Ywarn-value-discard", 
+  "-Xlint"
+)
 
 scalacOptions in (Compile, doc) <++= baseDirectory.map {
   (bd: File) => Seq[String](
@@ -18,15 +26,21 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
   )
 }
 
-javacOptions ++= Seq("-Xlint:deprecation", "-Xlint:unchecked", "-source", "1.7", "-target", "1.7", "-g:vars")
+javacOptions ++= Seq(
+  "-Xlint:deprecation", 
+  "-Xlint:unchecked", 
+  "-source", "1.8", 
+  "-target", "1.8", 
+  "-g:vars"
+)
 
 resolvers ++= Seq(
-  "Typesafe Releases"   at "http://repo.typesafe.com/typesafe/releases"
+  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases"
 )
 
 libraryDependencies ++= Seq(
   "com.beachape.filemanagement" %% "schwatcher"   % "0.1.5",
-  "com.typesafe"                %  "config"       % "1.2.0" withSources()
+  "com.typesafe"                %  "config"       % "1.3.1" withSources()
 )
 
 logLevel := Level.Warn
@@ -42,3 +56,4 @@ logLevel in compile := Level.Warn
 cancelable := true
 
 sublimeTransitive := true
+
