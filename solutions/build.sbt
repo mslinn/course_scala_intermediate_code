@@ -4,29 +4,42 @@ name := "Intermediate Scala Course Solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
-version := "2.11.6"
+version := "2.12.0"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.12.0"
 
-scalacOptions in (Compile, doc) <++= baseDirectory.map {
+scalacOptions in (Compile, doc) ++= baseDirectory.map {
   (bd: File) => Seq[String](
-     "-deprecation",
-	   "-encoding", "UTF-8",
-	   "-unchecked",
-     "-feature",
-	   "-target:jvm-1.6",
-     "-sourcepath", bd.getAbsolutePath,
-	   "-Ywarn-adapted-args",
-     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/solutions€{FILE_PATH}.scala"
+    "-deprecation",
+    "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/solutions€{FILE_PATH}.scala",
+    "-encoding", "UTF-8", 
+    "-feature", 
+    "-target:jvm-1.8", 
+    "-unchecked",
+    "-Ywarn-adapted-args",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-unused",
+    "-Ywarn-value-discard",
+    "-Xfuture",
+    "-Xlint"
   )
-}
+}.value
 
 scalacOptions in Test ++= Seq("-Yrangepos")
 
+javacOptions ++= Seq(
+  "-Xlint:deprecation", 
+  "-Xlint:unchecked", 
+  "-source", "1.8", 
+  "-target", "1.8", 
+  "-g:vars"
+)
+
 libraryDependencies ++= Seq(
-  "org.xerial"        %  "sqlite-jdbc"   % "3.7.2" withSources(),
+  "org.xerial"        %  "sqlite-jdbc"   % "3.14.2.1" withSources(),
   //
-  "org.scalatest"     %% "scalatest"     % "2.2.3"  % "test" withSources(),
+  "org.scalatest"     %% "scalatest"     % "3.0.0"  % "test" withSources(),
   "junit"             %  "junit"         % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
 )
 
@@ -39,3 +52,4 @@ logLevel := Level.Error
 // Only show warnings and errors on the screen for compilations.
 // This applies to both test:compile and compile and is Info by default
 //logLevel in compile := Level.Warn
+
