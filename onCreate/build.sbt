@@ -6,7 +6,7 @@ name := "onCreate"
 
 version := "0.1.3"
 
-scalaVersion := "2.12.0"
+scalaVersion := "2.12.1"
 
 scalacOptions ++= Seq(
   "-deprecation", 

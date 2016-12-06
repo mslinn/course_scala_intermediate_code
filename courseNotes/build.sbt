@@ -1,9 +1,9 @@
 organization := "com.micronautics"
-name := "Intermediate_scala_course"
+name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
-version := "2.12.0"
+version := "2.12.1"
 
-scalaVersion := "2.12.0"
+scalaVersion := "2.12.1"
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
   (bd: File) => Seq[String](
@@ -71,3 +71,4 @@ initialCommands in console := """import akka.actor._
 logLevel := Level.Info
 logLevel in test := Level.Info // Level.Info is needed to see detailed output when running tests
 logLevel in compile := Level.Info
+
