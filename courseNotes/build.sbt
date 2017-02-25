@@ -37,6 +37,7 @@ libraryDependencies ++= {
   Seq(
   "com.typesafe.akka"            %% "akka-actor"       % akkaV   withSources(),
   "com.beachape.filemanagement"  %% "schwatcher"       % "0.3.2" withSources(),
+  "com.github.melrief"           %% "pureconfig"       % "0.6.0" withSources(),
   "com.google.guava"             %  "guava"            % "18.0"  withSources(),
   "com.typesafe"                 %  "config"           % "1.3.0" withSources(),
   "org.scalactic"                %% "scalactic"        % "3.0.0" withSources(),
@@ -44,6 +45,7 @@ libraryDependencies ++= {
   //
   "com.typesafe.akka"            %% "akka-testkit"     % akkaV    % "test" withSources(),
   "org.specs2"                   %% "specs2-core"      % "3.8.6"  % "test" withSources(),
+  "org.specs2"                   %% "specs2-junit"     % "3.8.6"  % "test" withSources(),
   "org.scalatest"                %% "scalatest"        % "3.0.1"  % "test" withSources(),
   "junit"                        %  "junit"            % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
   )

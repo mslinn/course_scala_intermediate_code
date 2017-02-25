@@ -44,7 +44,7 @@ object CollectionConverters extends App {
   val treeMap = immutable.TreeMap(2 -> "bee", 1 -> "eh", 3 -> "sea")
   val jMap2: JMap[Int, String] = treeMap.asJava
   val sMap2: mutable.Map[Int, String] = jMap2.asScala
-  assert(treeMap ne sMap2)
+  assert(treeMap ne sMap2.toMap)
 
   println(s"""implicitly[Option[Int] => Iterable[Int]] = ${implicitly[Option[Int] => Iterable[Int]]}""")
   println(s"""implicitly[Function[Option[Int], Iterable[Int]]] = ${implicitly[Function[Option[Int], Iterable[Int]]]}""")

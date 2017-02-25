@@ -23,8 +23,7 @@ object SpecTest extends Specification {
       linesFrom(ciscoURL).toIterator must containMatch(targetWord)
     }
 
-    "Verify that cisco.com contains the word cisco (using higher-order function)" in {
-      linesFrom(ciscoURL).exists(_==targetWord)
-    }
+    "Verify that cisco.com contains the word cisco (using higher-order function)" in
+      linesFrom(ciscoURL).contains(targetWord)
   }
 }
