@@ -7,10 +7,16 @@ object PureConfigTest extends App {
   println(pureConfigFun)
 }
 
+object PureConfigTest2 extends App {
+  val pureConfigFun = PureConfigFun.loadOrThrow
+  println(pureConfigFun)
+}
+
 object PureConfigFun {
   def load: Either[ConfigReaderFailures, PureConfigFun] = pureconfig.loadConfig[PureConfigFun](Paths.get("pure.conf"))
+  def loadOrThrow: PureConfigFun = pureconfig.loadConfigOrThrow[PureConfigFun](Paths.get("pure.conf"))
 
-  def apply: PureConfigFun = load.getOrElse(PureConfigFun())
+  def apply: PureConfigFun = loadOrThrow
 
   val defaultConsoleConfig   = ConsoleConfig()
   val defaultFeedConfig      = FeedConfig()
