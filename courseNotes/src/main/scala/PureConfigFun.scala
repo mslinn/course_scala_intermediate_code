@@ -8,7 +8,7 @@ object PureConfigTest extends App {
 }
 
 object PureConfigFun {
-  def load: Either[ConfigReaderFailures, PureConfigFun] = pureconfig.loadConfig[PureConfigFun]("pure.config")
+  def load: Either[ConfigReaderFailures, PureConfigFun] = pureconfig.loadConfig[PureConfigFun](Paths.get("pure.conf"))
 
   def apply: PureConfigFun = load.getOrElse(PureConfigFun())
 
