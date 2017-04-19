@@ -1,9 +1,9 @@
 organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
-version := "2.12.1"
+version := "2.12.2"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.12.2"
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
   (bd: File) => Seq[String](
