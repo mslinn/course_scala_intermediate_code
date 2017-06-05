@@ -2,6 +2,8 @@ package multi
 
 import akka.actor._
 import com.typesafe.config.ConfigFactory
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 object ActorSystemFun1 extends App {
   implicit val system = ActorSystem("MySystem")
@@ -9,7 +11,7 @@ object ActorSystemFun1 extends App {
   futures.readUrlFuture(goodUrlStr1) andThen {
     case _ =>
       println("Future completed :)")
-      system.shutdown()
+      system.terminate()
   }
 }
 
@@ -34,7 +36,7 @@ object ActorSystemFun2 extends App {
   futures.readUrlFuture(goodUrlStr1) andThen {
     case _ =>
       println("Future completed :)")
-      system.shutdown()
+      system.terminate()
   }
 }
 
@@ -44,7 +46,7 @@ object ActorSystemFun3 extends App {
   futures.readUrlFuture(goodUrlStr1) andThen {
     case _ =>
       println("Future completed :)")
-      system.shutdown()
+      system.terminate()
   }
 }
 
@@ -55,7 +57,7 @@ object ActorSystemFun4 extends App {
   futures.readUrlFuture(goodUrlStr1) andThen {
     case _ =>
       println("Future completed :)")
-      system.shutdown()
+      system.terminate()
   }
   synchronized { wait() }
 }
@@ -67,7 +69,7 @@ object ActorSystemFun5 extends App {
   futures.readUrlFuture(goodUrlStr1) andThen {
     case _ =>
       println("Future completed :)")
-      system.shutdown()
+      system.terminate()
   }
   synchronized { wait() }
 }
@@ -75,10 +77,10 @@ object ActorSystemFun5 extends App {
 object ActorSystemFun6 extends App {
   implicit val system = ActorSystem()
   system.logConfiguration() // outputs hundreds of lines
-  println(s"ActorSystem name=${system.name}")
-  println(s"Before shutdown: isTerminated=${system.isTerminated}")
-  system.shutdown() // allow System.exit()
-  println(s"After shutdown: isTerminated=${system.isTerminated}")
-  time("awaitTermination")(system.awaitTermination())
-  println("After awaitTermination(), isTerminated=" + system.isTerminated)
+  println(s"ActorSystem name=${ system.name }")
+  println(s"Before shutdown: isTerminated=${ system.whenTerminated.isCompleted }")
+  system.terminate() // allow System.exit()
+  println(s"After shutdown: isTerminated=${ system.whenTerminated.isCompleted }")
+  time("awaitTermination")(Await.result(system.whenTerminated, Duration.Inf))
+  println("After awaitTermination(), isTerminated=" + system.whenTerminated.isCompleted)
 }

@@ -4,6 +4,8 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 import akka.pattern._
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
+import multi.MonkeyActors.system
+import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Random, Success}
@@ -55,11 +57,11 @@ object MonkeyActors extends App {
         val runtime = Runtime.getRuntime
         runtime.totalMemory - runtime.freeMemory
       }
-      println(f"\n\nLongest matched substring: '$bestResult'; ${bestResult.length} of ${target.length} characters, $percentComplete%.1f%% of goal. $mem%,d bytes of memory used.")
+      println(f"\n\nLongest matched substring: '$bestResult'; ${ bestResult.length } of ${ target.length } characters, $percentComplete%.1f%% of goal. $mem%,d bytes of memory used.")
     case Failure(e) =>
-      println(s"${e.getClass.getName}: ${e.getMessage}")
-  } andThen { case _ => system.shutdown() }
-  system.awaitTermination()
+      println(s"${ e.getClass.getName }: ${ e.getMessage }")
+  } andThen { case _ => system.terminate() }
+  Await.result(system.whenTerminated, concurrent.duration.Duration.Inf)
 }
 
 

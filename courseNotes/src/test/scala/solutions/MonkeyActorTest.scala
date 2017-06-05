@@ -1,12 +1,13 @@
 package solutions
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.ConfigFactory
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 import org.specs2.matcher.ShouldMatchers
+import scala.concurrent.Await
 
 @RunWith(classOf[JUnitRunner])
 class MonkeyActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender with ShouldMatchers with WordSpecLike with BeforeAndAfterAll {
@@ -62,7 +63,7 @@ class MonkeyActorTest(_system: ActorSystem) extends TestKit(_system) with Implic
 
   override def afterAll(): Unit = {
     println("Shutting down ActorSystem")
-    system.shutdown()
-    system.awaitTermination()
+    system.terminate()
+    Await.result(system.whenTerminated, concurrent.duration.Duration.Inf)
   }
 }

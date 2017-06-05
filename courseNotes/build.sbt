@@ -1,7 +1,7 @@
 organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
-version := "2.12.2"
+version := "2.12.2.1"
 
 scalaVersion := "2.12.2"
 autoCompilerPlugins := true
@@ -33,11 +33,11 @@ javacOptions ++= Seq(
 )
 
 libraryDependencies ++= {
-  val akkaV = "2.4.12"
+  val akkaV = "2.5.2"
   Seq(
   "com.typesafe.akka"            %% "akka-actor"       % akkaV   withSources(),
   "com.beachape.filemanagement"  %% "schwatcher"       % "0.3.2" withSources(),
-  "com.github.melrief"           %% "pureconfig"       % "0.6.0" withSources(),
+  "com.github.pureconfig"        %% "pureconfig"       % "0.7.2" withSources(),
   "com.google.guava"             %  "guava"            % "18.0"  withSources(),
   "com.typesafe"                 %  "config"           % "1.3.0" withSources(),
   "org.scalactic"                %% "scalactic"        % "3.0.0" withSources(),

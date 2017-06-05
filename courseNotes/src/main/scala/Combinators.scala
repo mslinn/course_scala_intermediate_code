@@ -33,7 +33,7 @@ object BoundAndGagged extends App {
     val badContainer = BadContainer(blarg).unpredictable { blarg => blarg.copy(i=blarg.i*2) }
     println(s"badContainer returned ${badContainer.i}")
     if (badContainer.i>=3) {
-      system.shutdown()
+      system.terminate()
       sys.exit(0)
     }
   } while (true)

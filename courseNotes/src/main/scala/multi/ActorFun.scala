@@ -66,7 +66,7 @@ object ActorFun2 extends App {
     case Success(response)  => println(response)
     case Failure(exception) => println(s"${exception.getClass.getName}: ${exception.getMessage}")
   } andThen {
-    case _ => system.shutdown()
+    case _ => system.terminate()
   }
 }
 
@@ -147,7 +147,7 @@ object ActorExercise {
         }
 
       case msg =>
-        println(s"Invalid message $msg of type ${msg.getClass.getName} received by Persistence actor")
+        println(s"Invalid message $msg of type ${ msg.getClass.getName } received by Persistence actor")
     }
   }
 }
@@ -166,12 +166,12 @@ object ActorFun3 extends App {
   val waiter = concurrent.Promise[String]()
   future.mapTo[ResultMsg] onComplete {
     case Success(value) =>
-      waiter.success(s"Best match is '${value.text}' (${value.text.length} characters})")
+      waiter.success(s"Best match is '${ value.text }' (${ value.text.length } characters})")
 
     case Failure(msg) =>
       waiter.failure(new Exception(msg))
   }
   val result = concurrent.Await.result(waiter.future, concurrent.duration.Duration.Inf)
   println(result)
-  system.shutdown()
+  system.terminate()
 }

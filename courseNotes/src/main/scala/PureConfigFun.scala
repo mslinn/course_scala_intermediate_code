@@ -12,7 +12,7 @@ object PureConfigTest2 extends App {
 }
 
 object PureConfigFun {
-  import pureconfig.{CamelCase, ConfigConvert, ConfigFieldMapping, ProductHint}
+  import pureconfig._
   import pureconfig.error.{CannotConvert, ConfigReaderFailures, ConfigValueLocation}
   import pureconfig.ConfigConvert._
   import com.typesafe.config.{ConfigValue, ConfigValueFactory, ConfigValueType}
@@ -31,7 +31,12 @@ object PureConfigFun {
           Right(Port(config.unwrapped.asInstanceOf[Int]))
 
         case _ =>
-          fail(CannotConvert(config.render, "Port", s"A port should be a number, but ${ config.valueType } was found", ConfigValueLocation(config)))
+          fail(CannotConvert(
+            value = config.render,
+            toType = "Port",
+            because = s"A port should be a number, but ${ config.valueType } was found",
+            location = ConfigValueLocation(config),
+            path = "/"))
       }
     }
 

@@ -1,10 +1,11 @@
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorSystem, Props}
 import org.specs2.matcher.ShouldMatchers
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
+import scala.concurrent.Await
 
 @RunWith(classOf[JUnitRunner])
 class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender with ShouldMatchers with WordSpecLike with BeforeAndAfterAll {
@@ -44,7 +45,7 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
 
   override def afterAll(): Unit = {
     println("Shutting down ActorSystem")
-    system.shutdown()
-    system.awaitTermination()
+    system.terminate()
+    Await.result(system.whenTerminated, concurrent.duration.Duration.Inf)
   }
 }
