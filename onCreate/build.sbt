@@ -6,7 +6,7 @@ name := "onCreate"
 
 version := "0.1.3"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.3"
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -56,4 +56,3 @@ logLevel in compile := Level.Warn
 cancelable := true
 
 sublimeTransitive := true
-

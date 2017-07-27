@@ -4,17 +4,17 @@ name := "Intermediate Scala Course Solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
-version := "2.12.2"
+version := "2.12.3"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.3"
 
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
   (bd: File) => Seq[String](
     "-deprecation",
     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/solutions€{FILE_PATH}.scala",
-    "-encoding", "UTF-8", 
-    "-feature", 
-    "-target:jvm-1.8", 
+    "-encoding", "UTF-8",
+    "-feature",
+    "-target:jvm-1.8",
     "-unchecked",
     "-Ywarn-adapted-args",
     "-Ywarn-dead-code",
@@ -29,10 +29,10 @@ scalacOptions in (Compile, doc) ++= baseDirectory.map {
 scalacOptions in Test ++= Seq("-Yrangepos")
 
 javacOptions ++= Seq(
-  "-Xlint:deprecation", 
-  "-Xlint:unchecked", 
-  "-source", "1.8", 
-  "-target", "1.8", 
+  "-Xlint:deprecation",
+  "-Xlint:unchecked",
+  "-source", "1.8",
+  "-target", "1.8",
   "-g:vars"
 )
 
@@ -52,4 +52,3 @@ logLevel := Level.Error
 // Only show warnings and errors on the screen for compilations.
 // This applies to both test:compile and compile and is Info by default
 //logLevel in compile := Level.Warn
-
