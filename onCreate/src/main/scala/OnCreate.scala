@@ -1,14 +1,14 @@
 case class FiletypeAction(filetype: String, commandTokens: List[String])
 
 object OnCreate extends App {
-  import collection.JavaConverters._
-  import collection.mutable
-  import com.typesafe.config.{Config, ConfigObject}
-  import com.beachape.filemanagement.RegistryTypes._
-  import com.beachape.filemanagement.Messages._
   import java.io.File
   import java.nio.file.Path
   import java.nio.file.StandardWatchEventKinds._
+  import com.beachape.filemanagement.Messages._
+  import com.beachape.filemanagement.RegistryTypes._
+  import com.typesafe.config.{Config, ConfigObject}
+  import scala.collection.JavaConverters._
+  import scala.collection.mutable
 
   implicit val system = akka.actor.ActorSystem("actorSystem")
   val fileMonitorActor = system.actorOf(com.beachape.filemanagement.MonitorActor())
@@ -45,7 +45,7 @@ object OnCreate extends App {
     }
   }
 
-  def handleActions(path: Path, config: Config) = {
+  def handleActions(path: Path, config: Config): Unit = {
     val filetype: String = config.getString("filetype")
     if (path.toString.endsWith(filetype)) {
       val commandTokens: mutable.Buffer[String] = config.getStringList("commandTokens").asScala
@@ -54,7 +54,7 @@ object OnCreate extends App {
       playSound("ascending.wav")
       val startMillis = System.currentTimeMillis
       val result = try {
-        import sys.process._
+        import scala.sys.process._
         Process(command).!
       } catch {
         case e: Exception =>
@@ -70,7 +70,6 @@ object OnCreate extends App {
   val createCallback: Callback = { path =>
     val am = config.getList("actionMap")
     am.asScala.foreach { case configObject: ConfigObject =>
-      val actionKeys: mutable.Set[String] = configObject.unwrapped.keySet.asScala
       handleActions(path, configObject.toConfig)
     }
   }
@@ -84,9 +83,9 @@ object OnCreate extends App {
   println(s"Watching $watchedDirectory")
 
   fileMonitorActor ! RegisterCallback(
-    ENTRY_CREATE,
+    event = ENTRY_CREATE,
     modifier = None,
     recursive = true,
     path = watchedFile.toPath,
-    createCallback)
+    callback = createCallback)
 }

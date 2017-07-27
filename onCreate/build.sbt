@@ -9,28 +9,28 @@ version := "0.1.3"
 scalaVersion := "2.12.2"
 
 scalacOptions ++= Seq(
-  "-deprecation", 
-  "-encoding", "UTF-8", 
-  "-feature", 
-  "-target:jvm-1.8", 
+  "-deprecation",
+  "-encoding", "UTF-8",
+  "-feature",
+  "-target:jvm-1.8",
   "-unchecked",
-  "-Ywarn-adapted-args", 
-  "-Ywarn-value-discard", 
+  "-Ywarn-adapted-args",
+  "-Ywarn-value-discard",
   "-Xlint"
 )
 
-scalacOptions in (Compile, doc) <++= baseDirectory.map {
+scalacOptions in (Compile, doc) ++= baseDirectory.map {
   (bd: File) => Seq[String](
      "-sourcepath", bd.getAbsolutePath,
      "-doc-source-url", "https://github.com/mslinn/onCreate/tree/master€{FILE_PATH}.scala"
   )
-}
+}.value
 
 javacOptions ++= Seq(
-  "-Xlint:deprecation", 
-  "-Xlint:unchecked", 
-  "-source", "1.8", 
-  "-target", "1.8", 
+  "-Xlint:deprecation",
+  "-Xlint:unchecked",
+  "-source", "1.8",
+  "-target", "1.8",
   "-g:vars"
 )
 
@@ -39,7 +39,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.beachape.filemanagement" %% "schwatcher"   % "0.1.5",
+  "com.beachape.filemanagement" %% "schwatcher"   % "0.3.2",
   "com.typesafe"                %  "config"       % "1.3.1" withSources()
 )
 
