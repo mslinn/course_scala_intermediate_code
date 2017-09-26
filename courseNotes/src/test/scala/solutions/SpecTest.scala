@@ -7,11 +7,12 @@ import org.specs2.runner.JUnitRunner
 /** Solution to http://www.scalacourses.com/lectures/admin/showLecture/15/75 */
 @RunWith(classOf[JUnitRunner])
 object SpecTest extends Specification {
-  val ciscoURL = "http://www.cisco.com/"
+  val ciscoURL = "https://www.cisco.com/"
   val targetWord = "cisco"
 
   def linesFrom(siteURL: String): Array[String] = {
-    io.Source.fromURL(siteURL).mkString.toLowerCase.split("\\W+")
+    val contents = io.Source.fromURL(siteURL).mkString
+    contents.toLowerCase.split("\\W+")
   }
 
   "Exercise 2" should {
@@ -20,7 +21,8 @@ object SpecTest extends Specification {
     }
 
     "Verify that cisco.com contains the word cisco (using iterator)" in {
-      linesFrom(ciscoURL).toIterator must containMatch(targetWord)
+      val actual = linesFrom(ciscoURL).toIterator
+      actual must containMatch(targetWord)
     }
 
     "Verify that cisco.com contains the word cisco (using higher-order function)" in

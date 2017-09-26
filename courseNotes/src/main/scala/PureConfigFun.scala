@@ -24,7 +24,7 @@ object PureConfigFun {
   val defaultSshServerConfig = SshServer()
 
   /** Define before `load` or `loadOrThrow` methods are defined so this implicit is in scope */
-  implicit val readPort = new ConfigConvert[Port] {
+  implicit val readPort: ConfigConvert[Port] = new ConfigConvert[Port] {
     override def from(config: ConfigValue): Either[ConfigReaderFailures, Port] = {
       config.valueType match {
         case ConfigValueType.NUMBER =>
@@ -75,7 +75,7 @@ case class PureConfigFun(
 
 case class FeedConfig(port: Port = Port(1100))
 
-case class ConsoleConfig(enabled: Boolean = true) extends AnyVal
+case class ConsoleConfig(enabled: Boolean = true)/* extends AnyVal */ // value objects worked in earlier PureConfig versions
 
 case class Port(value: Int) extends AnyVal
 
