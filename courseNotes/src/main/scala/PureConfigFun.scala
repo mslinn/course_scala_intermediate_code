@@ -1,5 +1,9 @@
+import java.io.File
 import java.nio.file.{Path, Paths}
 import PureConfigFun._
+import com.typesafe.config.ConfigValueType._
+import pureconfig.error.WrongType
+import scala.util.{Failure, Success, Try}
 
 object PureConfigTest extends App {
   val pureConfigFun = PureConfigFun.load
@@ -13,9 +17,7 @@ object PureConfigTest2 extends App {
 
 object PureConfigFun {
   import pureconfig._
-  import pureconfig.error.{CannotConvert, ConfigReaderFailures, ConfigValueLocation}
-  import pureconfig.ConfigConvert._
-  import com.typesafe.config.{ConfigValue, ConfigValueFactory, ConfigValueType}
+  import pureconfig.error.ConfigReaderFailures
 
   val defaultConsoleConfig   = ConsoleConfig()
   val defaultFeedConfig      = FeedConfig()
@@ -24,23 +26,14 @@ object PureConfigFun {
   val defaultSshServerConfig = SshServer()
 
   /** Define before `load` or `loadOrThrow` methods are defined so this implicit is in scope */
-  implicit val readPort: ConfigConvert[Port] = new ConfigConvert[Port] {
-    override def from(config: ConfigValue): Either[ConfigReaderFailures, Port] = {
-      config.valueType match {
-        case ConfigValueType.NUMBER =>
-          Right(Port(config.unwrapped.asInstanceOf[Int]))
+  implicit val readPort: ConfigReader[Port] = ConfigReader.fromCursor[Port] { cur =>
+    cur.asString.right.flatMap { str =>
+      Try(str.toInt) match {
+        case Success(number) => Right(Port(number))
 
-        case _ =>
-          fail(CannotConvert(
-            value = config.render,
-            toType = "Port",
-            because = s"A port should be a number, but ${ config.valueType } was found",
-            location = ConfigValueLocation(config),
-            path = "/"))
+        case Failure(_) => cur.failed(WrongType(STRING, Set(NUMBER)))
       }
     }
-
-    override def to(port: Port): ConfigValue = ConfigValueFactory.fromAnyRef(port.value)
   }
 
   /** Fail if an unknown key is found.
@@ -53,7 +46,14 @@ object PureConfigFun {
     fieldMapping = ConfigFieldMapping(CamelCase, CamelCase)
   )
 
-  lazy val confPath: Path = new java.io.File(getClass.getClassLoader.getResource("pure.conf").getPath).toPath
+  val expandTilde: String => Path =
+    (string: String) => Paths.get(string.replace("~", sys.props("user.home")))
+
+  import pureconfig.ConvertHelpers._
+  implicit val overridePathReader: ConfigReader[Path] =
+    ConfigReader.fromString[Path](catchReadError(expandTilde))
+
+  lazy val confPath: Path = new File(getClass.getClassLoader.getResource("pure.conf").getPath).toPath
 
   /** Be sure to define implicits such as [[ConfigConvert]] and [[ProductHint]] subtypes before this method so they are in scope */
   def load: Either[ConfigReaderFailures, PureConfigFun] = pureconfig.loadConfig[PureConfigFun](confPath, "ew")
@@ -81,7 +81,7 @@ case class Port(value: Int) extends AnyVal
 
 case class ReplConfig(
   home: Path = Paths.get(System.getProperty("user.home"))
-) extends AnyVal
+)
 
 case class SpeciesDefaults(
   attributeMinimum: Int = 0,

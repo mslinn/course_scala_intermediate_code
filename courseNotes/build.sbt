@@ -1,9 +1,9 @@
 organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
-version := "2.12.3"
+version := "2.12.5"
 
-scalaVersion := "2.12.3"
+scalaVersion := "2.12.5"
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
   (bd: File) => Seq[String](
@@ -33,20 +33,20 @@ javacOptions ++= Seq(
 )
 
 libraryDependencies ++= {
-  val akkaV = "2.5.4"
+  val akkaV = "2.5.11"
   Seq(
   "com.typesafe.akka"            %% "akka-actor"       % akkaV   withSources(),
-  "com.beachape.filemanagement"  %% "schwatcher"       % "0.3.3" withSources(),
-  "com.github.pureconfig"        %% "pureconfig"       % "0.8.0" withSources(),
-  "com.google.guava"             %  "guava"            % "23.0"  withSources(),
-  "com.typesafe"                 %  "config"           % "1.3.1" withSources(),
-  "org.scalactic"                %% "scalactic"        % "3.0.4" withSources(),
+  "com.beachape.filemanagement"  %% "schwatcher"       % "0.3.5" withSources(),
+  "com.github.pureconfig"        %% "pureconfig"       % "0.9.1" withSources(),
+  "com.google.guava"             %  "guava"            % "24.1-jre" withSources(),
+  "com.typesafe"                 %  "config"           % "1.3.3" withSources(),
+  "org.scalactic"                %% "scalactic"        % "3.0.5" withSources(),
   "org.scala-lang"               %  "scala-reflect"    % scalaVersion.value,
   //
   "com.typesafe.akka"            %% "akka-testkit"     % akkaV    % "test" withSources(),
-  "org.specs2"                   %% "specs2-core"      % "3.9.5"  % "test" withSources(),
-  "org.specs2"                   %% "specs2-junit"     % "3.9.5"  % "test" withSources(),
-  "org.scalatest"                %% "scalatest"        % "3.0.4"  % "test" withSources(),
+  "org.specs2"                   %% "specs2-core"      % "4.0.3"  % "test" withSources(),
+  "org.specs2"                   %% "specs2-junit"     % "4.0.3"  % "test" withSources(),
+  "org.scalatest"                %% "scalatest"        % "3.0.5"  % "test" withSources(),
   "junit"                        %  "junit"            % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
   )
 }
