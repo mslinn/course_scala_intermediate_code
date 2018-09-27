@@ -6,9 +6,9 @@ description := "Intermediate Scala Assignment"
 
 version := "0.1.0"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.12.7"
 
-scalacOptions in (Compile, doc) <++= baseDirectory.map {
+scalacOptions in (Compile, doc) ++= baseDirectory.map {
   (bd: File) => Seq[String](
      "-deprecation", 
 	 "-encoding", "UTF-8", 
@@ -19,7 +19,7 @@ scalacOptions in (Compile, doc) <++= baseDirectory.map {
 	 "-Ywarn-adapted-args",
      "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/assignment€{FILE_PATH}.scala"
   )
-}
+}.value
 
 libraryDependencies ++= Seq(
   "com.typesafe" %  "config" % "1.0.2"
