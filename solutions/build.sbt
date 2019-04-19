@@ -4,12 +4,12 @@ name := "Intermediate Scala Course Solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
-version := "2.12.7"
+version := "2.12.7" // "2.13.0-RC1"
 
-scalaVersion := "2.12.7"
+scalaVersion := "2.12.7" // "2.13.0-RC1"
 
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
-  (bd: File) => Seq[String](
+  bd: File => Seq[String](
     "-deprecation",
     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/solutions€{FILE_PATH}.scala",
     "-encoding", "UTF-8",
@@ -39,8 +39,8 @@ javacOptions ++= Seq(
 libraryDependencies ++= Seq(
   "org.xerial"        %  "sqlite-jdbc"   % "3.14.2.1" withSources(),
   //
-  "org.scalatest"     %% "scalatest"     % "3.0.0"  % "test" withSources(),
-  "junit"             %  "junit"         % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
+  "org.scalatest"     %% "scalatest"     % "3.0.5"  % Test withSources(),
+  "junit"             %  "junit"         % "4.12"   % Test // Scala IDE requires this; IntelliJ IDEA does not
 )
 
 // Optional settings from https://github.com/harrah/xsbt/wiki/Quick-Configuration-Examples follow
