@@ -1,12 +1,12 @@
 organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
-version := "2.12.7"
+version := "2.13.0-RC1" // "2.12.7"
 
-scalaVersion := "2.12.7"
+scalaVersion := "2.13.0-RC1" // "2.12.7"
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
-  (bd: File) => Seq[String](
+  bd: File => Seq[String](
     "-deprecation",
     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/coursenotes€{FILE_PATH}.scala",
     "-encoding", "UTF-8",
@@ -39,15 +39,15 @@ libraryDependencies ++= {
   "com.beachape.filemanagement"  %% "schwatcher"       % "0.3.5" withSources(),
   "com.github.pureconfig"        %% "pureconfig"       % "0.9.1" withSources(),
   "com.google.guava"             %  "guava"            % "24.1-jre" withSources(),
-  "com.typesafe"                 %  "config"           % "1.3.3" withSources(),
+  "com.typesafe"                 %  "config"           % "1.3.4" withSources(),
   "org.scalactic"                %% "scalactic"        % "3.0.5" withSources(),
   "org.scala-lang"               %  "scala-reflect"    % scalaVersion.value,
   //
-  "com.typesafe.akka"            %% "akka-testkit"     % akkaV    % "test" withSources(),
-  "org.specs2"                   %% "specs2-core"      % "4.0.3"  % "test" withSources(),
-  "org.specs2"                   %% "specs2-junit"     % "4.0.3"  % "test" withSources(),
-  "org.scalatest"                %% "scalatest"        % "3.0.5"  % "test" withSources(),
-  "junit"                        %  "junit"            % "4.12"   % "test" // Scala IDE requires this; IntelliJ IDEA does not
+  "com.typesafe.akka"            %% "akka-testkit"     % akkaV    % Test withSources(),
+  "org.specs2"                   %% "specs2-core"      % "4.3.4"  % Test withSources(),
+  "org.specs2"                   %% "specs2-junit"     % "4.3.4"  % Test withSources(),
+  "org.scalatest"                %% "scalatest"        % "3.0.5"  % Test withSources(),
+  "junit"                        %  "junit"            % "4.12"   % Test // Scala IDE requires this; IntelliJ IDEA does not
   )
 }
 updateOptions := updateOptions.value.withCachedResolution(true)
