@@ -1,9 +1,13 @@
 organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
-version := "2.12.7" // "2.13.0-RC1"
 
-scalaVersion := "2.12.7" // "2.13.0-RC1"
+version := "2.12.7"
+scalaVersion := "2.12.7"
+
+//version := "2.13.0-RC1"
+//scalaVersion := "2.13.0-RC1"
+
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
   bd: File => Seq[String](
@@ -50,6 +54,14 @@ libraryDependencies ++= {
   "junit"                        %  "junit"            % "4.12"   % Test // Scala IDE requires this; IntelliJ IDEA does not
   )
 }
+libraryDependencies ++=
+  scalaVersion {
+    case sv if sv.startsWith("2.13") => List(
+      "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0"
+    )
+
+    case _ => Nil
+  }.value
 updateOptions := updateOptions.value.withCachedResolution(true)
 
 // set the initial commands when entering 'console' or 'consoleQuick', but not 'consoleProject'
