@@ -2,11 +2,10 @@ organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
 
-version := "2.12.7"
 scalaVersion := "2.12.7"
+//scalaVersion := "2.13.0-RC1
 
-//version := "2.13.0-RC1"
-//scalaVersion := "2.13.0-RC1"
+version := scalaVersion.value
 
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
@@ -40,8 +39,8 @@ libraryDependencies ++= {
   val akkaV = "2.5.11"
   Seq(
   "com.typesafe.akka"            %% "akka-actor"       % akkaV   withSources(),
-  "com.beachape.filemanagement"  %% "schwatcher"       % "0.3.5" withSources(),
-  "com.github.pureconfig"        %% "pureconfig"       % "0.9.1" withSources(),
+  "com.beachape.filemanagement"  %% "schwatcher"       % "0.3.5" withSources(),    // not yet available for Scala 2.13-RC1
+  "com.github.pureconfig"        %% "pureconfig"       % "0.9.1" withSources(),    // not yet available for Scala 2.13-RC1
   "com.google.guava"             %  "guava"            % "24.1-jre" withSources(),
   "com.typesafe"                 %  "config"           % "1.3.4" withSources(),
   "org.scalactic"                %% "scalactic"        % "3.0.5" withSources(),
