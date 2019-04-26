@@ -1,3 +1,5 @@
+import akka.actor.ActorSystem
+
 case class FiletypeAction(filetype: String, commandTokens: List[String])
 
 object OnCreate extends App {
@@ -10,7 +12,7 @@ object OnCreate extends App {
   import scala.collection.JavaConverters._
   import scala.collection.mutable
 
-  implicit val system = akka.actor.ActorSystem("actorSystem")
+  implicit val system: ActorSystem = akka.actor.ActorSystem("actorSystem")
   val fileMonitorActor = system.actorOf(com.beachape.filemanagement.MonitorActor())
 
   def playSound(fileName: String): Unit = {
@@ -28,13 +30,11 @@ object OnCreate extends App {
       clip.open(audioIn)
       clip.start()
       val promise = concurrent.Promise[String]()
-      clip.addLineListener(new LineListener { // wait until sound has finished playing
-        def update(event: LineEvent): Unit = {
-          if (event.getType == LineEvent.Type.STOP) {
-            event.getLine.close()
-            promise.success("done")
-            ()
-          }
+      clip.addLineListener((event: LineEvent) => {
+        if (event.getType == LineEvent.Type.STOP) {
+          event.getLine.close()
+          promise.success("done")
+          ()
         }
       })
       concurrent.Await.result(promise.future, concurrent.duration.Duration.Inf)

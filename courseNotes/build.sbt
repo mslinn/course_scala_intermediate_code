@@ -2,7 +2,7 @@ organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
 
-scalaVersion := "2.12.7"
+scalaVersion := "2.12.8"
 //scalaVersion := "2.13.0-RC1
 
 version := scalaVersion.value
@@ -47,8 +47,8 @@ libraryDependencies ++= {
   "org.scala-lang"               %  "scala-reflect"    % scalaVersion.value,
   //
   "com.typesafe.akka"            %% "akka-testkit"     % akkaV    % Test withSources(),
-  "org.specs2"                   %% "specs2-core"      % "4.3.4"  % Test withSources(),
-  "org.specs2"                   %% "specs2-junit"     % "4.3.4"  % Test withSources(),
+  "org.specs2"                   %% "specs2-core"      % "4.5.1"  % Test withSources(),
+  "org.specs2"                   %% "specs2-junit"     % "4.5.1"  % Test withSources(),
   "org.scalatest"                %% "scalatest"        % "3.0.5"  % Test withSources(),
   "junit"                        %  "junit"            % "4.12"   % Test // Scala IDE requires this; IntelliJ IDEA does not
   )

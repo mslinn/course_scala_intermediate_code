@@ -4,9 +4,9 @@ organization := "com.micronautics"
 
 name := "onCreate"
 
-version := "0.1.3"
-
-scalaVersion := "2.12.7"
+scalaVersion := "2.12.8"
+//scalaVersion := "2.13.0-RC1"
+version := scalaVersion.value
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -20,7 +20,7 @@ scalacOptions ++= Seq(
 )
 
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
-  (bd: File) => Seq[String](
+  bd: File => Seq[String](
      "-sourcepath", bd.getAbsolutePath,
      "-doc-source-url", "https://github.com/mslinn/onCreate/tree/master€{FILE_PATH}.scala"
   )
@@ -39,8 +39,8 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.beachape.filemanagement" %% "schwatcher"   % "0.3.2",
-  "com.typesafe"                %  "config"       % "1.3.1" withSources()
+  "com.beachape.filemanagement" %% "schwatcher"   % "0.3.5",
+  "com.typesafe"                %  "config"       % "1.3.4" withSources()
 )
 
 logLevel := Level.Warn
