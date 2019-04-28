@@ -1,4 +1,6 @@
 logs
+.metals/
+.bloop/
 .cache*
 nosuch.html
 *.swp
