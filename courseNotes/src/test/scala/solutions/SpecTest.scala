@@ -7,8 +7,8 @@ import org.specs2.runner.JUnitRunner
 /** Solution to http://www.scalacourses.com/lectures/admin/showLecture/15/75 */
 @RunWith(classOf[JUnitRunner])
 object SpecTest extends Specification {
-  val ciscoURL = "https://www.cisco.com/"
-  val targetWord = "cisco"
+  val ciscoURL: String = "https://www.cisco.com/"
+  val targetWord: String = "cisco"
 
   def linesFrom(siteURL: String): Array[String] = {
     val contents = io.Source.fromURL(siteURL).mkString
@@ -21,7 +21,7 @@ object SpecTest extends Specification {
     }
 
     "Verify that cisco.com contains the word cisco (using iterator)" in {
-      val actual = linesFrom(ciscoURL).toIterator
+      val actual: List[String] = linesFrom(ciscoURL).toList
       actual must containMatch(targetWord)
     }
 

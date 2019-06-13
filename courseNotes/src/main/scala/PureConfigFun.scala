@@ -3,6 +3,7 @@ import java.nio.file.{Path, Paths}
 import PureConfigFun._
 import com.typesafe.config.ConfigValueType._
 import pureconfig.error.WrongType
+import pureconfig.generic.ProductHint
 import scala.util.{Failure, Success, Try}
 
 object PureConfigTest extends App {
@@ -52,11 +53,16 @@ object PureConfigFun {
   import pureconfig.ConvertHelpers._
   implicit val overridePathReader: ConfigReader[Path] =
     ConfigReader.fromString[Path](catchReadError(expandTilde))
+  import pureconfig.generic.auto._
 
   lazy val confPath: Path = new File(getClass.getClassLoader.getResource("pure.conf").getPath).toPath
 
   /** Be sure to define implicits such as [[ConfigConvert]] and [[ProductHint]] subtypes before this method so they are in scope */
-  def load: Either[ConfigReaderFailures, PureConfigFun] = pureconfig.loadConfig[PureConfigFun](confPath, "ew")
+  def load: Either[ConfigReaderFailures, PureConfigFun] = pureconfig.loadConfigFromFiles[PureConfigFun](
+    files = List(confPath),
+    failOnReadError = true,
+    namespace = "ew"
+  )
 
   /** Be sure to define implicits such as [[ConfigConvert]] and [[ProductHint]] subtypes before this method so they are in scope */
   def loadOrThrow: PureConfigFun = pureconfig.loadConfigOrThrow[PureConfigFun](confPath, "ew")
