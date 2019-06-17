@@ -8,20 +8,19 @@ object WeaklyTypedParameters extends App {
   object Users {
     private val users = ListBuffer.empty[User]
 
-    def add(user: User) = {
+    def add(user: User): Users.type = {
       users += user
       this
     }
 
-    def findByName(name: String): Option[User] =
-      users.find(_.name==name).headOption
+    def findByName(name: String): Option[User] = users.find(_.name == name)
   }
 
   implicit class RichUser(user: User) {
     def authorize(granteeName: String, permission: Permission): Option[User] =
       for {
         grantor <- Some(user) if user.permissions.contains(PARENT)
-        grantee <- Users.findByName(granteeName).headOption
+        grantee <- Users.findByName(granteeName)
       } yield grantee.copy(permissions = grantee.permissions :+ permission)
   }
 
@@ -39,7 +38,7 @@ object WeaklyTypedParameters extends App {
 
   pebbles.authorize(wilma.name, CHILD) match {
     case Some(child) =>
-      println(s"${child.name} got upgraded permissions")
+      println(s"${ child.name } got upgraded permissions")
 
     case None =>
       println("Authorization failed")
@@ -75,13 +74,13 @@ object StronglyTypedParameters extends App {
   object Users {
     private val users = ListBuffer.empty[User]
 
-    def add(user: User) = {
+    def add(user: User): Users.type = {
       users += user
       this
     }
 
     def findByName(name: String): Option[User] =
-      users.find(_.name==name).headOption
+      users.find(_.name == name)
   }
 
   val wilma = User("Wilma Flintstone", List(PARENT), Some(1))

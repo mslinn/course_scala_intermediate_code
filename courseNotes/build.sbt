@@ -2,14 +2,14 @@ organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
 
-scalaVersion := "2.12.8"
-//scalaVersion := "2.13.0"
+//scalaVersion := "2.12.8"
+scalaVersion := "2.13.0"
 
 version := scalaVersion.value
 
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
-  bd: File => Seq[String](
+  _: File => Seq[String](
     "-deprecation",
     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/coursenotes€{FILE_PATH}.scala",
     "-encoding", "UTF-8",
@@ -39,7 +39,7 @@ libraryDependencies ++= {
   val akkaV = "2.5.23"
   Seq(
   "com.typesafe.akka"      %% "akka-actor"                 % akkaV          withSources(),
-  "com.github.pureconfig"  %% "pureconfig"                 % "0.11.0"       withSources(), // not yet available for Scala 2.13.0
+  "com.github.pureconfig"  %% "pureconfig"                 % "0.11.1"       withSources(),
   "com.google.guava"       %  "guava"                      % "24.1-jre"     withSources(),
   "com.typesafe"           %  "config"                     % "1.3.4"        withSources(),
   "org.scalactic"          %% "scalactic"                  % "3.1.0-SNAP13" withSources(),

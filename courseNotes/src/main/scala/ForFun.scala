@@ -15,12 +15,12 @@ object ForTry extends App {
 }
 
 object ForFun extends App {
-  val vector = Vector(0, 1, 2, 3)
+  val vector: Vector[Int] = Vector(0, 1, 2, 3)
 
-  println( s"""vector.map(x => x.toString) = ${vector.map(x => x.toString)}""")
-  println( s"""List(1, 2, 3).map(_.toString) = ${List(1, 2, 3).map(_.toString)}""")
+  println(s"""vector.map(x => x.toString) = ${ vector.map(x => x.toString) }""")
+  println(s"""List(1, 2, 3).map(_.toString) = ${ List(1, 2, 3).map(_.toString) }""")
 
-  for (i <- 1 to 3) println("Hello, world!")
+  (1 to 3) foreach { _=> println("Hello, world!") }
 
   for {
     i <- List(1, 2, 3)
@@ -42,10 +42,10 @@ object ForFun extends App {
     string <- List("a", "b", "c")
   } println(string * i)
 
-  var outerVariable = 0
+  var outerVariable: Int = 0
   for {
     i <- List(1, 2, 3)
-    _ <- List(outerVariable = i) if i % 2 == 0
+    _ <- List(outerVariable) if i % 2 == 0
     string <- List("a", "b", "c")
   } println(string * i)
   println(s"outerVariable=$outerVariable")

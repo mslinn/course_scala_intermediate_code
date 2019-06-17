@@ -8,9 +8,9 @@ object PartiallyApplied {
     lazy val totalWeight: Double = riders.map(_.weight).sum
     lazy val cheer = s"Go $color team" + names.mkString(": ", ", ", "!")
   }
-  val chloe  = new Rider("Chloe",  124, 62)
-  val louise = new Rider("Louise", 136, 68)
-  val beth   = new Rider("Beth",   112, 59)
+  val chloe  = Rider("Chloe",  124, 62)
+  val louise = Rider("Louise", 136, 68)
+  val beth   = Rider("Beth",   112, 59)
   //
   val team1 = Bike(chloe, louise, beth, _: String)
   val bike1 = team1("red")

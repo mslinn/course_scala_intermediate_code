@@ -68,9 +68,9 @@ object GoodDuck extends App {
   }
 
   class DuckExtendsTrait extends DuckLike {
-    def quack(count: Int) = println("DuckExtendsTrait: " + "Quack! " * count)
+    def quack(count: Int): Unit = println("DuckExtendsTrait: " + "Quack! " * count)
 
-    def waddle() = println("DuckExtendsTrait Waddling...")
+    def waddle(): Unit = println("DuckExtendsTrait Waddling...")
   }
 
   abstract class AbstractDuck {
@@ -78,9 +78,9 @@ object GoodDuck extends App {
   }
 
   class DuckConcrete extends AbstractDuck {
-    def quack(count: Int) = println("DuckConcrete: " + "Quack! " * count)
+    def quack(count: Int): Unit = println("DuckConcrete: " + "Quack! " * count)
 
-    def waddle() = println("DuckConcrete: Waddling...")
+    def waddle(): Unit = println("DuckConcrete: Waddling...")
   }
 
   val duck1 = new DuckExtendsTrait

@@ -9,8 +9,8 @@ object WithLocale extends App {
   def withLocale(locale: Locale)(body: Locale => String): String = body(locale)
 
   def result(date: Date, number: BigDecimal)(implicit locale: Locale): String = {
-    implicit val dateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, locale)
-    implicit val numberFormat = NumberFormat.getNumberInstance(locale)
+    implicit val dateFormat: DateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, locale)
+    implicit val numberFormat: NumberFormat = NumberFormat.getNumberInstance(locale)
     val currencyCode = numberFormat.getCurrency.getCurrencyCode
     s"""${locale.getDisplayCountry}; currency: $currencyCode; """ +
       s"""date/time: ${formatDateTime(date)}; large number: ${formatNumber(number)}"""

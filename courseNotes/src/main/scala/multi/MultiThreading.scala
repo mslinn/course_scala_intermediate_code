@@ -1,10 +1,12 @@
 package multi
 
+import java.util.concurrent.ForkJoinPool
+
 object MultiThreading {
   import scala.concurrent.ExecutionContext
 
   /** Returns an instance of the requested type of `ExecutionContext`.
-    * @args can be `cached`, `fixed`, `forkjoin`, `scheduled`, `single`, `singleScheduled`, `akka*` or the empty String.
+    * @param args can be `cached`, `fixed`, `forkjoin`, `scheduled`, `single`, `singleScheduled`, `akka*` or the empty String.
     *      "" is the default, and uses the default global execution context.
     *      For `akka`, all arguments are used to configure the dispatcher (requires no embedded spaces between arguments), for example:
     *      <pre>akka.daemonic=on
@@ -23,7 +25,7 @@ object MultiThreading {
         ExecutionContext.fromExecutor(pool)
 
       case a if a.contains("forkjoin") =>
-        val pool: ExecutorService = new concurrent.forkjoin.ForkJoinPool()
+        val pool: ExecutorService = new ForkJoinPool()
         ExecutionContext.fromExecutor(pool)
 
       case a if a.contains("scheduled") =>
@@ -38,7 +40,7 @@ object MultiThreading {
         val pool: ExecutorService = Executors.newSingleThreadScheduledExecutor()
         ExecutionContext.fromExecutor(pool)
 
-      case a :: rest if a.contains("akka") =>
+      case a :: _ if a.contains("akka") =>
         val configString = args.mkString("\n")
         val config = com.typesafe.config.ConfigFactory.parseString(configString)
         val result = akka.actor.ActorSystem("actorSystem", config).dispatcher

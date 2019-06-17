@@ -44,7 +44,7 @@ object ForCompSerial1 extends App {
       System.exit(0)
 
     case Failure(ex) ⇒
-      println(s"Failure: ${ex.getMessage}")
+      println(s"Failure: ${ ex.getMessage }")
       System.exit(0)
   }
   synchronized { wait() }

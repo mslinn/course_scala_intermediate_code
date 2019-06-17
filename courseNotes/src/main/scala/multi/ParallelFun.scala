@@ -1,11 +1,16 @@
 package multi
 
+import java.util.concurrent.ForkJoinPool
+import scala.util.Random
+
 object ParallelFun extends App {
+  import scala.collection.parallel.CollectionConverters._
+
   /** Simulate a CPU-bound task */
   class CpuBound(val iterations:Int = 10000) {
     import scala.collection.parallel.immutable.ParSeq
 
-    def goNuts(decimals: Int) = {
+    def goNuts(decimals: Int): ParSeq[Double] = {
       println(s"Starting $iterations CPU-bound computations")
       time("serial CPU-bound computation") { (1 to iterations).map(_ => calculatePiFor(decimals)) }
       time[ParSeq[Double]]("parallel CPU-bound computation") { (1 to iterations).par.map { _ => calculatePiFor(decimals) } }
@@ -15,7 +20,7 @@ object ParallelFun extends App {
       val result: collection.parallel.ParSeq[Long] = {
         import scala.collection.parallel.ForkJoinTaskSupport
         val parRange = (1 to iterations).par
-        parRange.tasksupport = new ForkJoinTaskSupport(new scala.concurrent.forkjoin.ForkJoinPool(2))
+        parRange.tasksupport = new ForkJoinTaskSupport(new ForkJoinPool(2))
         for {
           i <- parRange
           load = calculatePiFor(i) if load.toString.contains("6")
@@ -28,7 +33,7 @@ object ParallelFun extends App {
 
   /** Simulate an IO-bound task */
   class IoBound {
-    val random = util.Random
+    val random: Random.type = util.Random
     val iterations = 10
     val fetchCount = 10
 
@@ -38,12 +43,12 @@ object ParallelFun extends App {
     /** maximum time (ms) to sleep per invocation */
     val maxDelay = 30
 
-    val computeRandomDelays = (count: Int) => {
-      def randomDelay = random.nextInt(maxDelay-minDelay) + minDelay
+    val computeRandomDelays: Int => IndexedSeq[Int] = (count: Int) => {
+      def randomDelay: Int = random.nextInt(maxDelay-minDelay) + minDelay
       for (i <- 0 until count) yield randomDelay
     }
 
-    val randomDelays = computeRandomDelays(fetchCount)
+    val randomDelays: IndexedSeq[Int] = computeRandomDelays(fetchCount)
 
     /** Simulate an IO-bound task (web spider) */
     val simulateSpider: () => Unit = () => {

@@ -14,7 +14,7 @@ object ForFun3Model {
 
     def ==(other: Money): Boolean = dollars == other.dollars
 
-    override def hashCode = dollars.hashCode
+    override def hashCode: Int = dollars.hashCode
 
     override def toString = s"$dollars dollars"
   }
@@ -36,7 +36,7 @@ object ForFun3Model {
   case class Tofu(override val weight: Int, override val price: Money) extends InventoryItem(weight, price)
 
   sealed abstract class Inventory(val quantity: Int, val item: InventoryItem) {
-    def isNotEmpty = quantity > 0
+    def isNotEmpty: Boolean = quantity > 0
   }
 
   case class CharcoalBagInventory(override val quantity: Int) extends Inventory(quantity, CharcoalBag(5, Money(10)))

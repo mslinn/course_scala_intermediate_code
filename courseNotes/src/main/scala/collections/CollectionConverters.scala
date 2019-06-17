@@ -2,6 +2,7 @@ package collections
 
 import collection._
 import collection.JavaConverters._
+import scala.collection.parallel.CollectionConverters._
 import java.util.{List => JList, Map => JMap, Set => JSet}
 
 object CollectionConverters extends App {
@@ -10,8 +11,8 @@ object CollectionConverters extends App {
 
   println(s"""io.Source.fromFile("build.sbt").getLines().toList=${ io.Source.fromFile("build.sbt").getLines().toList }""")
 
-  println(s"""List(1, 1, 2, 2, 3, 3).to[Set] = ${ List(1, 1, 2, 2, 3, 3).to[Set] }""")
-  println(s"""List(1, 1, 2, 2, 3, 3).to[collection.parallel.ParSet] = ${ List(1, 1, 2, 2, 3, 3).to[collection.parallel.ParSet] }""")
+  println(s"""List(1, 1, 2, 2, 3, 3).to[Set] = ${ List(1, 1, 2, 2, 3, 3).toSet }""")
+  println(s"""List(1, 1, 2, 2, 3, 3).to[collection.parallel.ParSet] = ${ List(1, 1, 2, 2, 3, 3).par.toSet }""")
 
   val list1 = mutable.ListBuffer(1, 2, 3)
   val jl: java.util.List[Int] = list1.asJava   // the type of j1 need not be declared, merely added for clarity

@@ -10,7 +10,7 @@ import scala.language.postfixOps
 import scala.util.{Failure, Random, Success}
 
 class MyActor extends Actor {
-  def receive = {
+  def receive: PartialFunction[Any, Unit] = {
     case msg =>
       println(s"MyActor got '$msg'")
       sender ! "Got the message" // reply to sender
@@ -21,7 +21,7 @@ object ActorFun1 extends App {
     val system: ActorSystem = ActorSystem("myActorSystem")
     val myActor1: ActorRef = system.actorOf(Props[MyActor], name="myActor1")
     val aMessage = "This is a message"
-    implicit val timeout = Timeout(60 seconds)
+    implicit val timeout: Timeout = Timeout(60 seconds)
     val response: Future[Any] = myActor1 ? aMessage
 
     val result1: Any = Await.result(myActor1 ? aMessage, 5 seconds)
@@ -37,8 +37,8 @@ object ActorFun1 extends App {
 }
 
 object ActorFun2 extends App {
-  implicit val system = ActorSystem("myActorSystem")
-  implicit val timeout = Timeout(60 seconds)
+  implicit val system: ActorSystem = ActorSystem("myActorSystem")
+  implicit val timeout: Timeout = Timeout(60 seconds)
 
   class SupervisorActor extends Actor {
     def start: Future[String] = {
@@ -49,7 +49,7 @@ object ActorFun2 extends App {
       }).mapTo[String]
     }
 
-    def receive = {
+    def receive: PartialFunction[Any, Unit] = {
       case msg if msg == SupervisorActor.goMsg =>
         println(s"SupervisorActor received '$msg'")
         sender ! time("message exchange")(Await.result(start, timeout.duration))
@@ -83,7 +83,7 @@ object ActorExercise {
   class Chunker extends Actor {
     var rootActor: ActorRef = _
 
-    def receive = {
+    def receive: PartialFunction[Any, Unit] = {
       case msg: ChunkerMsg =>
         //println(s"Chunker actor got $msg")
         rootActor = sender()
@@ -104,7 +104,7 @@ object ActorExercise {
 
   /** Performs long computation */
   class Worker extends Actor {
-    def receive = {
+    def receive: PartialFunction[Any, Unit] = {
       case msg: WorkerMsg =>
         //println(s"Worker actor got $msg")
         val random = new Random()
@@ -126,7 +126,7 @@ object ActorExercise {
     var workers = 0
     //println(s"Persistence actor path is ${context.self.path}")
 
-    def receive = {
+    def receive: PartialFunction[Any, Unit] = {
       case msg: ChunkerMsg =>
         //println(s"Persistence actor got $msg")
         targetString = msg.text
@@ -158,7 +158,7 @@ object ActorFun3 extends App {
 //  val pool: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors)
 //  implicit val executionContext: ExecutionContext = ExecutionContext.fromExecutor(pool)
 
-  implicit val timeout = Timeout(60 seconds)
+  implicit val timeout: Timeout = Timeout(60 seconds)
 
   val system = ActorSystem("monkeyCage")
   val chunker = system.actorOf(Props[Chunker], name = "chunker")

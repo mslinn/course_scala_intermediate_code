@@ -1,9 +1,11 @@
+import scala.util.matching.UnanchoredRegex
+
 object ImplicitClasses extends App {
   implicit class randomName(int: Int) {
     val length: Int = int.toString.length
   }
 
-  println(s"5.length=${5.length}")
+  println(s"5.length=${ 5.length }")
 }
 
 object ImplicitValueClass extends App {
@@ -11,13 +13,13 @@ object ImplicitValueClass extends App {
     @inline def length: Int = long.toString.length
   }
 
-  println(s"5L.length=${5L.length}")
+  println(s"5L.length=${ 5L.length }")
 }
 
 object EnhanceMyLibrary extends App {
   case class Dog(name: String) {
     override def equals(that: Any): Boolean = canEqual(that) && hashCode==that.hashCode
-    override def hashCode = name.hashCode
+    override def hashCode: Int = name.hashCode
   }
 
   class Stick
@@ -25,17 +27,17 @@ object EnhanceMyLibrary extends App {
   case class Ball(color: String)
 
   implicit class DogCommands(val dog: Dog) extends AnyVal {
-    def call(me: String): String = s"Here, ${dog.name} come to $me"
+    def call(me: String): String = s"Here, ${ dog.name } come to $me"
 
-    def fetch(stick: Stick): String = s"${dog.name}, fetch the stick!"
+    def fetch(stick: Stick): String = s"${ dog.name }, fetch the stick!"
 
-    def fetch(ball: Ball): String = s"${dog.name}, fetch the ${ball.color} ball!"
+    def fetch(ball: Ball): String = s"${ dog.name }, fetch the ${ ball.color } ball!"
   }
 
   val dog = Dog("Fido")
-  println(s"""dog.call("me") => ${dog.call("me")}""")
-  println(s"""dog.fetch(new Stick) => ${dog.fetch(new Stick)}""")
-  println(s"""dog.fetch(new Ball("green")) => ${dog.fetch(new Ball("green"))}""")
+  println(s"""dog.call("me") => ${ dog.call("me") }""")
+  println(s"""dog.fetch(new Stick) => ${ dog.fetch(new Stick) }""")
+  println(s"""dog.fetch(new Ball("green")) => ${ dog.fetch(Ball("green")) }""")
 }
 
 object Rates extends App {
@@ -55,24 +57,24 @@ object SymbolToCurrency {
       s"$convertedValue ${symbol.name}"
     } catch {
       case nsee: NoSuchElementException =>
-        println(s"Currency ${symbol.name} unknown. Available currencies are: ${rateMap.keys.map(_.name).toSeq.sorted.mkString(", ")}")
+        println(s"Currency ${symbol.name} unknown. Available currencies are: ${ rateMap.keys.map(_.name).toSeq.sorted.mkString(", ") }")
         ""
     }
   }
 
-  // define open exchange key as an environment variable before runnin this (bogus key shown):
+  // define open exchange key as an environment variable before running this (bogus key shown):
   // export OPEN_EXCHANGE_KEY=7364734638483498732987423
-  protected val openExchangeKey = sys.env("OPEN_EXCHANGE_KEY")
+  protected val openExchangeKey: String = sys.env("OPEN_EXCHANGE_KEY")
   protected val urlStr = s"http://openexchangerates.org/api/latest.json?app_id=$openExchangeKey"
   protected val latestRates: String = io.Source.fromURL(urlStr).mkString
-  protected val RateRegex = """(?s)rates.: \{(.*?)\}""".r.unanchored
+  protected val RateRegex: UnanchoredRegex = """(?s)rates.: \{(.*?)\}""".r.unanchored
   protected val RateRegex(rates) = latestRates
 
   protected val rateTuples: List[(Symbol, Double)] = (for {
     rateStr <- rates.split(",").toList
   } yield {
     rateStr.replaceAll("[ \n\"]", "").split(":") match {
-      case Array(k, v) =>
+      case Array(k: String, v: String) =>
         try {
           Some(Symbol(k) -> v.toDouble)
         } catch {

@@ -6,11 +6,11 @@ object TinyFuture {
   class WriteOnce[T] {
     private var value: Option[Try[T]] = None
 
-    def isCompleted = value.isDefined
+    def isCompleted: Boolean = value.isDefined
 
-    def isFailure = value.exists(_.isFailure)
+    def isFailure: Boolean = value.exists(_.isFailure)
 
-    def isSuccess = value.exists(_.isSuccess)
+    def isSuccess: Boolean = value.exists(_.isSuccess)
 
     /** Create an instance with a failure value (a Throwable instance) */
     def fail(throwable: Throwable): WriteOnce[T] = {
@@ -47,11 +47,11 @@ object TinyFuture {
   class Future[T] {
     val value = new WriteOnce[T]
 
-    def isCompleted = value.isCompleted
+    def isCompleted: Boolean = value.isCompleted
   }
 
   object Future {
-    def apply[T](value: => T) = {
+    def apply[T](value: => T): Future[T] = {
       val future = new Future[T]()
       try {
         future.value.set(value)
@@ -61,7 +61,7 @@ object TinyFuture {
       future
     }
 
-    def failed[T](throwable: Throwable) = {
+    def failed[T](throwable: Throwable): Future[T] = {
       val future = new Future[T]
       future.value.fail(throwable)
       future

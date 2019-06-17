@@ -29,7 +29,6 @@ object PartiallyAppliedStuff {
 
   val file = new File("/etc/passwd")
   def fileInputStream = new FileInputStream(file)
-
 }
 
 object PartiallyAppliedUsing extends App {
@@ -56,10 +55,10 @@ object PartiallyAppliedUsing extends App {
   val openFileInputStream5 = withCloseable[FileInputStream, String](fileInputStream) _
   val tryContents5: Try[String] = openFileInputStream5(first2lines("tryContents5", _).toUpperCase)
 
-  def openFileInputStream6[T] = withCloseable[FileInputStream, T](fileInputStream) _
+  def openFileInputStream6[T]: (FileInputStream => T) => Try[T] = withCloseable[FileInputStream, T](fileInputStream)
   val tryContents6: Try[String] = openFileInputStream6 { first2lines("tryContents6", _).replace(":", "#") }
 
-  def withBufferedInputStream1[T](input: File) =
+  def withBufferedInputStream1[T](input: File): (BufferedInputStream => T) => Try[T] =
     withCloseable(new BufferedInputStream(new FileInputStream(input))) (_: BufferedInputStream => T)
 
   def withBufferedInputStream[T](input: File): (BufferedInputStream => T) => Try[T] =
@@ -76,12 +75,12 @@ object PartiallyAppliedUsing extends App {
     }
   }
 
-  def stringMunger(a: String)(f: String ⇒ String) = f(a)
+  def stringMunger(a: String)(f: String ⇒ String): String = f(a)
   val abc = stringMunger("abc") _
   abc { x => x * 4 }
   abc { _ * 4 }
 
-  def twoStringMunger[T](a: String)(b: String)(f: (String, String) ⇒ T) = f(a, b)
+  def twoStringMunger[T](a: String)(b: String)(f: (String, String) ⇒ T): T = f(a, b)
   val twoStringToIntPF = twoStringMunger[Int]("abcdefghi")("def") _
   twoStringToIntPF { (s1, s2) ⇒ s1.indexOf(s2) }
 
@@ -118,10 +117,10 @@ object Banksy extends App {
 
     @inline def isEmpty: Boolean = capacityRemaining==0
 
-    @inline def moveTo(origin: Point) =
+    @inline def moveTo(origin: Point): Unit =
       println(f"Moving nozzle to ${origin.getX}%.1f, ${origin.getY}%.1f")
 
-    @inline def needsShaking = !doesNotNeedShaking
+    @inline def needsShaking: Boolean = !doesNotNeedShaking
 
     @inline def nonEmpty: Boolean = !isEmpty
 
@@ -130,7 +129,7 @@ object Banksy extends App {
       Some(new Date)
     }
 
-    @inline def spray(distance: Double, degrees: Double) = {
+    @inline def spray(distance: Double, degrees: Double): Unit = {
       if (needsShaking) println("Cannot spray, need to shake the paint can")
       else {
         val remaining = distanceRemaining
@@ -143,7 +142,8 @@ object Banksy extends App {
   }
 
   case class PatternArtist(sprayPaint: SprayPaint) {
-    val drawTriangle = sprayPaint.doIfNonEmpty(_: Point)(_: Double) { (origin, scale, self) =>
+    val drawTriangle: (Point, Double) => Unit =
+        sprayPaint.doIfNonEmpty(_: Point)(_: Double) { (origin, scale, self) =>
       self.shake()
       self.moveTo(new Point((origin.getX*scale).toInt, (origin.getY*scale).toInt))
       self.spray(scale, 45)

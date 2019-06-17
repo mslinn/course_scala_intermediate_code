@@ -8,7 +8,7 @@ object StreamMonitor extends App {
   def alert(watchWord: String, inputStream: InputStream)(implicit alertStream: OutputStream): Unit = {
     val buffer = new Array[Byte](100)
 
-    def producer: ((Int, Array[Byte])) = {
+    def producer: (Int, Array[Byte]) = {
       val len = inputStream.read(buffer)
       //println(s"Got $len bytes")
       (len, buffer)

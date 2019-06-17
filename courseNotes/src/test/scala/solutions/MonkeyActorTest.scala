@@ -33,7 +33,7 @@ class MonkeyActorTest(_system: ActorSystem) extends TestKit(_system) with Implic
                      |    }
                      |  }
                      |}""".stripMargin
-    val config = ConfigFactory.parseString(confStr).withFallback(ConfigFactory.load)
+    val config = ConfigFactory.parseString(confStr).withFallback(ConfigFactory.load())
     ActorSystem("testMonkey", config)
   }
 

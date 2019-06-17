@@ -19,7 +19,7 @@ object FutureRace extends App {
   implicit val ec = ExecutionContext.fromExecutor(pool)
 
   var offset = 6 // @volatile does not affect race conditions
-  def accessor = offset
+  def accessor: Int = offset
 
   val f1 = Future {
     2 + 3 + offset // will be executed asynchronously

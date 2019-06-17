@@ -25,7 +25,7 @@ object FutureFixtures {
   def urlSearch(word: String, urls: List[String]): Unit = {
     val futures2: List[Future[String]] = urls.map { url =>
       readUrlFuture(url).recover {
-        case e: Exception =>
+        case _: Exception =>
           println(s"Handling URL read exception on $url")
           ""
       }
@@ -46,7 +46,7 @@ object FutureFixtures {
         }
       }
     } catch {
-      case te: TimeoutException =>
+      case _: TimeoutException =>
         println("Futures timed out, is there an Internet connection?")
     }
     println()
@@ -57,13 +57,18 @@ object FutureFallbackTo extends App {
   println("Dot notation:\n" + Await.result(badHostFuture.fallbackTo(defaultFuture), 30 minutes))
   println("\n\nInfix notation:\n" + Await.result(badHostFuture fallbackTo defaultFuture, 30 minutes))
   println("\n\n")
-  Await.result(badHostFuture fallbackTo badPageFuture, 30 minutes)
+  try {
+    Await.result(badHostFuture fallbackTo badPageFuture, 30 minutes)
+  } catch {
+    case _: Exception =>
+      println("Caught the expected exception from badHostFuture fallbackTo badPageFuture")
+  }
 }
 
 object FutureRecover extends App {
   import multi.futures.FutureFixtures._
 
-  def doSomething(msg: String) = msg
+  def doSomething(msg: String): String = msg
 
   show(goodUrlStr1, "no problem") {
     _.recover { case e: UnknownHostException => doSomething("Handled UnknownHostException") }
@@ -99,10 +104,10 @@ object FutureRecover extends App {
   // Feel free to correct this code
   show(badHostUrlStr, "handle 4 Exception types in one PartialFunction using recover") {
     _.recover {
-      case e: FileNotFoundException  => doSomething("Handled FileNotFoundException")
-      case e: IOException            => doSomething("Handled IOException")
-      case e: MalformedURLException  => doSomething("Handled MalformedURLException")
-      case e: UnknownHostException   => doSomething("Handled UnknownHostException")
+      case _: FileNotFoundException  => doSomething("Handled FileNotFoundException")
+      case _: IOException            => doSomething("Handled IOException")
+      case _: MalformedURLException  => doSomething("Handled MalformedURLException")
+      case _: UnknownHostException   => doSomething("Handled UnknownHostException")
     }
   }
 }
@@ -151,15 +156,14 @@ object FutureCollect extends App {
   val allUrlsWithFutures: List[(String, Future[String])] =
     urls(includeBad = true) map { url => url -> readUrlFuture(url) }
 
-  allUrlsWithFutures foreach {
-    case tuple: (String, Future[String]) =>
-      println(s"  Examining ${tuple._1}")
-      tuple._2.collect {
-        case content: String if content.toLowerCase.contains("scala") =>
-          println(s"  Using Future.collect, scala was found in ${tuple._1}")
-      }.recover { case _ =>
-        println(s"  Future for ${tuple._1} failed")
-      }
+  allUrlsWithFutures foreach { tuple: (String, Future[String]) =>
+    println(s"  Examining ${tuple._1}")
+    tuple._2.collect {
+      case content: String if content.toLowerCase.contains("scala") =>
+        println(s"  Using Future.collect, scala was found in ${tuple._1}")
+    }.recover { case _ =>
+      println(s"  Future for ${tuple._1} failed")
+    }
   }
 
   val futures = Future.sequence(allUrlsWithFutures.map { _._2 })
@@ -311,7 +315,7 @@ object FutureFold extends App {
   val signal = Promise[String]()
 
   Future
-    .fold(futures)(BigInt(0))(_ + _)
+    .foldLeft(futures)(BigInt(0))(_ + _)
     .andThen {
       case Success(result)    => println(s"fold addition result = $result")
       case Failure(throwable) => println(throwable.getMessage)
@@ -319,7 +323,7 @@ object FutureFold extends App {
       case _ =>
         val bigMax: (BigInt, BigInt) => BigInt = (x: BigInt, y: BigInt) => if (x>y) x else y
         Future
-          .fold(futures)(BigInt(0))(bigMax)
+          .foldLeft(futures)(BigInt(0))(bigMax)
           .andThen {
             case Success(result)    => println(s"fold max result = $result")
             case Failure(throwable) => println(throwable.getMessage)
@@ -337,14 +341,14 @@ object FutureReduce extends App {
   val signal = Promise[String]()
 
   Future
-    .reduce(futures)(_+_)
+    .reduceLeft(futures)(_+_)
     .andThen {
     case Success(result)    => println(s"Reduce addition result = $result")
     case Failure(throwable) => println(throwable.getMessage)
   }.andThen {
     case _ =>
       Future
-        .reduce(futures)(bigMax)
+        .reduceLeft(futures)(bigMax)
         .andThen {
           case Success(result)    => println(s"Reduce max result = $result")
           case Failure(throwable) => println(throwable.getMessage)

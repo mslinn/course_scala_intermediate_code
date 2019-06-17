@@ -1,6 +1,8 @@
 package solutions
 
 object ParMonkeys extends App {
+  import scala.collection.parallel.CollectionConverters._
+
   val target = "I thought I saw a lolcat! I did, I did see a lolcat!"
 
   def matchSubstring(str1: String, str2: String): String =

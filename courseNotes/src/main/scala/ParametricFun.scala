@@ -1,3 +1,5 @@
+import scala.language.{implicitConversions, reflectiveCalls}
+
 object ParametricFun extends App {
   def hasValue[T] (option: Option[T]): Boolean = option.isDefined
 
@@ -70,15 +72,13 @@ package parametricSimulation {
   }
 
   object AbstractSimulation {
-    implicit lazy val defaultSimulation = new AbstractSimulation[Int, Double, String] {
-      def simulate(x: Int, y: Double, z: String) = s"Companion simulation: $x, $y, $z"
-    }
+    implicit lazy val defaultSimulation: AbstractSimulation[Int, Double, String] =
+      (x: Int, y: Double, z: String) => s"Companion simulation: $x, $y, $z"
   }
 
   trait Implicit {
-    implicit lazy val defaultSimulation = new AbstractSimulation[Int, Double, String] {
-      def simulate(x: Int, y: Double, z: String) = s"Implicit simulation: $x, $y, $z"
-    }
+    implicit lazy val defaultSimulation: AbstractSimulation[Int, Double, String] =
+      (x: Int, y: Double, z: String) => s"Implicit simulation: $x, $y, $z"
   }
 
   object ParametricSimulation extends App {
@@ -115,9 +115,15 @@ object Ternary1 extends App {
 }
 
 object Ternary2 extends App {
-  implicit def boolToOperator(predicate: Boolean) = new {
-    def ?[A](thenClause: => A) = new {
-      def |(elseClause: => A) = if (predicate) thenClause else elseClause
+  implicit def boolToOperator(predicate: Boolean): Object {
+    def ?[A](thenClause: => A): Object {
+      def |(elseClause: => A): A
+    }
+  } = new {
+    def ?[A](thenClause: => A): Object {
+      def |(elseClause: => A): A
+    } = new {
+      def |(elseClause: => A): A = if (predicate) thenClause else elseClause
     }
   }
 
@@ -161,7 +167,7 @@ object ExtendJavaSet extends App {
         case obj => super.add(obj)
       }
 
-    abstract override def contains(obj: Object) =
+    abstract override def contains(obj: Object): Boolean =
       obj match {
         case s: String =>
           super.contains(s.toLowerCase)

@@ -12,7 +12,7 @@ object PartialFun1 extends App {
 
   val home = Option(System.getenv("JAVA_HOME"))
 
-  val env = new PartialFunction[String, String] {
+  val env: PartialFunction[String, String] = new PartialFunction[String, String] {
     private def value(name: String) = Option(System.getenv(name))
 
     def apply(name: String): String = value(name).get
@@ -30,12 +30,12 @@ object PartialFun1 extends App {
   }
 }
 
-object PartialFunShorthand extends App {
+trait Env {
   val env: PartialFunction[String, String] = {
     case name: String if Option(System.getenv(name)).isDefined  ⇒ System.getenv(name)
   }
 
-  /* }
+  /*
   <console>:8: error: missing parameter type for expanded function
      The argument types of an anonymous function must be fully known. (SLS 8.5)
      Expected type was: ?
@@ -44,6 +44,8 @@ object PartialFunShorthand extends App {
 //    case name: String if Option(System.getenv(name) ).isDefined ⇒ System.getenv(name)
 //  }
 }
+
+object PartialFunShorthand extends App with Env
 
 object PartialFunMultiIn extends App {
   val checkStringLength: PartialFunction[(String, Int), Boolean] = {
@@ -60,23 +62,21 @@ object PartialFunMultiIn extends App {
 
 object PartialFunCompose extends App {
   type PfAnyToUnit = PartialFunction[Any, Unit]
-  val int: PfAnyToUnit = { case x: Int => println("Int found") }
-  val double: PfAnyToUnit = { case x: Double => println("Double found") }
-  val any: PfAnyToUnit = { case x => println(s"Something else found ($x)") }
-  val chainedPF = int orElse double orElse any
+  val int: PfAnyToUnit    = { case _: Int    => println("Int found") }
+  val double: PfAnyToUnit = { case _: Double => println("Double found") }
+  val any: PfAnyToUnit    = { case x         => println(s"Something else found ($x)") }
+  val chainedPF: PartialFunction[Any, Unit] = int orElse double orElse any
 
-  println(s"""chainedPF(1)=${chainedPF(1)}""")
+  println(s"""chainedPF(1)=${ chainedPF(1) }""")
 
   val chainedPF2: PfAnyToUnit = {
-    case _: Int => println("Int found")
-
+    case _: Int    => println("Int found")
     case _: Double => println("Double found")
-
-    case x => println(s"Something else found ($x)")
+    case x         => println(s"Something else found ($x)")
   }
-  println(s"""chainedPF2(1)=${chainedPF2(1)}""")
-  println(s"""(int orElse double orElse any)(1.0)=${(int orElse double orElse any)(1.0)}""")
-  println(s"""(int orElse double orElse any)(true)=${(int orElse double orElse any)(true)}""")
+  println(s"""chainedPF2(1)=${ chainedPF2(1) }""")
+  println(s"""(int orElse double orElse any)(1.0)=${ (int orElse double orElse any)(1.0) }""")
+  println(s"""(int orElse double orElse any)(true)=${ (int orElse double orElse any)(true) }""")
 }
 
 object PartialFunCollect extends App {
@@ -107,17 +107,18 @@ object PartialFunCompColl extends App {
 
 object PartialFunCaseSeq extends App {
   val list = List(Some(1), None, Some(3))
-  val result1 = list collect { item => // IntelliJ IDEA flags this as a syntax error but it is legal and will run
-    item match {
-      case Some(x) ⇒ x
-    }
-  }
-  println(s"result1=$result1")
+//  val result1 = list collect { item => // IntelliJ IDEA flags this as a syntax error but it is legal and will run
+//    item match {
+//      case Some(x) ⇒ x
+//    }
+//  }
+//  println(s"result1=$result1")
 
+  // This is what IntelliJ wants:
   val result2 = list collect { case Some(x) ⇒ x }
   println(s"result2=$result2")
 
-  def doSomething[T](data: T)(operation: T => T) = try {
+  def doSomething[T](data: T)(operation: T => T): Any = try {
      operation(data)
   } catch {
     case ioe: java.io.IOException => println(ioe.getMessage)
@@ -131,9 +132,9 @@ object PartialFunWith extends App {
   case class Blarg(i: Int, s: String)
 
   def handle(implicit blarg: Blarg): Unit = withT(blarg) {
-    case Blarg(0, s) ⇒ println("i is 0")
+    case Blarg(0, _) ⇒ println("i is 0")
 
-    case Blarg(i, "triple") ⇒ println("s is triple")
+    case Blarg(_, "triple") ⇒ println("s is triple")
 
     case whatever ⇒ println(whatever)
   }
@@ -142,13 +143,13 @@ object PartialFunWith extends App {
   println(s"""handle(Blarg(1, "triple"))=${handle(Blarg(1, "triple"))}""")
   println(s"""handle(Blarg(0, "triple"))=${handle(Blarg(0, "triple"))}""")
 
-  def showBlarg(msg: String)(implicit blarg: Blarg) = println(s"$msg\nblarg.i=${blarg.i}; blarg.s=${blarg.s}")
+  def showBlarg(msg: String)(implicit blarg: Blarg): Unit = println(s"$msg\nblarg.i=${blarg.i}; blarg.s=${blarg.s}")
 
   withT(Blarg(1, "blarg ")) { implicit blarg =>
     blarg match {
       case Blarg(0, s) ⇒ showBlarg("Matched blarg on i==0")
       case Blarg(i, "triple") ⇒ showBlarg("""Matched blarg on s=triple""")
-      case whatever ⇒ showBlarg("Catchall case")
+      case _ ⇒ showBlarg("Catchall case")
     }
   }
 }

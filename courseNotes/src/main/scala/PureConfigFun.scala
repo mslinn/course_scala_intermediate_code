@@ -28,7 +28,7 @@ object PureConfigFun {
 
   /** Define before `load` or `loadOrThrow` methods are defined so this implicit is in scope */
   implicit val readPort: ConfigReader[Port] = ConfigReader.fromCursor[Port] { cur =>
-    cur.asString.right.flatMap { str =>
+    cur.asString.flatMap { str =>
       Try(str.toInt) match {
         case Success(number) => Right(Port(number))
 
@@ -81,7 +81,7 @@ case class PureConfigFun(
 
 case class FeedConfig(port: Port = Port(1100))
 
-case class ConsoleConfig(enabled: Boolean = true)/* extends AnyVal */ // value objects worked in earlier PureConfig versions
+case class ConsoleConfig(enabled: Boolean = true) extends AnyVal
 
 case class Port(value: Int) extends AnyVal
 

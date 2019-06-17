@@ -1,12 +1,14 @@
+import scala.language.implicitConversions
+
 object TypesafeEquality extends App {
   class Dog3(val name: String) {
     override def equals(that: Any): Boolean = canEqual(that) && hashCode==that.hashCode
 
-    override def hashCode = name.hashCode
+    override def hashCode: Int = name.hashCode
 
     def canEqual(that: Any) : Boolean = that.isInstanceOf[Dog3]
 
-    def ===[D <% Dog3](that: D): Boolean = this==that
+    def ===[D](that: D)(implicit ev$1: D => Dog3): Boolean = this==that
   }
 
   val dog3a = new Dog3("Fido3a")
@@ -32,12 +34,12 @@ object ViewBounds {
   class Y(val x: Int, val y: Int)
 
   class Z(val x: Int, val y: Int, val z: Int) {
-    def sum = x + y + z
+    def sum: Int = x + y + z
   }
 
   implicit def intToX(i: Int): X = new X(i)
-  implicit def xToY[XView <% X](x: XView): Y = new Y(x.x, 0)
-  implicit def yToZ[YView <% Y](y: YView): Z = new Z(y.x, y.y, 0)
+  implicit def xToY[XView](x: XView)(implicit ev$1: XView => X): Y = new Y(x.x, 0)
+  implicit def yToZ[YView](y: YView)(implicit ev$1: YView => Y): Z = new Z(y.x, y.y, 0)
 
   println(5.sum)
   println(new Y(2, 3).sum)

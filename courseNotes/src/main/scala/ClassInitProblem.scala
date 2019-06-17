@@ -1,3 +1,5 @@
+import scala.collection.parallel.CollectionConverters._
+
 // This hangs:
 object Outer extends App {
   val x = 3

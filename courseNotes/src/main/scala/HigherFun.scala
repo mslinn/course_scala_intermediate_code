@@ -1,4 +1,6 @@
-object HigherFun extends App {
+import java.io.{BufferedReader, FileInputStream, FileReader, InputStreamReader}
+
+trait MaybeMaybeNot {
   def square(num: Int): Int = num * num
 
   val maybeInt = Some(3)
@@ -8,9 +10,9 @@ object HigherFun extends App {
   Array(1, 2, 3).map(x => x.toDouble)
 }
 
-object HigherShorthand extends App {
-  import HigherFun._
+object HigherFun extends App with MaybeMaybeNot
 
+object HigherShorthand extends App with MaybeMaybeNot{
   maybeInt.map(_.toDouble)
   maybeInt.map(square _)
   maybeInt.map(square)
@@ -24,7 +26,7 @@ object TimedTask {
 
   def apply(intervalSeconds: Int=1)(op: => Unit) {
     val task = new TimerTask {
-      def run() = op
+      def run(): Unit = op
     }
     val timer = new Timer
     timer.schedule(task, 0L, intervalSeconds*1000L)
@@ -59,21 +61,26 @@ object TimedPi extends App {
   println(time(calculatePiFor(100000)))
 }
 
-object BinaryIO extends App {
+object BinaryIO extends App with AutoCloseableLike {
+  import scala.language.postfixOps
+
   val scalaCompilerPath: String = {
     import sys.process._
-    ("which scalac" !!).trim
+    "which scalac".!!.trim
   }
 
-  val compilerObject1 = io.Source.fromFile(scalaCompilerPath, "ISO-8859-1").map(_.toByte).toArray
+  // read binary file the right way:
+  val text1: String = using(
+    new BufferedReader(new InputStreamReader(new FileInputStream(scalaCompilerPath), "ISO-8859-1"))
+  ) {
+    _.readLine
+  }.mkString("\n")
 
-  val compilerObject2 = scala.io.Source.fromFile(scalaCompilerPath, "ISO-8859-1")
-  val compilerAsByteArray = compilerObject2.map(_.toByte).toArray
-  compilerObject2.close()
+  // read binary file the wrong way (leaves file open):
+  val text2 = scala.io.Source.fromFile(scalaCompilerPath, "ISO-8859-1")
 
-  val compilerAsByteArray2 = try { compilerObject2.map(_.toByte).toArray } finally { compilerObject2.close() }
-
+  // This is another way to read a file, but it should be wrapped in try/finally; can you do it?
   val bis = new java.io.BufferedInputStream(new java.io.FileInputStream(scalaCompilerPath))
-  val compilerAsByteArray3 = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
+  val compilerAsByteArray3 = LazyList.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
   bis.close()
 }

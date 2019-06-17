@@ -10,7 +10,7 @@ object ConfigAWS extends App {
         val accessKey = config.getString(key)
         println(s"$configName defines $key=$accessKey")
       } else
-        println(s"$configName does not define $key as one of its ${keyList.size} keys")
+        println(s"$configName does not define $key as one of its ${ keyList.size } keys")
 
     if (keySet.isEmpty) {
       println(s"$configName is empty")

@@ -1,12 +1,16 @@
+import java.nio.file.Path
+
 object IoSource extends App {
   io.Source.fromFile("/etc/passwd") foreach print
 
   val len = io.Source.fromFile("/etc/passwd").mkString.length
   println(s"$len characters printed from /etc/passwd")
 
+  // Warning: does not close the file
   val rootLines = io.Source.fromFile("/etc/passwd").getLines().toList
   println(s"${rootLines.length} lines printed from /etc/passwd:\n  " + rootLines.mkString("\n  "))
 
+  // Warning: does not close the file
   val rootLines2 = (for {
     line <- io.Source.fromFile("/etc/passwd").getLines()
   } yield line).toList
@@ -14,7 +18,7 @@ object IoSource extends App {
 }
 
 object Writing7 extends App {
-  @inline def writeToTextFile(fileName: String, content: String) = {
+  @inline def writeToTextFile(fileName: String, content: String): Unit = {
     import java.io.{File, PrintWriter}
 
     val writer = new PrintWriter(new File(fileName))
@@ -29,7 +33,7 @@ object Writing8 extends App {
   import java.nio.file.{Files, Paths, StandardOpenOption}
 
   /** Requires Java 8 */
-  @inline def writeToTextFile(fileName: String, content: String) =
+  @inline def writeToTextFile(fileName: String, content: String): Path =
     Files.write(Paths.get(fileName), content.getBytes, StandardOpenOption.CREATE)
 
   writeToTextFile("test.txt", "Being disintegrated makes me go angry!")

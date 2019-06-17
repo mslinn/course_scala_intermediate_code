@@ -1,3 +1,6 @@
+import java.io.{BufferedReader, FileReader}
+import scala.collection.mutable.ListBuffer
+
 object Variance extends App {
   class BaseClass
   class SubClass extends BaseClass
@@ -24,7 +27,7 @@ object Variance extends App {
   val idb3: InvariantContainer[BaseClass] = new InvariantContainer(baseClass)
   val idb4 = new InvariantContainer[BaseClass](subClass)
 
-  def base(container: Container) = container.getClass.getName
+  def base(container: Container): String = container.getClass.getName
   base(invariantContainingBase)
   base(invariantContainingSub)
   base(covariantContainingBase)
@@ -32,35 +35,35 @@ object Variance extends App {
   base(contravariantContainingBase)
   base(contravariantContainingSub)
 
-  def invariantWithBase(container: InvariantContainer[BaseClass]) = container.getClass.getName
+  def invariantWithBase(container: InvariantContainer[BaseClass]): String = container.getClass.getName
   invariantWithBase(invariantContainingBase)
 
-  def invariantWithSuper(container: InvariantContainer[SubClass]) = container.getClass.getName
+  def invariantWithSuper(container: InvariantContainer[SubClass]): String = container.getClass.getName
   invariantWithSuper(invariantContainingSub)
 
-  def covariantWithBase(container: CovariantContainer[BaseClass]) = container.getClass.getName
+  def covariantWithBase(container: CovariantContainer[BaseClass]): String = container.getClass.getName
   covariantWithBase(covariantContainingBase)
   covariantWithBase(covariantContainingSub)
 
-  def covariantWithSuper(container: CovariantContainer[SubClass]) = container.getClass.getName
+  def covariantWithSuper(container: CovariantContainer[SubClass]): String = container.getClass.getName
   covariantWithSuper(covariantContainingSub)
 
-  def contravariantWithBase(container: ContravariantContainer[BaseClass]) = container.getClass.getName
+  def contravariantWithBase(container: ContravariantContainer[BaseClass]): String = container.getClass.getName
   contravariantWithBase(contravariantContainingBase)
 
-  def contravariantWithSuper(container: ContravariantContainer[SubClass]) = container.getClass.getName
+  def contravariantWithSuper(container: ContravariantContainer[SubClass]): String = container.getClass.getName
   contravariantWithSuper(contravariantContainingBase)
   contravariantWithSuper(contravariantContainingSub)
 }
 
 object ParametricBounds extends App {
   abstract class Clothing(val size: Int, val manufacturer: String) extends Ordering[Clothing] {
-    def compare(a: Clothing, b: Clothing) =  {
+    def compare(a: Clothing, b: Clothing): Int =  {
       val primaryKey = a.size - b.size
       if (primaryKey!=0) primaryKey else a.manufacturer compare b.manufacturer
     }
 
-    override def equals(other: Any) = {
+    override def equals(other: Any): Boolean = {
       try {
         val that = other.asInstanceOf[Clothing]
         this.size == that.size && this.manufacturer==that.manufacturer
@@ -69,7 +72,7 @@ object ParametricBounds extends App {
       }
     }
 
-    override def hashCode = super.hashCode
+    override def hashCode: Int = super.hashCode
 
     override def toString = s"$productPrefix by $manufacturer of size $size"
 
@@ -77,7 +80,7 @@ object ParametricBounds extends App {
   }
 
   object Clothing {
-    implicit val ClothingOrdering = Ordering.by { clothing: Clothing =>
+    implicit val ClothingOrdering: Ordering[Clothing] = Ordering.by { clothing: Clothing =>
       (clothing.size, clothing.manufacturer)
     }
   }
@@ -89,7 +92,7 @@ object ParametricBounds extends App {
   case class Hat(override val size: Int, override val manufacturer: String) extends Clothing(size, manufacturer)
 
   class ShoppingCart[A <: Clothing] {  // ShoppingCart can hold Clothing and subclasses
-    val items = collection.mutable.ListBuffer.empty[A]
+    val items: collection.mutable.ListBuffer[A] = ListBuffer.empty
 
     def pick(item: A, count: Int): ShoppingCart[A] = {
       1 to count foreach { i =>
@@ -99,19 +102,22 @@ object ParametricBounds extends App {
       this
     }
 
-    override def toString = {
+    override def toString: String = {
       val strings = items.map(item => s"${item.productPrefix} size ${item.size} by ${item.manufacturer}").mkString("\n  ", "\n  ", "\n")
       s"ShoppingCart has ${items.size} items in it:$strings"
     }
   }
 
-  val clothing: Array[Clothing] = Array(new Hat(5, "Gucci"), new Hat(4, "Ralph Lauren"))
+  val clothing: Array[Clothing] = Array(Hat(5, "Gucci"), Hat(4, "Ralph Lauren"))
 
-  val hat   = new Hat(5, "Gucci")
-  val pants = new Pants(5, "Ralph Lauren")
-  val dress = new Dress(4, "Donna Karan")
+  val hat   = Hat(5, "Gucci")
+  val pants = Pants(5, "Ralph Lauren")
+  val dress = Dress(4, "Donna Karan")
 
-  val shoppingCart = new ShoppingCart[Clothing].pick(hat, 2).pick(dress, 3).pick(pants, 5)
+  val shoppingCart = new ShoppingCart[Clothing]
+                           .pick(hat, 2)
+                           .pick(dress, 3)
+                           .pick(pants, 5)
   println(shoppingCart)
 
 
@@ -119,7 +125,7 @@ object ParametricBounds extends App {
   class Bag[T <: Clothing] {
     import collection.mutable
 
-    val items = mutable.MutableList.empty[Clothing]
+    val items: mutable.Buffer[Clothing] = mutable.Buffer.empty
 
     def put[U >: T <: Clothing](item: U, quantity: Int): Bag[T] = {
       1 to quantity foreach { x => items += item }
@@ -130,9 +136,9 @@ object ParametricBounds extends App {
 
     def findByManufacturer(s: String): List[Clothing] = items.filter(_.manufacturer == s).toList
 
-    override def toString = {
-      val strings = items.map(item => s"${item.productPrefix} size ${item.size} by ${item.manufacturer}").mkString("\n  ", "\n  ", "\n")
-      s"Bag has ${items.size} items in it:$strings"
+    override def toString: String = {
+      val strings = items.map(item => s"${ item.productPrefix } size ${ item.size } by ${ item.manufacturer }").mkString("\n  ", "\n  ", "\n")
+      s"Bag has ${ items.size } items in it:$strings"
     }
   }
 
@@ -163,8 +169,14 @@ object UpperBound extends App {
 
   def read[A <: Output](a: A): String = {
     val maybeFile = a.maybeFile
-    maybeFile.map(io.Source.fromFile(_).getLines().mkString).getOrElse("")
+    maybeFile.map(readLines).getOrElse("")
   }
+
+  def readLines(file: File): String =
+    using(new BufferedReader(new FileReader(file))) { _.readLine() }
+
+  def using[A <: AutoCloseable, B](resource: A)
+                                  (block: A => B): B = try block(resource) finally resource.close()
 
   val readBackContents: String = read(Storage("storage.txt", "Blah blah blah"))
   println(s"Contents are '$readBackContents'")

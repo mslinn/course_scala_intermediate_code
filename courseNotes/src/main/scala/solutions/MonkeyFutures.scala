@@ -21,6 +21,8 @@ trait Timeable[T] {
   * For that many iterations, you should only expect 3 characters to match in about a minute on a fast machine.
   * This naive implementation' computational effort increases geometrically with the number of iterations. */
 object FutureMonkey extends App with Timeable[Future[String]] {
+  import scala.collection.parallel.CollectionConverters._
+
   val iterations: Long = 13000000L
   val singleFutureTimeout = Duration(20, "seconds")
 
@@ -38,7 +40,7 @@ object FutureMonkey extends App with Timeable[Future[String]] {
 
   /** Generate a random string of length n from the given alphabet */
   def randomString(alphabet: String, n: Int): String =
-    Stream.continually(random.nextInt(alphabet.size)).map(alphabet).take(n).mkString
+    LazyList.continually(random.nextInt(alphabet.length)).map(alphabet).take(n).mkString
 
   def matchSubstring(str1: String, str2: String): String =
     str1.view.zip(str2).takeWhile(Function.tupled(_ == _)).map(_._1).mkString

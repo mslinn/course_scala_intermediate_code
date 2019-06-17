@@ -4,14 +4,14 @@ package foopkg {
   }
 
   object CanFoo {
-    implicit val companionIntFoo = new CanFoo[Int] {
-      def foos(x: Int) = "companionIntFoo:" + x.toString
+    implicit val companionIntFoo: CanFoo[Int] = new CanFoo[Int] {
+      def foos(x: Int): String = "companionIntFoo:" + x.toString
     }
   }
 
   trait Implicit {
-    implicit lazy val intFoo = new CanFoo[Int] {
-      def foos(x: Int) = "traitFoo:" + x.toString
+    implicit lazy val intFoo: CanFoo[Int] = new CanFoo[Int] {
+      def foos(x: Int): String = "traitFoo:" + x.toString
     }
   }
 

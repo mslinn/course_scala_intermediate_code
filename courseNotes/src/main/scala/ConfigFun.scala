@@ -2,7 +2,6 @@ import com.typesafe.config.{ConfigObject, ConfigList, ConfigFactory}
 import java.util.concurrent.TimeUnit._
 
 object ConfigFun extends App {
-
   import com.typesafe.config.{ConfigRenderOptions, Config}
 
   val confDemo: Config = ConfigFactory.parseResources("demo.properties")
@@ -107,7 +106,7 @@ object ConfigFun extends App {
   println(s"""value5b=$value5b""")
   println(s"""value6b=$value6b""")
 
-  import collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
   val keys = conf2.entrySet.asScala.map(_.getKey)
   val keyName1 = conf2.getString("keyName1")
   val array = conf2.getIntList("array")
