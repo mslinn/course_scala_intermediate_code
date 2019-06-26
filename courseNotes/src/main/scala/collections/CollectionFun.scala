@@ -1,24 +1,24 @@
 package collections
 
-import collection._
-import scala.io.BufferedSource
+import com.micronautics.utils
+import scala.collection._
 
 object CollectionFun extends App {
   val a1 = Array(1, 2, 3)
-  println(s"a1=$a1")
+  println(s"a1=${ a1.mkString(", ") }")
 
   val a2 = Array.empty[Int]
   val a3: Array[Int] = Array(1, 2, 3)
 
   a1(0) = a1(0) + 1
-  println(s"a1=$a1")
-  a1.update(0, a1.apply(0) + 1)
-  println(s"a1=$a1")
+  println(s"a1=${ a1.mkString(", ") }")
+  a1.update(0, a1(0) + 1)
+  println(s"a1=${ a1.mkString(", ") }")
 
-  val iterator: BufferedSource = io.Source.fromFile("/etc/passwd")
-  val x1: String = iterator.mkString
-  val x2: String = io.Source.fromFile("/etc/passwd").mkString(", ")
-  val x3: String = io.Source.fromFile("/etc/passwd").mkString(">>>", ", ", "<<<")
+  val chars: Seq[Char] = utils.read("build.sbt").toList
+  val x1: String = chars.mkString
+  val x2: String = chars.mkString(", ")
+  val x3: String = chars.mkString(">>>", ", ", "<<<")
 
   val immutableMap: immutable.Map[Int, String] = immutable.HashMap.empty[Int, String]
   val mutableMap: mutable.Map[Int, String] = mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )
@@ -83,4 +83,23 @@ object CollectionFun extends App {
   println(s"""immutable.HashSet(1.0, 2) = ${ immutable.HashSet[Number](1.0, 2) }""")
   val set: immutable.Set[Number] = immutable.HashSet[Number](1.0, 2)
   println(s"""set = $set""")
+
+  def showMap(message: String, map: Map[Int, String]): Unit = {
+    println(s"$message: ")
+    map.foreach { case (key, value) =>
+      println(s"  key=$key, value=$value")
+    }
+  }
+
+  // added with Scala 2.13
+  showMap("immutable.ListMap", immutable.ListMap(1 -> "One", -2 -> "Negative two", 3 -> "Three"))
+
+  val treeSeqMap: Map[Int, String] = immutable.TreeSeqMap(1 -> "One", -2 -> "Negative two", 3 -> "Three")
+  showMap("immutable.TreeSeqMap", treeSeqMap)
+
+  // Custom collection authors need to know about steppers; this course does not address that audience
+  val y: IntStepper = treeSeqMap.keysIterator.stepper
+  val stepper: IntStepper = treeSeqMap.keyStepper
+  val isES = stepper.isInstanceOf[Stepper.EfficientSplit]
+  val x: IntStepper = stepper.trySplit()
 }

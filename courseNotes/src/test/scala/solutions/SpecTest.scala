@@ -20,7 +20,7 @@ object SpecTest extends Specification {
       linesFrom(ciscoURL) must not be empty
     }
 
-    "Verify that cisco.com contains the word cisco (using iterator)" in {
+    "Verify that cisco.com contains the word cisco (using chars)" in {
       val actual: List[String] = linesFrom(ciscoURL).toList
       actual must containMatch(targetWord)
     }

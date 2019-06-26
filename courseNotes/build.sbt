@@ -21,7 +21,6 @@ scalacOptions in (Compile, doc) ++= baseDirectory.map {
     "-Ywarn-numeric-widen",
     "-Ywarn-unused",
     "-Ywarn-value-discard",
-    "-Xfuture",
     "-Xlint"
   )
 }.value
@@ -41,6 +40,7 @@ libraryDependencies ++= {
   "com.typesafe.akka"      %% "akka-actor"                 % akkaV          withSources(),
   "com.github.pureconfig"  %% "pureconfig"                 % "0.11.1"       withSources(),
   "com.google.guava"       %  "guava"                      % "24.1-jre"     withSources(),
+  "com.micronautics"       %% "scalacourses-utils"         % "0.3.2"        withSources(),
   "com.typesafe"           %  "config"                     % "1.3.4"        withSources(),
   "org.scalactic"          %% "scalactic"                  % "3.1.0-SNAP13" withSources(),
   "org.scala-lang"         %  "scala-reflect"              % scalaVersion.value,
@@ -61,6 +61,8 @@ libraryDependencies ++=
     case _ => Nil
   }.value
 updateOptions := updateOptions.value.withCachedResolution(true)
+
+resolvers += "micronautics/scala on bintray" at "http://dl.bintray.com/micronautics/scala"
 
 // set the initial commands when entering 'console' or 'consoleQuick', but not 'consoleProject'
 initialCommands in console := """import akka.actor._

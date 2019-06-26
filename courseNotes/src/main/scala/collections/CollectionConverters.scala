@@ -1,15 +1,16 @@
 package collections
 
 import collection._
-import collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.parallel.CollectionConverters._
 import java.util.{List => JList, Map => JMap, Set => JSet}
+import com.micronautics.utils._
 
 object CollectionConverters extends App {
   println(s"""List(1, 1, 2, 2, 3, 3).toArray = ${ List(1, 1, 2, 2, 3, 3).toArray }""")
-  println(s"""Vector(1, 1, 2, 2, 3, 3).toStream = ${ Vector(1, 1, 2, 2, 3, 3).toStream }""")
+  println(s"""Vector(1, 1, 2, 2, 3, 3).toStream = ${ Vector(1, 1, 2, 2, 3, 3).to(LazyList) }""")
 
-  println(s"""io.Source.fromFile("build.sbt").getLines().toList=${ io.Source.fromFile("build.sbt").getLines().toList }""")
+  println(s"""readLines("build.sbt")=${ readLines("build.sbt") }""")
 
   println(s"""List(1, 1, 2, 2, 3, 3).to[Set] = ${ List(1, 1, 2, 2, 3, 3).toSet }""")
   println(s"""List(1, 1, 2, 2, 3, 3).to[collection.parallel.ParSet] = ${ List(1, 1, 2, 2, 3, 3).par.toSet }""")
@@ -35,19 +36,19 @@ object CollectionConverters extends App {
   val set = immutable.HashSet(1, 2, 3)
   val jSet: JSet[Int] = set.asJava
   val sSet: mutable.Set[Int] = set.asJava.asScala
-  assert(set ne sSet)
+  assert(set.to(Set) ne sSet)
 
   val map = immutable.HashMap(2 -> "bee", 1 -> "eh", 3 -> "sea")
   val jMap: JMap[Int, String] = map.asJava
   val sMap: mutable.Map[Int, String] = jMap.asScala
-  assert(map ne sMap)
+  assert(map.to(Map) ne sMap)
 
   val treeMap = immutable.TreeMap(2 -> "bee", 1 -> "eh", 3 -> "sea")
   val jMap2: JMap[Int, String] = treeMap.asJava
   val sMap2: mutable.Map[Int, String] = jMap2.asScala
   assert(treeMap ne sMap2.toMap)
 
-  println(s"""implicitly[Option[Int] => Iterable[Int]] = ${implicitly[Option[Int] => Iterable[Int]]}""")
-  println(s"""implicitly[Function[Option[Int], Iterable[Int]]] = ${implicitly[Function[Option[Int], Iterable[Int]]]}""")
-  println(s"""implicitly[Some[Int] => Iterable[Int]] = ${implicitly[Some[Int] => Iterable[Int]]}""")
+  println(s"""implicitly[Option[Int] => Iterable[Int]] = ${ implicitly[Option[Int] => Iterable[Int]] }""")
+  println(s"""implicitly[Function[Option[Int], Iterable[Int]]] = ${ implicitly[Function[Option[Int], Iterable[Int]]] }""")
+  println(s"""implicitly[Some[Int] => Iterable[Int]] = ${ implicitly[Some[Int] => Iterable[Int]] }""")
 }

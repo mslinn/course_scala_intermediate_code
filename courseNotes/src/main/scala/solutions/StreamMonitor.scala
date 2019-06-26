@@ -1,11 +1,10 @@
 package solutions
 
 object StreamMonitor extends App {
-  import java.io.InputStream
-  import java.io.OutputStream
-  import java.io.FileInputStream
+  import java.io.{FileInputStream, InputStream, OutputStream}
 
-  def alert(watchWord: String, inputStream: InputStream)(implicit alertStream: OutputStream): Unit = {
+  def alert(watchWord: String, inputStream: InputStream)
+           (implicit alertStream: OutputStream): Unit = {
     val buffer = new Array[Byte](100)
 
     def producer: (Int, Array[Byte]) = {
@@ -18,7 +17,8 @@ object StreamMonitor extends App {
       tuple._1 >= 0
     }
 
-    def consumer(len: Int, buffer: Array[Byte])(implicit alertStream: OutputStream): Unit = {
+    def consumer(len: Int, buffer: Array[Byte])
+                (implicit alertStream: OutputStream): Unit = {
       val string = buffer.map(_.toChar).mkString
       val index = string.indexOf(watchWord)
       if (index>=0)
