@@ -36,13 +36,13 @@ object FutureCallback extends App {
     case Failure(throwable) => println(s"promises(1) onComplete exception; message: '${ throwable.getMessage }'.")
   }
   promises(1).future onComplete {
-    case Success(value) => println(s"promises(1) onSuccess; value='$value'.")
+    case Success(value) => println(s"promises(1) onComplete; value='$value'.")
     // Caution: you should also provide the Failure case. This is an example of bad habits
   }
 
   promises(1).future onComplete {
     // Caution: you should also provide the Success case. This is an example of bad habits
-    case Failure(throwable) => println(s"promises(1) onFailure; exception message: '${ throwable.getMessage }'.")
+    case Failure(throwable) => println(s"promises(1) onComplete; exception message: '${ throwable.getMessage }'.")
   }
   promises(1).future andThen {
     case Success(value) => println(s"promises(1) andThen success: value='$value'.")
