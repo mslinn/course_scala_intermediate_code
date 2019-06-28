@@ -168,18 +168,18 @@ object FutureRecovering extends App {
 object FutureMixed extends App {
   import multi.futures.FutureArtifacts._
 
-  //def urlSearch(word: String, urls: List[String]) = {
-  //  val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
-  //  for {
-  //    (url, future) <- urls zip futures
-  //    contents <- future if contents.toLowerCase.contains(word)
-  //  } yield url
-  //}
-  // Error:(100, 16) type mismatch;
+  // This generates the error discussed in the section entitled "Mixing Monads in a for-Comprehension"
+//  def urlSearch(word: String, urls: List[String]): List[String] = {
+//    val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
+//    for {
+//      (url, future) <- urls zip futures
+//      contents <- future if contents.toLowerCase.contains(word)
+//    } yield url
+//  }
+  // Error:(176, 16) type mismatch;
   // found   : scala.concurrent.Future[String]
-  // required: scala.collection.GenTraversableOnce[?]
+  // required: scala.collection.IterableOnce[?]
   //      contents <- future if contents.toLowerCase.contains(word)
-  //               ^
 
   val indices = (1 to 3).toList
   val result1 = for (url <- urls(); index <- indices) yield (index, url)
