@@ -1,5 +1,6 @@
-/** This code now lives in https://github.com/mslinn/futurePerfect so it can be used in actual projects */
+package multi.futures
 
+/** This code now lives in https://github.com/mslinn/futurePerfect so it can be used in actual projects */
 object FuturesUtil {
   import scala.concurrent._
   import scala.util.{Failure, Success, Try}
@@ -10,8 +11,9 @@ object FuturesUtil {
     *         The Function1 returns None if Future has not been canceled, otherwise it returns Some(CancellationException))
     *         that contains the String passed to the function when the future was canceled.
     * @author Eric Pederson (@sourcedelica) http://stackoverflow.com/questions/16020964/cancellation-with-future-and-promise-in-scala
-    * @author Mike Slinn */
-  def interruptibleFuture[T](block: =>T)(implicit ex: ExecutionContext): (Future[T], String => Option[CancellationException]) = {
+    * @author Mike Slinn updated to Scala 2.13 */
+  def interruptibleFuture[T](block: =>T)
+                            (implicit ex: ExecutionContext): (Future[T], String => Option[CancellationException]) = {
     val p = Promise[T]()
     val future = p.future
     val atomicReference = new java.util.concurrent.atomic.AtomicReference[Thread](null)
@@ -20,10 +22,11 @@ object FuturesUtil {
       atomicReference.synchronized { atomicReference.set(thread) }
       try block finally {
         atomicReference.synchronized { atomicReference getAndSet null } ne thread
+        ()
       }
     }
 
-    /** This method can be called multiple times */
+    /* This method can be called multiple times without any problem */
     val cancel = (msg: String) => {
       if (p.isCompleted) {
         None
@@ -44,13 +47,15 @@ object FuturesUtil {
     * @return the first future to complete, with the remainder of the Futures as a sequence.
     * @param futures a scala.collection.Seq
     * @author Victor Klang (https://gist.github.com/4488970)
-    * @author Mike Slinn */
-  def select[A](futures: Seq[Future[A]])(implicit ec: ExecutionContext): Future[(Try[A], Seq[Future[A]])] = {
+    * @author Mike Slinn Updated to Scala 2.13 */
+  def select[A](futures: Seq[Future[A]])
+               (implicit ec: ExecutionContext): Future[(Try[A], Seq[Future[A]])] = {
     import scala.annotation.tailrec
     import scala.concurrent.Promise
 
     @tailrec
-    def stripe(promise: Promise[(Try[A], Seq[Future[A]])],
+    def stripe(promise: Promise[(Try[A],
+               Seq[Future[A]])],
                head: Seq[Future[A]],
                thisFuture: Future[A],
                tail: Seq[Future[A]]): Future[(Try[A], Seq[Future[A]])] = {
@@ -60,7 +65,7 @@ object FuturesUtil {
     }
 
     if (futures.isEmpty) Future.failed(new IllegalArgumentException("List of futures is empty"))
-    else stripe(Promise(), futures.genericBuilder[Future[A]].result(), futures.head, futures.tail)
+    else stripe(Promise(), futures, futures.head, futures.tail)
   }
 
   /** Driver for select; apply a function over a sequence of Future as soon as each future completes.
