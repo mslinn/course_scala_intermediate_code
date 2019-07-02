@@ -14,7 +14,7 @@ object FutureArtifacts {
     (_: List[String]).map { url => Future(readUrl(url)) }
 
   val futureTuples: List[String] => List[Future[(String, String)]] =
-    (_: List[String]).map { url => Future((url, io.Source.fromURL(url).mkString)) }
+    (_: List[String]).map { url => Future((url, readUrl(url))) }
 
   /** @return String of the form [...]blah blah word blah blah [...] */
   def snippet(word: String, string: String): String = {
@@ -170,7 +170,7 @@ object FutureMixed extends App {
 
   // This generates the error discussed in the section entitled "Mixing Monads in a for-Comprehension"
 //  def urlSearch(word: String, urls: List[String]): List[String] = {
-//    val futures: List[Future[String]] = urls.map(u => Future(io.Source.fromURL(u).mkString))
+//    val futures: List[Future[String]] = urls.map(u => Future(readUrl(u)))
 //    for {
 //      (url, future) <- urls zip futures
 //      contents <- future if contents.toLowerCase.contains(word)
@@ -188,9 +188,9 @@ object FutureMixed extends App {
   val result2 = urls().flatMap { url => indices.map { index => (url, index) } }
   println(s"flatMap/map result = $result2")
 
-  val futureContent: String => (String, Future[String]) = (url: String) => (url, Future(io.Source.fromURL(url).mkString))
+  val futureContent: String => (String, Future[String]) = (url: String) => (url, Future(readUrl(url)))
   val futureContents: List[String] => List[(String, Future[String])] =
-    (_: List[String]).collect { case url => (url, Future(io.Source.fromURL(url).mkString)) }
+    (_: List[String]).collect { case url => (url, Future(readUrl(url))) }
 
   val result3 = futureContents(urls()).map { case (url, future) => (future, url) }
   println(s"map/map result = $result3")

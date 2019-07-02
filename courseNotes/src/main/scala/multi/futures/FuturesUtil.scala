@@ -74,8 +74,14 @@ object FuturesUtil {
     * @param whenDone block of code to execute when all futures have been processed
     * @author David Crosson
     * @author Mike Slinn */
-  def asapFutures[T](futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit={})(implicit ec: ExecutionContext): Unit = {
-    def jiffyFutures(futures: Seq[Future[T]])(operation: Try[T]=>Unit)(whenDone: =>Unit): Unit = {
+  def asapFutures[T](futures: Seq[Future[T]])
+                    (operation: Try[T]=>Unit)
+                    (whenDone: =>Unit={})
+                    (implicit ec: ExecutionContext): Unit = {
+
+    def jiffyFutures(futures: Seq[Future[T]])
+                    (operation: Try[T]=>Unit)
+                    (whenDone: =>Unit): Unit = {
       if (futures.nonEmpty) {
         select(futures) andThen {
           case Success((tryResult, remainingFutures)) =>
