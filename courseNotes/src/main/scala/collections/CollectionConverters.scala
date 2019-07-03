@@ -8,11 +8,11 @@ import com.micronautics.utils._
 
 object CollectionConverters extends App {
   println(s"""List(1, 1, 2, 2, 3, 3).toArray = ${ List(1, 1, 2, 2, 3, 3).toArray }""")
-  println(s"""Vector(1, 1, 2, 2, 3, 3).toStream = ${ Vector(1, 1, 2, 2, 3, 3).to(LazyList) }""")
+  println(s"""Vector(1, 1, 2, 2, 3, 3).to(LazyList) = ${ Vector(1, 1, 2, 2, 3, 3).to(LazyList) }""")
 
   println(s"""readLines("build.sbt")=${ readLines("build.sbt") }""")
 
-  println(s"""List(1, 1, 2, 2, 3, 3).to[Set] = ${ List(1, 1, 2, 2, 3, 3).toSet }""")
+  println(s"""List(1, 1, 2, 2, 3, 3).toSet = ${ List(1, 1, 2, 2, 3, 3).toSet }""")
   println(s"""List(1, 1, 2, 2, 3, 3).to[collection.parallel.ParSet] = ${ List(1, 1, 2, 2, 3, 3).par.toSet }""")
 
   val list1 = mutable.ListBuffer(1, 2, 3)
