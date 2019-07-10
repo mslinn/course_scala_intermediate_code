@@ -14,18 +14,18 @@ object PartiallyApplied {
   //
   val team1 = Bike(chloe, louise, beth, _: String)
   val bike1 = team1("red")
-  val cheer1 = s"${bike1.cheer}"
+  val cheer1 = bike1.cheer
   //
   val oneRider = Bike(_: Rider, _: Rider, chloe, _: String)
   val team2 = oneRider(louise, beth, _: String)
   val bike2 = team2("blue")
-  val riders2 = s"""bike2 riders are: ${bike2.names.mkString(", ")}"""
+  val riders2 = s"""bike2 riders are: ${ bike2.names.mkString(", ") }"""
   //
   val curriedBike = (Bike.apply _).curried
   val curriedBike2 = Bike.curried
   //
   val bike3 = curriedBike(chloe)(louise)(beth)("yellow")
-  val weight3 = s"Team ${bike3.color} weighs ${bike3.totalWeight} pounds"
+  val weight3 = s"Team ${ bike3.color } weighs ${ bike3.totalWeight } pounds"
   //
   val oneRiderB1 = Bike.curried(chloe)(_: Rider)(_: Rider)(_: String)
   val oneRiderB2 = Bike.curried(_: Rider)(louise)(_: Rider)(_: String)
@@ -47,7 +47,7 @@ object PartiallyApplied {
   val beekayCurried2 = Rider.curried("Beekay")
   //
   val bike4 = team4a("green")
-  val weight4 = s"Team ${bike4.color} weighs ${bike4.totalWeight} pounds"
+  val weight4 = s"Team ${ bike4.color } weighs ${ bike4.totalWeight } pounds"
   //
   val uncurriedBike1 = curriedBike _
   val uncurriedBike2 = Function.uncurried(curriedBike)

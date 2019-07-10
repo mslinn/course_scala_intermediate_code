@@ -6,13 +6,13 @@ object IsEmpty extends App {
     case _ => false
   }
 
-  println(s"isEmpty(List(1, 2, 3))=${isEmpty(List(1, 2, 3))}")
-  println(s"isEmpty(List())=${isEmpty(List())}")
-  println(s"isEmpty(Nil)=${isEmpty(Nil)}")
+  println(s"isEmpty(List(1, 2, 3))=${ isEmpty(List(1, 2, 3)) }")
+  println(s"isEmpty(List())=${ isEmpty(List()) }")
+  println(s"isEmpty(Nil)=${ isEmpty(Nil) }")
 
-  println(s"List(1, 2, 3).isEmpty=${List(1, 2, 3).isEmpty}")
-  println(s"Array(1, 2).isEmpty=${Array(1, 2).isEmpty}")
-  println(s"Vector.empty.isEmpty=${Vector.empty.isEmpty}")
+  println(s"List(1, 2, 3).isEmpty=${ List(1, 2, 3).isEmpty }")
+  println(s"Array(1, 2).isEmpty=${ Array(1, 2).isEmpty }")
+  println(s"Vector.empty.isEmpty=${ Vector.empty.isEmpty }")
 }
 
 object HasLeadingZero extends App {
@@ -30,43 +30,43 @@ object HasLeadingZero extends App {
 
   def hasLeadingZero2(seq: Seq[Int]): Boolean =
     seq match {
-      case Seq(0, remainder) => true
+      case Seq(0, _) => true
       case _ ⇒ false
     }
 
   def hasLeadingZero2(array: Array[Int]): Boolean =
     array match {
-      case Array(0, remainder) => true
+      case Array(0, _) => true
       case _ ⇒ false
     }
 
   def hasLeading0(seq: Seq[Int]): Boolean = seq.headOption.contains(0)
 
-  println(s"hasLeadingZero(List(0, 1, 2))=${hasLeadingZero(List(0, 1, 2))}")
-  println(s"hasLeadingZero(List(1, 2, 3)) = ${hasLeadingZero(List(1, 2, 3))}")
+  println(s"hasLeadingZero(List(0, 1, 2))=${ hasLeadingZero(List(0, 1, 2)) }")
+  println(s"hasLeadingZero(List(1, 2, 3)) = ${ hasLeadingZero(List(1, 2, 3)) }")
 
-  println(s"hasLeadingZero(List(0))=${hasLeadingZero(List(0))}")
-  println(s"hasLeadingZero(List(1)) = ${hasLeadingZero(List(1))}")
+  println(s"hasLeadingZero(List(0))=${ hasLeadingZero(List(0)) }")
+  println(s"hasLeadingZero(List(1)) = ${ hasLeadingZero(List(1)) }")
 
-  println(s"hasLeadingZero(Array(0, 1, 2))=${hasLeadingZero(Array(0, 1, 2))}")
-  println(s"hasLeadingZero(Array(1, 2, 3)) = ${hasLeadingZero(Array(1, 2, 3))}")
+  println(s"hasLeadingZero(Array(0, 1, 2))=${ hasLeadingZero(Array(0, 1, 2)) }")
+  println(s"hasLeadingZero(Array(1, 2, 3)) = ${ hasLeadingZero(Array(1, 2, 3)) }")
 
-  println(s"hasLeadingZero2(List(0, 1, 2))=${hasLeadingZero(List(0, 1, 2))}")
-  println(s"hasLeadingZero2(List(1, 2, 3)) = ${hasLeadingZero(List(1, 2, 3))}")
+  println(s"hasLeadingZero2(List(0, 1, 2))=${ hasLeadingZero(List(0, 1, 2)) }")
+  println(s"hasLeadingZero2(List(1, 2, 3)) = ${ hasLeadingZero(List(1, 2, 3)) }")
 
-  println(s"hasLeadingZero2(Array(0, 1, 2))=${hasLeadingZero(Array(0, 1, 2))}")
-  println(s"hasLeadingZero2(Array(1, 2, 3)) = ${hasLeadingZero(Array(1, 2, 3))}")
+  println(s"hasLeadingZero2(Array(0, 1, 2))=${ hasLeadingZero(Array(0, 1, 2)) }")
+  println(s"hasLeadingZero2(Array(1, 2, 3)) = ${ hasLeadingZero(Array(1, 2, 3)) }")
 
-  println(s"hasLeading0(List(0, 1, 2))=${hasLeading0(List(0, 1, 2))}")
-  println(s"hasLeading0(List(1, 2, 3)) = ${hasLeading0(List(1, 2, 3))}")
+  println(s"hasLeading0(List(0, 1, 2))=${ hasLeading0(List(0, 1, 2)) }")
+  println(s"hasLeading0(List(1, 2, 3)) = ${ hasLeading0(List(1, 2, 3)) }")
 
-  println(s"hasLeading0(Array(0, 1, 2))=${hasLeading0(Array(0, 1, 2))}")
-  println(s"hasLeading0(Array(1, 2, 3)) = ${hasLeading0(Array(1, 2, 3))}")
+  println(s"hasLeading0(Array(0, 1, 2))=${ hasLeading0(Array(0, 1, 2)) }")
+  println(s"hasLeading0(Array(1, 2, 3)) = ${ hasLeading0(Array(1, 2, 3)) }")
 }
 
 object ListExtractAnyLen extends App {
   def extract[T](list: List[T]): String = list match {
-    case x1 :: x2 :: x3 :: rest => s"x1=$x1, x2=$x2, x3=$x3"
+    case x1 :: x2 :: x3 :: _ => s"x1=$x1, x2=$x2, x3=$x3"
     case _ => "Nope"
   }
 
@@ -83,17 +83,17 @@ object ListExtractAnyLen extends App {
   }
 
   def extract3[T](list: List[T]): String = list match {
-      case List(x1, x2, x3, remainder) => s"x1=$x1, x2=$x2, x3=$x3"
+      case List(x1, x2, x3, _) => s"x1=$x1, x2=$x2, x3=$x3"
       case _ => "Nope"
     }
 
   def extract3[T](array: Array[T]): String = extract3(array.toList)
 
-  println(s"""extract("one two three blah blah".split(" ")=${extract("one two three blah blah".split(" "))}""")
-  println(s"""extract2("one two three blah blah".split(" ").toList=${extract2("one two three blah blah".split(" ").toList)}""")
-  println(s"""extract2("one two three blah blah".split(" ")=${extract2("one two three blah blah".split(" "))}""")
-  println(s"""extract3("one two three blah blah".split(" ").toList=${extract3("one two three blah blah".split(" ").toList)}""")
-  println(s"""extract3("one two three blah blah".split(" ")=${extract3("one two three blah blah".split(" "))}""")
+  println(s"""extract("one two three blah blah".split(" ")=${ extract("one two three blah blah".split(" ")) }""")
+  println(s"""extract2("one two three blah blah".split(" ").toList=${ extract2("one two three blah blah".split(" ").toList) }""")
+  println(s"""extract2("one two three blah blah".split(" ")=${ extract2("one two three blah blah".split(" ")) }""")
+  println(s"""extract3("one two three blah blah".split(" ").toList=${ extract3("one two three blah blah".split(" ").toList) }""")
+  println(s"""extract3("one two three blah blah".split(" ")=${ extract3("one two three blah blah".split(" ")) }""")
 }
 
 object ListExtractAssertLen extends App {
@@ -117,9 +117,9 @@ object VectorHeadTail extends App {
     case _ => None
   }
 
-  println(s"maybeHeadTail(Vector(1, 2, 3, 4))=${maybeHeadTail(Vector(1, 2, 3, 4))}")
-  println(s"maybeHeadTail(Vector(1))=${maybeHeadTail(Vector(1))}")
-  println(s"maybeHeadTail(Vector())=${maybeHeadTail(Vector())}")
+  println(s"maybeHeadTail(Vector(1, 2, 3, 4))=${ maybeHeadTail(Vector(1, 2, 3, 4)) }")
+  println(s"maybeHeadTail(Vector(1))=${ maybeHeadTail(Vector(1)) }")
+  println(s"maybeHeadTail(Vector())=${ maybeHeadTail(Vector()) }")
 }
 
 object VectorInitLast extends App {
@@ -128,9 +128,9 @@ object VectorInitLast extends App {
     case _ => None
   }
 
-  println(s"maybeInitLast(Vector(1, 2, 3, 4))=${maybeInitLast(Vector(1, 2, 3, 4))}")
-  println(s"maybeInitLast(Vector(1))=${maybeInitLast(Vector(1))}")
-  println(s"maybeInitLast(Vector())=${maybeInitLast(Vector())}")
+  println(s"maybeInitLast(Vector(1, 2, 3, 4))=${ maybeInitLast(Vector(1, 2, 3, 4)) }")
+  println(s"maybeInitLast(Vector(1))=${ maybeInitLast(Vector(1)) }")
+  println(s"maybeInitLast(Vector())=${ maybeInitLast(Vector()) }")
 }
 
 /** Your mission: eat dessert.
@@ -138,22 +138,22 @@ object VectorInitLast extends App {
   * You can feed the first course to the dog if you don't like it, but the dog cannot eat spinach since that is poisonous to dogs. */
 object MatchAlias extends App {
   case class Food(name: String, calories: Int, yumminess: Int) {
-    def dogCanEat = name!="Spinach"
+    def dogCanEat: Boolean = name!="Spinach"
   }
 
   case class Menu(foods: Food*) {
-    def totalCalories = foods.map(_.calories).sum
+    def totalCalories: Int = foods.map(_.calories).sum
 
-    def mostYucky = foods.sortBy(_.yumminess).head
+    def mostYucky: Food = foods.minBy(_.yumminess)
 
-    def mostTasty = foods.sortBy(_.yumminess).last
+    def mostTasty: Food = foods.maxBy(_.yumminess)
 
     def isWorthOrdering: Boolean = {
-      //println(s"totalCalories=$totalCalories; mostYucky.yumminess=${mostYucky.yumminess}; mostTasty.yumminess=${mostTasty.yumminess}")
+      //println(s"totalCalories=$totalCalories; mostYucky.yumminess=${ mostYucky.yumminess }; mostTasty.yumminess=${ mostTasty.yumminess }")
       totalCalories<200 || mostTasty.yumminess>=9
     }
 
-    override def toString = s"${foods.map(_.name).mkString("_")}: totalCalories=$totalCalories; mostYucky=${mostYucky.name}; mostTasty=${mostTasty.name}"
+    override def toString = s"${ foods.map(_.name).mkString("_") }: totalCalories=$totalCalories; mostYucky=${ mostYucky.name }; mostTasty=${ mostTasty.name }"
   }
 
   val course1a = Food("Spinach",  10,  2)
