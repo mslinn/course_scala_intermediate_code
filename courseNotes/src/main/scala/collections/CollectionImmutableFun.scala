@@ -55,7 +55,7 @@ object CollectionImmutableFun extends App {
   println(s"""seq.lastOption = ${ seq.lastOption }""")
   println(s"""Nil.lastOption = ${ Nil.lastOption }""")
 
-  println(s"""seq.init = ${seq.init}""")
+  println(s"""seq.init = ${ seq.init }""")
   println(s"""Vector(1).init = ${ Vector(1).init }""")
   try { println(s"""Nil.init = ${ Nil.init }""") } catch { case e: Exception => println(e.getMessage) }
   println(s"""seq.take(2) = ${ seq.take(2) }""")
