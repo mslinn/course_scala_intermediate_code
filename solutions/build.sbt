@@ -4,8 +4,8 @@ name := "Intermediate Scala Course Solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
-scalaVersion := "2.12.8"
-//scalaVersion := "2.13.0-RC1"
+//scalaVersion := "2.12.8"
+scalaVersion := "2.13.0"
 version := scalaVersion.value
 
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
@@ -43,7 +43,6 @@ libraryDependencies ++= Seq(
   "junit"             %  "junit"         % "4.12"   % Test // Scala IDE requires this; IntelliJ IDEA does not
 )
 
-// Optional settings from https://github.com/harrah/xsbt/wiki/Quick-Configuration-Examples follow
 initialCommands := """
                      |""".stripMargin
 
