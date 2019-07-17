@@ -71,9 +71,9 @@ initialCommands in console := """import akka.actor._
                                 |import scala.language.postfixOps
                                 |import java.io.File
                                 |import java.net.URL
-                                |import concurrent._
-                                |import concurrent.duration._
-                                |import concurrent.ExecutionContext.Implicits.global
+                                |import scala.concurrent._
+                                |import scala.concurrent.duration._
+                                |import scala.concurrent.ExecutionContext.Implicits.global
                                 |import scala.sys.process._
                                 |import scala.util.control.NoStackTrace
                                 |import scala.util.{Try,Success,Failure}
