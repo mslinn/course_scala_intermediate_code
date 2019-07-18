@@ -55,13 +55,23 @@ object ConverterFun extends App {
 
 trait FunctionConverterFromScala {
   import java.util.{List => JList}
+  import java.lang.{Integer => JInt}
   import scala.collection._
 
-  val intoEvenOdd: JList[Int] => (JList[Int], JList[Int]) = {
+  val intoEvenOdd1: JList[Int] => (JList[Int], JList[Int]) = {
     import scala.jdk.CollectionConverters._
     javaList: JList[Int] =>
       javaList.asScala.partition(_ % 2 == 0) match {
-      case (even: mutable.Buffer[Int], odd: mutable.Buffer[Int]) =>
+      case (even, odd) =>
+        (even.asJava, odd.asJava)
+    }
+  }
+
+  val intoEvenOdd2: JList[JInt] => (JList[JInt], JList[JInt]) = {
+    import scala.jdk.CollectionConverters._
+    javaList: JList[JInt] =>
+      javaList.asScala.partition(_ % 2 == 0) match {
+      case (even: mutable.Buffer[JInt], odd: mutable.Buffer[JInt]) =>
         (even.asJava, odd.asJava)
     }
   }
@@ -69,14 +79,20 @@ trait FunctionConverterFromScala {
 
 object FunctionConverterFromJava extends FunctionConverterFromScala {
   import java.util.{function, List => JList}
+  import java.lang.{Integer => JInt}
 
   def reverse(string: String): String = string.reverse
 
   def zipChars(string: String): IndexedSeq[(Char, Int)] = string.zipWithIndex
 
-  val intoEvenOddForJava: function.Function[JList[Int], (JList[Int], JList[Int])] = {
+  val intoEvenOddForJava1: function.Function[JList[Int], (JList[Int], JList[Int])] = {
     import scala.jdk.FunctionConverters._
-    intoEvenOdd.asJava
+    intoEvenOdd1.asJava
+  }
+
+  val intoEvenOddForJava2: function.Function[JList[JInt], (JList[JInt], JList[JInt])] = {
+    import scala.jdk.FunctionConverters._
+    intoEvenOdd2.asJava
   }
 }
 
@@ -85,5 +101,5 @@ object FunctionConverterFun extends App with FunctionConverterFromScala {
     import scala.jdk.CollectionConverters._
     (1 to 10).asJava
   }
-  println(intoEvenOdd(jList))
+  println(intoEvenOdd1(jList))
 }
