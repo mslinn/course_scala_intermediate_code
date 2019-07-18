@@ -1,6 +1,6 @@
 organization := "com.micronautics"
 
-name := "Intermediate Scala Course Solutions"
+name := "intermediate-scala-course-solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
@@ -37,10 +37,10 @@ javacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.xerial"        %  "sqlite-jdbc"   % "3.14.2.1" withSources(),
+  "org.xerial"        %  "sqlite-jdbc"   % "3.14.2.1"      withSources(),
   //
-  "org.scalatest"     %% "scalatest"     % "3.0.5"  % Test withSources(),
-  "junit"             %  "junit"         % "4.12"   % Test // Scala IDE requires this; IntelliJ IDEA does not
+  "org.scalatest"     %% "scalatest"     % "3.1.0-SNAP13"  % Test withSources(),
+  "junit"             %  "junit"         % "4.12"          % Test // Scala IDE requires this; IntelliJ IDEA does not
 )
 
 initialCommands := """
