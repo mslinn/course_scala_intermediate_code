@@ -1,6 +1,5 @@
 package solutions
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import java.sql.Connection
 import scala.collection.immutable.Map
 import scala.util.{Failure, Success, Try}
