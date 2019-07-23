@@ -4,7 +4,6 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
-import scala.concurrent.Await
 
 object ActorSystemConfig {
   private val confStr =  """akka {
