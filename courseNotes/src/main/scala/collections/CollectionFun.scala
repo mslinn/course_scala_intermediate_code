@@ -5,7 +5,7 @@ import scala.collection._
 object CollectionFun extends App {
   val iterator = io.Source.fromFile("build.sbt")
   println(s"iterator.mkString #1 = ${ iterator.mkString }")
-  println(s"iterator.mkString #2 = ${ iterator.mkString }")
+  println(s"iterator.mkString #2 = ${ iterator.mkString }")  // silent failure!
 
   val charList = io.Source.fromFile("build.sbt").toList
 
