@@ -1,14 +1,28 @@
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.{Config, ConfigFactory}
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.wordspec.AnyWordSpecLike
-import org.specs2.matcher.ShouldMatchers
-import scala.concurrent.Await
+import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 
-class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender with ShouldMatchers with AnyWordSpecLike with BeforeAndAfterAll {
+object ActorSystemConfig {
+  val configApplication: Config = ConfigFactory.load("application.conf")
+  val configDefault: Config     = ConfigFactory.load
+
+  private val confStr = """
+                  |""".stripMargin
+  val stringConf: Config        = ConfigFactory.parseString(confStr)
+  val config: Config            = ConfigFactory.load(stringConf
+                                                       .withFallback(configApplication)
+                                                       .withFallback(configDefault)
+                                                    )
+}
+
+/** July 23, 2019: IntelliJ IDEA cannot compile or run this code. Use SBT from the command line. */
+class ActorTest extends TestKit(ActorSystem("test", ActorSystemConfig.config))  // the order of these mixins is significant
+  with WordSpecLike
+  with ImplicitSender
+  with BeforeAndAfterAll {
+
   import multi.ActorExercise._
-  import multi._
 
   val chunkerMsg1 = ChunkerMsg(10, 10, "Ain't this grand?")
   val workerMsg1 = WorkerMsg(10, 10)
@@ -23,16 +37,6 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
   val persistenceActorRef: TestActorRef[Persistence] = TestActorRef(Props[Persistence], chunker1ActorRef, "persistence")
   val persistenceActor: Persistence = persistenceActorRef.underlyingActor
 
-  def this() = this {
-    val confStr = """
-                    |""".stripMargin
-    val stringConf: Config = ConfigFactory.parseString(confStr)
-    val configApplication  = ConfigFactory.load("application.conf")
-    val configDefault      = ConfigFactory.load
-    val config: Config     = ConfigFactory.load(stringConf.withFallback(configApplication).withFallback(configDefault))
-    ActorSystem("myApp", config)
-  }
-
   "ActorPaths" should {
     "behave" in {
       assertResult("akka://myApp/user/chunker1",             "chunker1 path")   (chunker1ActorRef.path.toString)
@@ -43,7 +47,6 @@ class ActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
 
   override def afterAll(): Unit = {
     println("Shutting down ActorSystem")
-    system.terminate()
-    Await.result(system.whenTerminated, concurrent.duration.Duration.Inf)
+    TestKit.shutdownActorSystem(system)
   }
 }

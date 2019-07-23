@@ -3,12 +3,11 @@ package solutions
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.ConfigFactory
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 import org.specs2.matcher.ShouldMatchers
 import scala.concurrent.Await
 
-class MonkeyActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender with ShouldMatchers with AnyWordSpecLike with BeforeAndAfterAll {
+class MonkeyActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender with ShouldMatchers with WordSpecLike with BeforeAndAfterAll {
   val targetString = "abc"
   val alphabet = "abcdef"
   val startMsg = BookkeeperStart(targetString, alphabet, 10)
@@ -40,22 +39,22 @@ class MonkeyActorTest(_system: ActorSystem) extends TestKit(_system) with Implic
   "Monkeys" should {
     "generate proper strings" in {
       val string = monkeyActor.randomString
-      string.length === targetString.length
+      string.length shouldEqual targetString.length
     }
   }
 
   "BookKeepers" should {
     "compute longestStr properly" in {
-      assert("abcdef" === BookKeeperActor.longestStr("abc", "abcdef"))
-      assert("abcdef" === BookKeeperActor.longestStr("", "abcdef"))
-      assert("abc" === BookKeeperActor.longestStr("abc", ""))
+      assert("abcdef" shouldEqual BookKeeperActor.longestStr("abc", "abcdef"))
+      assert("abcdef" shouldEqual BookKeeperActor.longestStr("", "abcdef"))
+      assert("abc" shouldEqual BookKeeperActor.longestStr("abc", ""))
     }
 
     "compute matchSubstring properly" in {
-      assert("abc" === BookKeeperActor.matchSubstring("abc", "abcdef"))
-      assert("" === BookKeeperActor.matchSubstring("", "abcdef"))
-      assert( "abc" === BookKeeperActor.matchSubstring("abcz", "abcdef"))
-      assert("abc" === BookKeeperActor.matchSubstring("abcdef", "abc"))
+      assert("abc" shouldEqual BookKeeperActor.matchSubstring("abc", "abcdef"))
+      assert("" shouldEqual BookKeeperActor.matchSubstring("", "abcdef"))
+      assert( "abc" shouldEqual BookKeeperActor.matchSubstring("abcz", "abcdef"))
+      assert("abc" shouldEqual BookKeeperActor.matchSubstring("abcdef", "abc"))
     }
   }
 

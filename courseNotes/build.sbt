@@ -42,13 +42,13 @@ libraryDependencies ++= {
   "com.google.guava"       %  "guava"                      % "24.1-jre"     withSources(),
   "com.micronautics"       %% "scalacourses-utils"         % "0.3.2"        withSources(),
   "com.typesafe"           %  "config"                     % "1.3.4"        withSources(),
-  "org.scalactic"          %% "scalactic"                  % "3.1.0-SNAP13" withSources(),
+  "org.scalactic"          %% "scalactic"                  % "3.0.8"        withSources(),
   "org.scala-lang"         %  "scala-reflect"              % scalaVersion.value,
   //
   "com.typesafe.akka"      %% "akka-testkit"               % akkaV          % Test withSources(),
   "org.specs2"             %% "specs2-core"                % "4.5.1"        % Test withSources(),
   "org.specs2"             %% "specs2-junit"               % "4.5.1"        % Test withSources(),
-  "org.scalatest"          %% "scalatest"                  % "3.1.0-SNAP13" % Test withSources(),
+  "org.scalatest"          %% "scalatest"                  % "3.0.8"        % Test withSources(),
   "junit"                  %  "junit"                      % "4.12"         % Test // Scala IDE requires this; IntelliJ IDEA does not
   )
 }
