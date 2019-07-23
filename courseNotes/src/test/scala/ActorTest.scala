@@ -16,7 +16,6 @@ object ActorSystemConfig {
                                                     )
 }
 
-/** July 23, 2019: IntelliJ IDEA cannot compile or run this code. Use SBT from the command line. */
 class ActorTest extends TestKit(ActorSystem("test", ActorSystemConfig.config))  // the order of these mixins is significant
   with WordSpecLike
   with ImplicitSender
@@ -39,9 +38,9 @@ class ActorTest extends TestKit(ActorSystem("test", ActorSystemConfig.config))  
 
   "ActorPaths" should {
     "behave" in {
-      assertResult("akka://myApp/user/chunker1",             "chunker1 path")   (chunker1ActorRef.path.toString)
-      assertResult("akka://myApp/user/chunker1/worker1",     "worker1 path")    (worker1ActorRef.path.toString)
-      assertResult("akka://myApp/user/chunker1/persistence", "persistence path")(persistenceActorRef.path.toString)
+      assertResult("akka://test/user/chunker1",             "chunker1 path")   (chunker1ActorRef.path.toString)
+      assertResult("akka://test/user/chunker1/worker1",     "worker1 path")    (worker1ActorRef.path.toString)
+      assertResult("akka://test/user/chunker1/persistence", "persistence path")(persistenceActorRef.path.toString)
     }
   }
 
