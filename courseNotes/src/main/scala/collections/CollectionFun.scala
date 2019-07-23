@@ -8,12 +8,21 @@ object CollectionFun extends App {
   println(s"iterator.mkString #2 = ${ iterator.mkString }")
 
   val charList = io.Source.fromFile("build.sbt").toList
-  val lines = io.Source.fromFile("build.sbt").
-           getLines.
-           filter(_.contains("Scala")).
-           mkString(", ").
-           replaceAll(" +", " ")
+
+  // IntelliJ IDEA does not like trailing dots (messes up indentation)
+  val lines = io.Source.fromFile("build.sbt")
+    .getLines
+    .filter(_.contains("Scala"))
+    .mkString(", ")
+.replaceAll(" +", " ")
   println(s"lines = $lines")
+
+  val lines2 = io.Source.fromFile("build.sbt")
+    .getLines
+    .filter(_.contains("Scala"))
+    .mkString(">>>\n\t", "\n\t", "\n<<<")
+    .replaceAll(" +", " ")
+  println(s"lines2 = $lines2")
 
   val x = mutable.Set(1, 2, 3)
   val y = immutable.Set(1, 2, 3)
@@ -22,7 +31,7 @@ object CollectionFun extends App {
   val set: immutable.HashSet[Number] = immutable.HashSet(1.0, 2)  // IntelliJ shows this line has errors, but IntelliJ is wrong and this works just fine
   println(s"set = $set")
 
-  val set2: immutable.Set[Number] = immutable.HashSet(1.0, 2)
+  val set2: immutable.Set[Number] = immutable.HashSet(1.0, 2)     // IntelliJ shows this line has errors, but IntelliJ is wrong and this works just fine
   println(s"set2 = $set2")
 
   def newCollection(values: Number*): immutable.Set[Number] = immutable.Set[Number](values: _*)
