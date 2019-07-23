@@ -85,3 +85,5 @@ initialCommands in console := """import akka.actor._
 logLevel := Level.Info
 logLevel in test := Level.Info // Level.Info is needed to see detailed output when running tests
 logLevel in compile := Level.Info
+
+version := "2.13_2"
