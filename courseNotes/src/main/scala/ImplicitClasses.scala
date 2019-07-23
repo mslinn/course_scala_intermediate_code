@@ -43,10 +43,10 @@ object EnhanceMyLibrary extends App {
 object Rates extends App {
   import SymbolToCurrency._
 
-  println('CAD(100.0))
-  println('USD(100.0))
-  println('JPY(100.0))
-  println('BLA(100.0))
+  println(Symbol("CAD")(100.0))
+  println(Symbol("USD")(100.0))
+  println(Symbol("JPY")(100.0))
+  println(Symbol("BLA")(100.0))
 }
 
 object SymbolToCurrency {
@@ -56,7 +56,7 @@ object SymbolToCurrency {
       val convertedValue = value * rateMap(symbol)
       s"$convertedValue ${symbol.name}"
     } catch {
-      case nsee: NoSuchElementException =>
+      case _: NoSuchElementException =>
         println(s"Currency ${symbol.name} unknown. Available currencies are: ${ rateMap.keys.map(_.name).toSeq.sorted.mkString(", ") }")
         ""
     }

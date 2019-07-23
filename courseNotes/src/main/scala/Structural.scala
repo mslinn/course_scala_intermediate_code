@@ -95,18 +95,18 @@ object GoodDuck extends App {
 object Structural extends App {
   type Closeable = { def close(): Unit }
 
-  def using[A <: Closeable, B](closeable: A)(f: A ⇒ B): B = {
+  def using[A <: Closeable, B](closeable: A)(f: A => B): B = {
     try {
       f(closeable)
     } finally {
       try {
         closeable.close()
-      } catch { case _: Throwable ⇒ () }
+      } catch { case _: Throwable => () }
     }
   }
 
   val byteStream = new java.io.ByteArrayInputStream("hello world".getBytes)
-  using(byteStream){ in ⇒
+  using(byteStream){ in =>
     val str = io.Source.fromInputStream(in).mkString
     println(s"'$str' has ${str.length} characters")
   }
@@ -115,19 +115,19 @@ object Structural extends App {
 object Structural2 extends App {
   type Closeable = { def close(): Unit }
 
-  def using[A <: Closeable, B](closeable: ⇒ A)(f: A ⇒ B): B = {
+  def using[A <: Closeable, B](closeable: => A)(f: A => B): B = {
     val closeableRef = closeable // only reference closeable once
     try {
       f(closeableRef)
     } finally {
       try {
         closeableRef.close()
-      } catch { case _: Throwable ⇒ () }
+      } catch { case _: Throwable => () }
     }
   }
 
   val byteStream = new java.io.ByteArrayInputStream("hello world".getBytes)
-  using(byteStream){ in ⇒
+  using(byteStream){ in =>
     val str = io.Source.fromInputStream(in).mkString
     println(s"'$str' has ${str.length} characters")
   }
@@ -137,8 +137,8 @@ object SelfStructural extends App {
   type Openable = { def open(): Unit }
   type Closeable = { def close(): Unit }
 
-  trait Door { self: Openable with Closeable ⇒
-    def doSomething(f: () ⇒ Unit): Unit = try {
+  trait Door { self: Openable with Closeable =>
+    def doSomething(f: () => Unit): Unit = try {
       open()
       f()
     } finally {
@@ -149,7 +149,7 @@ object SelfStructural extends App {
   class FrontDoor extends Door {
     def open(): Unit = println("Door is open")
 
-    def walkThrough(): Unit = doSomething { () ⇒ println("Walking through door") }
+    def walkThrough(): Unit = doSomething { () => println("Walking through door") }
 
     def close(): Unit = println("Door is closed")
   }

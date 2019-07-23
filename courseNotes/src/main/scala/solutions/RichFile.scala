@@ -2,13 +2,14 @@ package solutions
 
 import io.Source
 import java.io._
+import scala.language.implicitConversions
 
 /** Non-elegant solution to http://www.scalacourses.com/lectures/admin/showLecture/16/111 */
 object RichFile {
   implicit class EnrichedFile(file: File) {
     /** @return None if the File does not exist. If file is a directory,
-      *  return the listing as a [List[File]] on the left side of the Either,
-      *  otherwise return the contents of the File as Array[Byte]] */
+      *  return the listing as a List[File] on the left side of the Either,
+      *  otherwise return the contents of the File as Array[Byte] */
     def contents: Option[Either[Array[Byte], List[File]]] =
       if (!file.exists) None
       else if (file.isDirectory) Some(Right(file.listFiles().toList))
@@ -44,14 +45,16 @@ object RichFile {
         }
       }
 
-    private def read(inputStream: InputStream): Stream[Int] =
-      Stream.continually(inputStream.read).takeWhile(_ != -1)
+    private def read(inputStream: InputStream): LazyList[Int] =
+      LazyList.continually(inputStream.read).takeWhile(_ != -1)
 
     private def readAsByteArray(input: InputStream): Array[Byte] =
       read(input).map(_.toByte).toArray
 
-    /** Copy file to newFile; return true if successful.  */
-    def copy[T <% File](newFile: T): Boolean =
+    /** Copy file to newFile; return true if successful.
+      * View bounds are deprecated, so using an implicit parameter instead */
+    def copy[T](newFile: T)
+               (implicit ev: T => File): Boolean =
       if (!file.exists || file.isDirectory) {
         false
       } else try {

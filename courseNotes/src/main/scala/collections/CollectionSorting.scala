@@ -42,7 +42,7 @@ object PriorityQueueFun extends App {
   import scala.collection.mutable
 
   println(s"""The items in thingOrderings sorted by the natural implicitOrdering are: ${ thingOrderings.sorted.mkString(", ") }""")
-  val pq1 = mutable.PriorityQueue(thingOrderings:_*)
+  val pq1 = mutable.PriorityQueue(thingOrderings: _*)
   println(s"""pq1.dequeue=${ pq1.dequeue() }""")
   println(s"""pq1.dequeue=${ pq1.dequeue() }""")
   println(s"""pq1.dequeue=${ pq1.dequeue() }""")
@@ -55,11 +55,11 @@ object PriorityQueueFun extends App {
   }
 
   println(s"""\nThe items in thingOrderings sorted by the orderByI implicitOrdering are: ${ thingOrderings.sorted(orderByI).mkString(", ") }""")
-  val pq2: mutable.PriorityQueue[ThingOrdering] = mutable.PriorityQueue(thingOrderings:_*)(orderByI)
+  val pq2: mutable.PriorityQueue[ThingOrdering] = mutable.PriorityQueue(thingOrderings: _*)(orderByI)
   pq2.dequeueAll.foreach { item: ThingOrdering => println(s"""pq2.dequeue=$item""") }
 
   println(s"""\nThe items in thingOrderings sorted by the orderByS implicitOrdering are: ${ thingOrderings.sorted(orderByS).mkString(", ") }""")
-  val pq3 = mutable.PriorityQueue(thingOrderings:_*)(orderByS)
+  val pq3 = mutable.PriorityQueue(thingOrderings: _*)(orderByS)
   (0 until pq3.length).foreach { _ => println(s"""pq3.dequeue=${pq3.dequeue()}""") }
 }
 

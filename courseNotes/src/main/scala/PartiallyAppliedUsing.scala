@@ -12,17 +12,19 @@ object PartiallyAppliedStuff {
     s"$msg\n " + string.split("\n").take(2).mkString("\n  ")
   }
 
-  def withT[T, U](t: T)(operation: T => U): U = operation(t)
+  def withT[T, U](t: T)
+                 (operation: T => U): U = operation(t)
 
-  def withCloseable[C <: Closeable, T](factory: => C)(operation: C ⇒ T): Try[T] = {
+  def withCloseable[C <: Closeable, T](factory: => C)
+                                      (operation: C => T): Try[T] = {
       val closeable = factory
       try {
         val result: T = operation(closeable)
         closeable.close()
         Success(result)
       } catch {
-        case throwable: Throwable ⇒
-          try { closeable.close() } catch { case _: Throwable ⇒ }
+        case throwable: Throwable =>
+          try { closeable.close() } catch { case _: Throwable => }
           Failure(throwable)
       }
     }
@@ -66,26 +68,26 @@ object PartiallyAppliedUsing extends App {
 
   withBufferedInputStream(file) { first2lines("withBufferedInputStream", _) } foreach println
 
-  def withBufferedOutputStream[T](input: File): (BufferedOutputStream ⇒ T) ⇒ Try[T] =
+  def withBufferedOutputStream[T](input: File): (BufferedOutputStream => T) => Try[T] =
     withCloseable(new BufferedOutputStream(new FileOutputStream(input)))
 
-  withBufferedInputStream(file) { inputStream ⇒
-    withBufferedOutputStream(new File("/tmp/blah")) { outputStream ⇒
+  withBufferedInputStream(file) { inputStream =>
+    withBufferedOutputStream(new File("/tmp/blah")) { outputStream =>
       read(inputStream).foreach(outputStream.write(_))
     }
   }
 
-  def stringMunger(a: String)(f: String ⇒ String): String = f(a)
+  def stringMunger(a: String)(f: String => String): String = f(a)
   val abc = stringMunger("abc") _
   abc { x => x * 4 }
   abc { _ * 4 }
 
-  def twoStringMunger[T](a: String)(b: String)(f: (String, String) ⇒ T): T = f(a, b)
+  def twoStringMunger[T](a: String)(b: String)(f: (String, String) => T): T = f(a, b)
   val twoStringToIntPF = twoStringMunger[Int]("abcdefghi")("def") _
-  twoStringToIntPF { (s1, s2) ⇒ s1.indexOf(s2) }
+  twoStringToIntPF { (s1, s2) => s1.indexOf(s2) }
 
-  def concatStringsAndFnValue(a: String)(b: String)(f: (String, String) ⇒ String) = a + b + f(a, b)
-  val r3b = concatStringsAndFnValue("x")("y") { (u, v) ⇒ (u.length + v.length).toString }
+  def concatStringsAndFnValue(a: String)(b: String)(f: (String, String) => String): String = a + b + f(a, b)
+  val r3b = concatStringsAndFnValue("x")("y") { (u, v) => (u.length + v.length).toString }
   val xyHuh = concatStringsAndFnValue("x")("y") _
   def u2v3(u: String, v: String): String = (u.length * 2 + v.length * 3).toString
   xyHuh { u2v3 }
@@ -150,7 +152,7 @@ object Banksy extends App {
       self.spray(scale, -45)
       self.spray(scale, 180)
       if (self.nonEmpty)
-        println(f"Spray paint can has ${self.capacityRemaining}%.1f milliliters remaining and can spray ${self.distanceRemaining}%.1f meters more.")
+        println(f"Spray paint can has ${ self.capacityRemaining }%.1f milliliters remaining and can spray ${ self.distanceRemaining }%.1f meters more.")
     }
   }
 

@@ -39,11 +39,11 @@ object ForCompSerial1 extends App {
     z <- Future(factorial(345)) if x % 2 == BigInt(0)
   } yield x + y + z
   futureResult andThen {
-    case Success(value) ⇒
+    case Success(value) =>
       println(s"Future value=$value")
       System.exit(0)
 
-    case Failure(ex) ⇒
+    case Failure(ex) =>
       println(s"Failure: ${ ex.getMessage }")
       System.exit(0)
   }

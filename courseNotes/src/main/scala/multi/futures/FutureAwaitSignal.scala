@@ -42,11 +42,11 @@ object FutureBadHabits extends App {
 
 object WaitExitDemo extends App {
   readUrlFuture("http://www.scalacourses.com") onComplete {
-    case Success(value) ⇒
+    case Success(value) =>
       println(s"\nFirst 500 characters of http://scalacourses.com:\n$value")
       System.exit(0)
 
-    case Failure(throwable) ⇒
+    case Failure(throwable) =>
       println("\n" + throwable.getMessage)
       System.exit(-1)
   }
@@ -57,11 +57,11 @@ object WaitExitDemo extends App {
 object SignalDemo extends App {
   val signal = Promise[String]()
   readUrlFuture("http://www.scalacourses.com") onComplete {
-    case Success(value) ⇒
+    case Success(value) =>
       println("\nFirst 500 characters of http://scalacourses.com:\n$value")
       signal.complete(Success("All done"))
 
-    case Failure(throwable) ⇒
+    case Failure(throwable) =>
       println("\n" + throwable.getMessage)
       signal.complete(Failure(throwable))
   }

@@ -6,62 +6,62 @@ object IsEmpty extends App {
     case _ => false
   }
 
-  println(s"isEmpty(List(1, 2, 3))=${ isEmpty(List(1, 2, 3)) }")
-  println(s"isEmpty(List())=${ isEmpty(List()) }")
-  println(s"isEmpty(Nil)=${ isEmpty(Nil) }")
+  println(s"isEmpty(List(1, 2, 3)) = ${ isEmpty(List(1, 2, 3)) }")
+  println(s"isEmpty(List()) = ${ isEmpty(List()) }")
+  println(s"isEmpty(Nil) = ${ isEmpty(Nil) }")
 
-  println(s"List(1, 2, 3).isEmpty=${ List(1, 2, 3).isEmpty }")
-  println(s"Array(1, 2).isEmpty=${ Array(1, 2).isEmpty }")
-  println(s"Vector.empty.isEmpty=${ Vector.empty.isEmpty }")
+  println(s"List(1, 2, 3).isEmpty = ${ List(1, 2, 3).isEmpty }")
+  println(s"Array(1, 2).isEmpty = ${ Array(1, 2).isEmpty }")
+  println(s"Vector.empty.isEmpty = ${ Vector.empty.isEmpty }")
 }
 
 object HasLeadingZero extends App {
   def hasLeadingZero(seq: Seq[Int]): Boolean =
     seq match {
       case Seq(0, _*) => true
-      case _ ⇒ false
+      case _ => false
     }
 
   def hasLeadingZero(array: Array[Int]): Boolean =
     array match {
       case Array(0, _*) => true
-      case _ ⇒ false
+      case _ => false
     }
 
   def hasLeadingZero2(seq: Seq[Int]): Boolean =
     seq match {
       case Seq(0, _) => true
-      case _ ⇒ false
+      case _ => false
     }
 
   def hasLeadingZero2(array: Array[Int]): Boolean =
     array match {
       case Array(0, _) => true
-      case _ ⇒ false
+      case _ => false
     }
 
   def hasLeading0(seq: Seq[Int]): Boolean = seq.headOption.contains(0)
 
-  println(s"hasLeadingZero(List(0, 1, 2))=${ hasLeadingZero(List(0, 1, 2)) }")
-  println(s"hasLeadingZero(List(1, 2, 3)) = ${ hasLeadingZero(List(1, 2, 3)) }")
+  println(s"hasLeadingZero(List(0, 1, 2)) = " + hasLeadingZero(List(0, 1, 2)).toString)
+  println(s"hasLeadingZero(List(1, 2, 3)) = " + hasLeadingZero(List(1, 2, 3)).toString)
 
-  println(s"hasLeadingZero(List(0))=${ hasLeadingZero(List(0)) }")
-  println(s"hasLeadingZero(List(1)) = ${ hasLeadingZero(List(1)) }")
+  println(s"hasLeadingZero(List(0)) = " + hasLeadingZero(List(0)).toString)
+  println(s"hasLeadingZero(List(1)) = " + hasLeadingZero(List(1)).toString)
 
-  println(s"hasLeadingZero(Array(0, 1, 2))=${ hasLeadingZero(Array(0, 1, 2)) }")
-  println(s"hasLeadingZero(Array(1, 2, 3)) = ${ hasLeadingZero(Array(1, 2, 3)) }")
+  println(s"hasLeadingZero(Array(0, 1, 2)) = " + hasLeadingZero(Array(0, 1, 2)).toString)
+  println(s"hasLeadingZero(Array(1, 2, 3)) = " + hasLeadingZero(Array(1, 2, 3)).toString)
 
-  println(s"hasLeadingZero2(List(0, 1, 2))=${ hasLeadingZero(List(0, 1, 2)) }")
-  println(s"hasLeadingZero2(List(1, 2, 3)) = ${ hasLeadingZero(List(1, 2, 3)) }")
+  println(s"hasLeadingZero2(List(0, 1, 2)) = " + hasLeadingZero(List(0, 1, 2)).toString)
+  println(s"hasLeadingZero2(List(1, 2, 3)) = " + hasLeadingZero(List(1, 2, 3)).toString)
 
-  println(s"hasLeadingZero2(Array(0, 1, 2))=${ hasLeadingZero(Array(0, 1, 2)) }")
-  println(s"hasLeadingZero2(Array(1, 2, 3)) = ${ hasLeadingZero(Array(1, 2, 3)) }")
+  println(s"hasLeadingZero2(Array(0, 1, 2)) = " + hasLeadingZero(Array(0, 1, 2)).toString )
+  println(s"hasLeadingZero2(Array(1, 2, 3)) = " + hasLeadingZero(Array(1, 2, 3)).toString )
 
-  println(s"hasLeading0(List(0, 1, 2))=${ hasLeading0(List(0, 1, 2)) }")
-  println(s"hasLeading0(List(1, 2, 3)) = ${ hasLeading0(List(1, 2, 3)) }")
+  println(s"hasLeading0(List(0, 1, 2)) = " + hasLeading0(List(0, 1, 2)).toString)
+  println(s"hasLeading0(List(1, 2, 3)) = " + hasLeading0(List(1, 2, 3)).toString)
 
-  println(s"hasLeading0(Array(0, 1, 2))=${ hasLeading0(Array(0, 1, 2)) }")
-  println(s"hasLeading0(Array(1, 2, 3)) = ${ hasLeading0(Array(1, 2, 3)) }")
+  println(s"hasLeading0(Array(0, 1, 2)) = " + hasLeading0(Array(0, 1, 2)).toString)
+  println(s"hasLeading0(Array(1, 2, 3)) = " + hasLeading0(Array(1, 2, 3)).toString)
 }
 
 object ListExtractAnyLen extends App {
@@ -169,7 +169,7 @@ object MatchAlias extends App {
   val menu5 = Menu(course1b, course2b, dessert)
 
   val result = List(menu1, menu2, menu3, menu4, menu5) filter {
-    case menu @ Menu(c1, c2, c3) if menu.isWorthOrdering || c1.dogCanEat => true
+    case menu @ Menu(c1, _, _) if menu.isWorthOrdering || c1.dogCanEat => true
     case _ => false
   }
 

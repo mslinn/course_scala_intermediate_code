@@ -1,4 +1,4 @@
-import java.io.{BufferedReader, FileInputStream, FileReader, InputStreamReader}
+import java.io.{BufferedReader, FileInputStream, InputStreamReader}
 
 trait MaybeMaybeNot {
   def square(num: Int): Int = num * num
@@ -24,7 +24,7 @@ object HigherShorthand extends App with MaybeMaybeNot{
 object TimedTask {
   import java.util.{Timer, TimerTask}
 
-  def apply(intervalSeconds: Int=1)(op: => Unit) {
+  def apply(intervalSeconds: Int=1)(op: => Unit): Unit = {
     val task = new TimerTask {
       def run(): Unit = op
     }
@@ -36,7 +36,7 @@ object TimedTask {
 object TimedFun extends App {
   var i = 0
 
-  TimedTask(1) {
+  TimedTask() {
     println(s"Tick #$i")
     i = i + 1
   }
@@ -65,7 +65,7 @@ object BinaryIO extends App with AutoCloseableLike {
   import scala.language.postfixOps
 
   val scalaCompilerPath: String = {
-    import sys.process._
+    import scala.sys.process._
     "which scalac".!!.trim
   }
 

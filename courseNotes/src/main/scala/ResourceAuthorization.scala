@@ -37,8 +37,8 @@ object ResourceAuthorization extends App {
 
   def isUserAuthorized(userId: String, password: String, resourceId: Long): Option[AuthorizationToken] = {
     val token = for {
-      user ← authenticate(userId, password)
-      resource ← findResourceById(resourceId)
+      user <- authenticate(userId, password)
+      resource <- findResourceById(resourceId)
     } yield AuthorizationToken(user, resource)
     token
   }

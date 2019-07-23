@@ -25,8 +25,8 @@ object CollectionMutableFun extends App {
 }
 
 object CMap extends App {
-  import collection.concurrent.{TrieMap, Map => CMap }
-  import collection.JavaConverters._
+  import scala.collection.concurrent.{TrieMap, Map => CMap }
+  import scala.jdk.CollectionConverters._
   import java.util.concurrent.{ConcurrentSkipListMap, ConcurrentHashMap => JConcurrentHashMap }
 
   val cmap = new JConcurrentHashMap[String, String].asScala

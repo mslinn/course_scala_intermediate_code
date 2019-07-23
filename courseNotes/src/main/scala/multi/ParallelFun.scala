@@ -87,7 +87,7 @@ object ParallelFun extends App {
 
   println()  // Work towards reducing results
   println("Class name of results: " + result.getClass.getName)
-  println("Reduced value: " + result.filter(_.toString.contains("6")).reduce { (acc, n) ⇒ acc + n })
+  println("Reduced value: " + result.filter(_.toString.contains("6")).reduce { (acc, n) => acc + n })
   println("Summed value: " + result.filter(_.toString.contains("6")).sum)
   println()
 

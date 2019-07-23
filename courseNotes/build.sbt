@@ -10,21 +10,21 @@ version := scalaVersion.value
 autoCompilerPlugins := true
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
   _: File => Seq[String](
-    "-deprecation",
     "-doc-source-url", "https://bitbucket.org/mslinn/course_scala_intermediate_code/src/master/coursenotes€{FILE_PATH}.scala",
     "-encoding", "UTF-8",
     "-feature",
     "-target:jvm-1.8",
     "-unchecked",
     "-Ywarn-adapted-args",
-    "-Ywarn-dead-code",
+//    "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
-    "-Ywarn-unused",
-    "-Ywarn-value-discard",
+//    "-Ywarn-unused",
+//    "-Ywarn-value-discard",
     "-Xlint"
   )
 }.value
 scalacOptions in Test ++= Seq("-Yrangepos")
+scalacOptions += "-deprecation"
 
 javacOptions ++= Seq(
   "-Xlint:deprecation",

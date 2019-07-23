@@ -1,7 +1,7 @@
 package solutions
 
 import com.typesafe.config._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import java.io.{File, PrintWriter}
 
 object ConfigFlatNest extends App {
@@ -23,7 +23,7 @@ object ConfigFlatNest extends App {
   val originalEntrySet = configApp.entrySet
   val confFlat = ConfigFactory.parseFile(file)
   val matched = confFlat.entrySet.asScala.forall { kv =>
-    def removeOuterParens(string: String) =
+    def removeOuterParens(string: String): String =
       if (string.startsWith("\"") && string.endsWith("\"")) string.substring(1, string.length-1) else string
 
     def render(value: ConfigValue): String =

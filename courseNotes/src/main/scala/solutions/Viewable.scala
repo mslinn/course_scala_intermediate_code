@@ -1,5 +1,7 @@
 package solutions
 
+import scala.language.implicitConversions
+
 object Viewable extends App {
   /** Speed of light in m/s */
   val C: Double = 299293458d
@@ -25,18 +27,24 @@ object Viewable extends App {
   case class Sand(name: String, color: String, weight: Double)
   case class Rock(name: String, color: String, weight: Double)
 
-  implicit def sandToMineral(sand: Sand) = Mineral(sand.name, sand.weight)
-  implicit def rockToMineral(rock: Rock) = Mineral(rock.name, rock.weight)
+  implicit def sandToMineral(sand: Sand): Mineral = Mineral(sand.name, sand.weight)
+  implicit def rockToMineral(rock: Rock): Mineral = Mineral(rock.name, rock.weight)
 
-  implicit def appleTreeToVegetable(tree: AppleTree) = Vegetable(tree.name,  tree.height,  tree.weight)
-  implicit def grassToVegetable(grass: Grass)        = Vegetable(grass.name, grass.height, grass.weight)
+  implicit def appleTreeToVegetable(tree: AppleTree): Vegetable = Vegetable(tree.name,  tree.height,  tree.weight)
+  implicit def grassToVegetable(grass: Grass): Vegetable = Vegetable(grass.name, grass.height, grass.weight)
 
-  implicit def bugToAnimal(bug: Bug)       = Animal(bug.name, bug.height, bug.weight)
-  implicit def whaleToAnimal(whale: Whale) = Animal(whale.name, whale.height, whale.weight)
+  implicit def bugToAnimal(bug: Bug): Animal = Animal(bug.name, bug.height, bug.weight)
+  implicit def whaleToAnimal(whale: Whale): Animal = Animal(whale.name, whale.height, whale.weight)
 
-  implicit def animalToMatter[X <% Animal](animal: X)          = Matter(animal.name,    animal.weight)
-  implicit def vegetableToMatter[X <% Vegetable](vegetable: X) = Matter(vegetable.name, vegetable.weight)
-  implicit def mineralToMatter[X <% Mineral](mineral: X)       = Matter(mineral.name,   mineral.weight)
+  // View bounds are deprecated, so using implicit parameter instead
+  implicit def animalToMatter[X](animal: X)
+                                (implicit ev: X => Animal): Matter = Matter(animal.name,    animal.weight)
+
+  implicit def vegetableToMatter[X](vegetable: X)
+                                   (implicit ev: X => Vegetable): Matter = Matter(vegetable.name, vegetable.weight)
+
+  implicit def mineralToMatter[X](mineral: X)
+                                 (implicit $1: X => Mineral): Matter = Matter(mineral.name,   mineral.weight)
 
   //println(Animal("Poodle", 1.0, 8.0).megaJouleMsg)
   //println(AppleTree("Spartan", 2.3, 26.2, 12).megaJouleMsg)

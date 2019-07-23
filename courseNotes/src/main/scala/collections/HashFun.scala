@@ -3,7 +3,46 @@ package collections
 import com.micronautics.utils
 import scala.collection._
 
-object HashFun extends App {
+object SetFun extends App {
+  val evenSet: immutable.Set[Int] = immutable.Set(0, 2, 4, 6, 8, 10)
+  val primeList: immutable.List[Int] = immutable.List(19, 23, 29)
+
+  val primeBits: immutable.HashSet[Int] = immutable.HashSet(2, 3, 5, 7, 11)
+  val evenBits: immutable.HashSet[Int] =  immutable.HashSet(0, 2, 4, 6, 8, 10)
+
+  println(s"""primeBits & evenBits = ${ primeBits & evenBits }""")
+  println(s"""primeBits & evenSet = ${ primeBits & evenSet }""")
+  println(s"""primeBits &~ evenBits = ${ primeBits &~ evenBits }""")
+  println(s"""primeBits &~ evenSet = ${ primeBits &~ evenSet }""")
+
+  val morePrimes: immutable.Set[Int] = primeBits + 13 + 17
+  println(s"""morePrimes = $morePrimes""")
+  println(s"""morePrimes ++ primeList = ${ morePrimes ++ primeList }""")
+  println(s"""morePrimes - 11 = ${ morePrimes - 11 }""")
+  println(s"""morePrimes -- evenBits = ${ morePrimes -- evenBits }""")
+
+  def doSomething(set: mutable.Set[Int]): Unit = println(set.mkString(", "))
+
+  println(s"""doSomething(mutable.HashSet(1, 2, 3)) = ${ doSomething(mutable.HashSet(1, 2, 3)) }""")
+  println(s"""doSomething(mutable.LinkedHashSet(1, 2, 3)) = ${ doSomething(mutable.LinkedHashSet(1, 2, 3)) }""")
+
+  println(s"""immutable.HashSet(1.0, 2) = ${ immutable.HashSet[Number](1.0, 2) }""")
+  val set: immutable.Set[Number] = immutable.HashSet[Number](1.0, 2)
+  println(s"""set = $set""")
+}
+
+object BitSetFun extends App {
+  val evenSet: immutable.Set[Int] = immutable.Set(0, 2, 4, 6, 8, 10)
+  val primeBits: immutable.BitSet = immutable.BitSet(2, 3, 5, 7, 11)
+  val evenBits: immutable.BitSet =  immutable.BitSet(0, 2, 4, 6, 8, 10)
+
+  println(s"""primeBits & evenBits = ${ primeBits & evenBits }""")
+  println(s"""primeBits & evenSet = ${ primeBits & evenSet }""")
+  println(s"""primeBits &~ evenBits = ${ primeBits &~ evenBits }""")
+  println(s"""primeBits &~ evenSet = ${ primeBits &~ evenSet }""")
+}
+
+object HashMapFun extends App {
   val chars: Seq[Char] = utils.read("build.sbt").toList
   val x1: String = chars.mkString
   val x2: String = chars.mkString(", ")
@@ -24,7 +63,7 @@ object HashFun extends App {
   val emptyMap: immutable.Map[Int, String] = immutable.HashMap.empty
   println(s"""map + (3 -> "c") = ${ map + (3 -> "c") }""")
 
-  println(s"""map + (3 -> "c", 4 -> "d") = ${ map + (3 -> "c", 4 -> "d") }""")
+  println(s"""map + (3 -> "c", 4 -> "d") = ${ map ++ List(3 -> "c", 4 -> "d") }""")
   val map3: immutable.Map[Int, String] = map ++ map2
   println(s"""map ++ map2 = $map3""")
   println(s"""map3.keys = ${ map3.keys }""")
@@ -46,32 +85,6 @@ object HashFun extends App {
 
   val emptyImmutableBits = immutable.BitSet.empty
   val emptyMutableBits = mutable.BitSet.empty
-
-  val primeBits = immutable.BitSet(2, 3, 5, 7, 11)
-  val evenBits =  immutable.BitSet(0, 2, 4, 6, 8, 10)
-
-  val evenSet = Set(0, 2, 4, 6, 8, 10)
-  val primeList = List(19, 23, 29)
-
-  println(s"""primeBits & evenBits = ${ primeBits & evenBits }""")
-  println(s"""primeBits & evenSet = ${ primeBits & evenSet }""")
-  println(s"""primeBits &~ evenBits = ${ primeBits &~ evenBits }""")
-  println(s"""primeBits &~ evenSet = ${ primeBits &~ evenSet }""")
-
-  val morePrimes = primeBits + 13 + 17
-  println(s"""morePrimes = $morePrimes""")
-  println(s"""morePrimes ++ primeList = ${ morePrimes ++ primeList }""")
-  println(s"""morePrimes - 11 = ${ morePrimes - 11 }""")
-  println(s"""morePrimes -- evenBits = ${ morePrimes -- evenBits }""")
-
-  def doSomething(set: Set[Int]): Unit = println(set.mkString(", "))
-
-  println(s"""doSomething(mutable.HashSet(1, 2, 3)) = ${ doSomething(mutable.HashSet(1, 2, 3)) }""")
-  println(s"""doSomething(mutable.LinkedHashSet(1, 2, 3)) = ${ doSomething(mutable.LinkedHashSet(1, 2, 3)) }""")
-
-  println(s"""immutable.HashSet(1.0, 2) = ${ immutable.HashSet[Number](1.0, 2) }""")
-  val set: immutable.Set[Number] = immutable.HashSet[Number](1.0, 2)
-  println(s"""set = $set""")
 
   def showMap(message: String, map: Map[Int, String]): Unit = {
     println(s"$message: ")

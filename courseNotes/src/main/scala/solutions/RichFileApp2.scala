@@ -25,8 +25,8 @@ object RichFile2 {
       }
     }
 
-    private def read(inputStream: InputStream): Stream[Int] =
-      Stream.continually(inputStream.read).takeWhile(_ != -1)
+    private def read(inputStream: InputStream): LazyList[Int] =
+      LazyList.continually(inputStream.read).takeWhile(_ != -1)
 
     private def readAsByteArray(input: InputStream): Array[Byte] =
       read(input).map(_.toByte).toArray
@@ -65,8 +65,10 @@ object RichFile2 {
         Nil
 
     /** Copy the underlying File to newFile.
-      * @return false if the underlying File is a directory, or if there is any other problem */
-    def copy[T <% File](newFile: T): Boolean = {
+      * @return false if the underlying File is a directory, or if there is any other problem
+      * View bounds are deprecated, so implicit parameter used instead */
+    def copy[T](newFile: T)
+               (implicit ev: T => File): Boolean = {
       if (underlying.isDirectory) {
         false
       } else {

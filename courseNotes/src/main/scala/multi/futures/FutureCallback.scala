@@ -29,6 +29,7 @@ object FutureCallback extends App {
   promises(0).future onComplete {
     case Success(value) => println(s"promises(0) completed successfully with value='$value'.")
     // Caution: you should also provide the Failure case. This is an example of bad habits
+    // The compiler will emit a warning
   }
 
   promises(1).future onComplete {
@@ -38,10 +39,12 @@ object FutureCallback extends App {
   promises(1).future onComplete {
     case Success(value) => println(s"promises(1) onComplete; value='$value'.")
     // Caution: you should also provide the Failure case. This is an example of bad habits
+    // The compiler will emit a warning
   }
 
   promises(1).future onComplete {
     // Caution: you should also provide the Success case. This is an example of bad habits
+    // The compiler will emit a warning
     case Failure(throwable) => println(s"promises(1) onComplete; exception message: '${ throwable.getMessage }'.")
   }
   promises(1).future andThen {
@@ -58,6 +61,7 @@ object FutureCallback extends App {
     case Success(Some(value)) => println(s"The value $value only is matched if the future returns an Option")
     case Success(None) => println(s"None could only be matched if the future returns an Option")
     // Caution: you should also provide the Failure case. This is an example of bad habits
+    // The compiler will emit a warning
   }
   optionIntPromise1.success(Some(3))
   Await.ready(optionIntPromise1.future, 30 minutes)
@@ -65,7 +69,8 @@ object FutureCallback extends App {
   val optionFilePromise1 = Promise[Option[java.io.File]]()
   optionFilePromise1.future onComplete {
     // Caution: you should also provide the Success case. This is an example of bad habits
-    case Failure(fnfe: java.io.FileNotFoundException) => println(s"Hey, you are missing a file! ${ fnfe.getMessage }")
+    // The compiler will emit a warning
+    case Failure(ex: java.io.FileNotFoundException) => println(s"Hey, you are missing a file! ${ ex.getMessage }")
     case Failure(ioe: java.io.IOException) => println(s"Could be burgler? ${ ioe.getMessage }")
     case Failure(throwable) => println(s"optionFilePromise1 throwable message: '${ throwable.getMessage }'.")
   }
@@ -76,7 +81,7 @@ object FutureCallback extends App {
   optionFilePromise2.future andThen {
     case Success(Some(value)) => println(s"The value $value only is matched if the future returns an Option")
     case Success(None) => println(s"None could only be matched if the future returns an Option")
-    case Failure(fnfe: java.io.FileNotFoundException) => println(s"Hey, you are missing a file! ${ fnfe.getMessage }")
+    case Failure(ex: java.io.FileNotFoundException) => println(s"Hey, you are missing a file! ${ ex.getMessage }")
     case Failure(ioe: java.io.IOException) => println(s"Could be burgler? ${ ioe.getMessage }")
     case Failure(throwable) => println(s"optionFilePromise2 exception message: '${ throwable.getMessage }'.")
   }
@@ -94,6 +99,7 @@ object FutureCallback extends App {
 
   promises(3).future onComplete {
     // Caution: you should also provide the Success case. This is an example of bad habits
+    // The compiler will emit a warning
     case Failure(exception) => println(s"promises(3) completed with exception message: '${ exception.getMessage }'.")
   }
 

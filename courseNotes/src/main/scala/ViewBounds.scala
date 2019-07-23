@@ -20,10 +20,12 @@ object TypesafeEquality extends App {
 
 object AllEquality extends App {
   implicit class AnyEquality[T](thiz: T) {
-    def ===[U <% T](that: U): Boolean = thiz==that
+    // View bounds are deprecated, using implicit parameter instead
+    def ===[U](that: U)
+              (implicit ev: U => T): Boolean = thiz==that
   }
 
-  println(s"Comparing 3 with 4: ${3===4}")
+  println(s"Comparing 3 with 4: ${ 3 === 4 }")
   //println(s"Comparing 3 with Some(3): ${3===Some(3)}")
 }
 
