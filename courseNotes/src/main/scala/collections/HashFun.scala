@@ -4,97 +4,145 @@ import com.micronautics.utils
 import scala.collection._
 
 object SetFun extends App {
-  val evenSet: immutable.Set[Int] = immutable.Set(0, 2, 4, 6, 8, 10)
-  val primeList: immutable.List[Int] = immutable.List(19, 23, 29)
+  val immSet: immutable.Set[Int] = immutable.Set(0, 2, 4, 6, 8, 10)
+  println(s"""immSet = $immSet""")
 
-  val primeBits: immutable.HashSet[Int] = immutable.HashSet(2, 3, 5, 7, 11)
-  val evenBits: immutable.HashSet[Int] =  immutable.HashSet(0, 2, 4, 6, 8, 10)
+  val mutSet: mutable.Set[Int]   = mutable.Set(2, 3, 5, 7, 11, 13)
+  println(s"""mutSet = $mutSet""")
 
-  println(s"""primeBits & evenBits = ${ primeBits & evenBits }""")
-  println(s"""primeBits & evenSet = ${ primeBits & evenSet }""")
-  println(s"""primeBits &~ evenBits = ${ primeBits &~ evenBits }""")
-  println(s"""primeBits &~ evenSet = ${ primeBits &~ evenSet }""")
+  mutSet += 123
+  println(s"""mutSet after adding 123 = $mutSet""")
 
-  val morePrimes: immutable.Set[Int] = primeBits + 13 + 17
-  println(s"""morePrimes = $morePrimes""")
-  println(s"""morePrimes ++ primeList = ${ morePrimes ++ primeList }""")
-  println(s"""morePrimes - 11 = ${ morePrimes - 11 }""")
-  println(s"""morePrimes -- evenBits = ${ morePrimes -- evenBits }""")
+  mutSet.addOne(23).addOne(29)
+  println(s"""mutSet after adding 23 and 29 = $mutSet""")
 
-  def doSomething(set: mutable.Set[Int]): Unit = println(set.mkString(", "))
+  val largerImmSet = immSet.incl(8).incl(10)
+  println(s"""largerImmSet = $largerImmSet""")
 
-  println(s"""doSomething(mutable.HashSet(1, 2, 3)) = ${ doSomething(mutable.HashSet(1, 2, 3)) }""")
-  println(s"""doSomething(mutable.LinkedHashSet(1, 2, 3)) = ${ doSomething(mutable.LinkedHashSet(1, 2, 3)) }""")
+  mutSet -= 123
+  println(s"""mutSet after removing 123 = $mutSet""")
 
-  println(s"""immutable.HashSet(1.0, 2) = ${ immutable.HashSet[Number](1.0, 2) }""")
-  val set: immutable.Set[Number] = immutable.HashSet[Number](1.0, 2)
-  println(s"""set = $set""")
+  mutSet.subtractOne(23).subtractOne(29)
+  println(s"""mutSet after removing 23 and 29 = $mutSet""")
+
+  val smallerImmSet = immSet.excl(8).excl(10)
+  println(s"""smallerImmSet = $smallerImmSet""")
+
+  println(s"mutSet & immSet = ${ mutSet & immSet }")
+  println(s"immSet & mutSet = ${ immSet & mutSet }")
+  println(s"mutSet &~ immSet = ${ mutSet &~ immSet }")
+  println(s"immSet &~ mutSet = ${ immSet &~ mutSet }")
+
+  println(s"mutSet ++ List(123) = ${ mutSet ++ List(123) }")
+  println(s"immSet ++ List(123) = ${ immSet ++ List(123) }")
+  println(s"immSet.removedAll(mutSet) = ${ immSet.removedAll(mutSet) }")
+
+  val immHashSet = immutable.HashSet(2, 5, 1)
+  val mutHashSet = mutable.HashSet(2, 5, 1)
+
+  println(s"mutable.HashSet(4, 2, 4) = ${ mutable.HashSet(4, 2, 4) }")
+  println(s"mutable.LinkedHashSet(4, 2, 4) = ${ mutable.LinkedHashSet(4, 2, 4) }")
 }
 
 object BitSetFun extends App {
-  val evenSet: immutable.Set[Int] = immutable.Set(0, 2, 4, 6, 8, 10)
-  val primeBits: immutable.BitSet = immutable.BitSet(2, 3, 5, 7, 11)
-  val evenBits: immutable.BitSet =  immutable.BitSet(0, 2, 4, 6, 8, 10)
+  val emptyMutableBits = mutable.BitSet.empty
+  val emptyImmutableBits = immutable.BitSet.empty
 
-  println(s"""primeBits & evenBits = ${ primeBits & evenBits }""")
-  println(s"""primeBits & evenSet = ${ primeBits & evenSet }""")
-  println(s"""primeBits &~ evenBits = ${ primeBits &~ evenBits }""")
-  println(s"""primeBits &~ evenSet = ${ primeBits &~ evenSet }""")
+  val immBits = immutable.BitSet(2, 3, 5, 7, 11)
+  val mutBits =  mutable.BitSet(0, 2, 4, 6, 8, 10)
+  println(s"immBits ++ mutBits = ${ immBits ++ mutBits }")
 }
 
-object HashMapFun extends App {
-  val chars: Seq[Char] = utils.read("build.sbt").toList
-  val x1: String = chars.mkString
-  val x2: String = chars.mkString(", ")
-  val x3: String = chars.mkString(">>>", ", ", "<<<")
-
-  val immutableMap: immutable.Map[Int, String] = immutable.HashMap.empty[Int, String]
-  val mutableMap: mutable.Map[Int, String] = mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )
-  val map: immutable.Map[Int, String] = immutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )
-  println(s"map.get(1) = ${ map.get(1) }")
-  println(s"map(1) = ${ map(1) }")
-  println(s"map.get(0) = ${ map.get(0) }")
-  //println(s"map(0) = ${map(0)}")  // java.util.NoSuchElementException: key not found: 0
-  println(s"""map.getOrElse(0, Some("defaultValue")) = ${ map.getOrElse(0, Some("defaultValue")) }""")
-
-  val map2: mutable.Map[Int, String] = mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea").withDefaultValue("eh")
-  println(s"map2(0) = ${ map2(0) }")
-
-  val emptyMap: immutable.Map[Int, String] = immutable.HashMap.empty
-  println(s"""map + (3 -> "c") = ${ map + (3 -> "c") }""")
-
-  println(s"""map + (3 -> "c", 4 -> "d") = ${ map ++ List(3 -> "c", 4 -> "d") }""")
-  val map3: immutable.Map[Int, String] = map ++ map2
-  println(s"""map ++ map2 = $map3""")
-  println(s"""map3.keys = ${ map3.keys }""")
-  println(s"""map3.updated(1, "q") = ${ map3.updated(1, "q") }""")
-  println(s"""map3.isDefinedAt(42) = ${ map3.isDefinedAt(42) }""")
-  println(s"""map3.isDefinedAt(2) = ${ map3.isDefinedAt(2) }""")
-
-  println(s"""immutable.HashSet(1, 1, 2) = ${ immutable.HashSet(1, 1, 2) }""")
-  println(s"""mutable.HashSet(1, 1, 2) = ${ mutable.HashSet(1, 1, 2) }""")
-  println(s"""mutable.LinkedHashSet(4, 4, 4) = ${ mutable.LinkedHashSet(4, 4, 4) }""")
-
-  val mapFruit = Map(1 -> "apricot", 2 -> "banana", 3 -> "clementine", 4 -> "durian", 5 -> "fig", 6 -> "guava", 7 -> "jackfruit", 8 -> "kiwi", 9 -> "lime", 10 -> "mango")
-  println(s"""mapFruit.mapValues(_ capitalize) = ${ mapFruit.view.mapValues(_.capitalize) }""")
-
-  val set2 = mutable.HashSet.empty[String]
-  set2 += "Buy a dog"
-  set2 += "Sell the cat"
-  println(s"set2 = $set2")
-
-  val emptyImmutableBits = immutable.BitSet.empty
-  val emptyMutableBits = mutable.BitSet.empty
-
+trait MapHelper {
   def showMap(message: String, map: Map[Int, String]): Unit = {
     println(s"$message: ")
     map.foreach { case (key, value) =>
       println(s"  key=$key, value=$value")
     }
   }
+}
 
-  // added with Scala 2.13
-  showMap("immutable.ListMap", immutable.ListMap(1 -> "One", -2 -> "Negative two", 3 -> "Three"))
+object MapFun extends App with MapHelper {
+  val immMap: immutable.HashMap[Int, String] = immutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )
+  val immEmpty1 = immutable.HashMap.empty
+  val mutEmpty = mutable.HashMap.empty
+
+  val immEmpty2: immutable.HashMap[Int, String] = immutable.HashMap.empty
+  val immEmpty3 = immutable.HashMap.empty[Int, String]
+
+  println(s"immMap.get(1) = ${ immMap.get(1) }")
+  println(s"immMap(1) = ${ immMap(1) }")
+
+  println(s"immMap.get(0) = ${ immMap.get(0) }")
+  try {
+    println(s"immMap(0) = ${ immMap(0) }")
+  } catch {
+    case e: Exception => println(s"immMap(0) threw ${ e.getMessage }")
+  }
+
+  val mutMap = mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea").withDefaultValue("eh")
+  println(s"mutMap(0) = ${ mutMap(0) }")
+  println(s"""mutMap.getOrElse(0, "defaultValue") = ${ mutMap.getOrElse(0, "defaultValue") }""")
+
+  mutMap += (3 -> "c")
+  showMap("mutMap after adding a tuple", mutMap)
+
+  mutMap.addOne(3 -> "c")
+  showMap("mutMap after adding another tuple", mutMap)
+
+  mutMap ++= Map(3 -> "c2", 4 -> "d")
+  showMap("mutMap after adding another Map", mutMap)
+
+  showMap("mutMap ++ immMap", mutMap ++ immMap)
+  showMap("mutMap ++ immMap", mutMap ++ immMap)
+  showMap("""mutMap.addAll(Map(3 -> "c2", 4 -> "d"))""", mutMap.addAll(Map(3 -> "c2", 4 -> "d")))
+
+  println(s"""mutMap.keys = ${ mutMap.keys }""")
+  println(s"""mutMap.keySet = ${ mutMap.keySet }""")
+
+  println(s"""mutMap.values = ${ mutMap.values }""")
+  println(s"""mutMap.values.toList = ${ mutMap.values.toList }""")
+
+  println(s"""mutMap.isDefinedAt(42) = ${ mutMap.isDefinedAt(42) }""")
+  println(s"""immMap.isDefinedAt(42) = ${ immMap.isDefinedAt(42) }""")
+
+  val zippedFruit = immutable.Map(1 -> "apricot", 2 -> "banana", 3 -> "clementine", 4 -> "durian", 5 -> "fig",
+                                  6 -> "guava", 7 -> "jackfruit", 8 -> "kiwi", 9 -> "lime", 10 -> "mango")
+
+  println(s"""zippedFruit.mapValues(_.capitalize) = ${ zippedFruit.mapValues(_.capitalize) }""") // Pre-2.13
+  showMap("""zippedFruit.view.mapValues(_.capitalize).toMap""", zippedFruit.view.mapValues(_.capitalize).toMap)
+
+  showMap("""immMap.updated(1, "q")""", immMap.updated(1, "q"))
+
+  showMap("""mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )""", mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" ))
+  showMap("""immutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )""", immutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" ))
+}
+
+object SortFun extends App with MapHelper {
+  val immTreeSet = immutable.TreeSet(3, 1, 2)
+  val mutTreeSet = mutable.TreeSet(3, 1, 2)
+  println("""immutable.TreeSet(3, 1, 2) = """ + immTreeSet)
+  println("""mutable.TreeSet(3, 1, 2) = """ + mutTreeSet)
+
+  // I do not like relying on an interface's default implementation
+  println("""immutable.SortedSet(3, 1, 2) = """ + immutable.SortedSet(3, 1, 2))
+  println("""mutable.SortedSet(3, 1, 2) = """ + mutable.SortedSet(3, 1, 2))
+
+
+  val hashSet = immutable.HashSet(1, 2, 3)
+  println("""immutable.HashSet(1, 2, 3).to(immutable.TreeSet) = """ + hashSet.to(immutable.TreeSet))
+  println("""immutable.HashSet(1, 2, 3).to(mutable.TreeSet) = """ + hashSet.to(mutable.TreeSet))
+
+  println("""immutable.HashSet(1, 2, 3).to(immutable.SortedSet) = """ + hashSet.to(immutable.SortedSet))
+  println("""immutable.HashSet(1, 2, 3).to(mutable.SortedSet) = """ + hashSet.to(mutable.SortedSet))
+
+  val tuples: List[(Int, String)] = List(3 -> "c", 2 -> "b", 1 -> "a")
+  showMap("""immutable.TreeMap(3 -> "c", 2 -> "b", 1 -> "a")""", immutable.TreeMap(tuples: _*))
+  showMap("""mutable.TreeMap(3 -> "c", 2 -> "b", 1 -> "a")""", mutable.TreeMap(tuples: _*))
+
+  // I do not like relying on an interface's default implementation
+  showMap("""immutable.SortedMap(3 -> "c", 2 -> "b", 1 -> "a")""", immutable.SortedMap(tuples: _*))
+  showMap("""mutable.SortedMap(3 -> "c", 2 -> "b", 1 -> "a")""", mutable.SortedMap(tuples: _*))
 
   val treeSeqMap: Map[Int, String] = immutable.TreeSeqMap(1 -> "One", -2 -> "Negative two", 3 -> "Three")
   showMap("immutable.TreeSeqMap", treeSeqMap)
