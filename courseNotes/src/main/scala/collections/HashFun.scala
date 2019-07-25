@@ -1,7 +1,7 @@
 package collections
 
-import com.micronautics.utils
 import scala.collection._
+import scala.collection.immutable.TreeSeqMap
 
 object SetFun extends App {
   val immSet: immutable.Set[Int] = immutable.Set(0, 2, 4, 6, 8, 10)
@@ -54,6 +54,8 @@ object BitSetFun extends App {
 }
 
 trait MapHelper {
+  val listOfTuples: List[(Int, String)] = List(2 -> "b", 1 -> "a", 3 -> "c")
+
   def showMap(message: String, map: Map[Int, String]): Unit = {
     println(s"$message: ")
     map.foreach { case (key, value) =>
@@ -63,7 +65,7 @@ trait MapHelper {
 }
 
 object MapFun extends App with MapHelper {
-  val immMap: immutable.HashMap[Int, String] = immutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )
+  val immMap: immutable.HashMap[Int, String] = immutable.HashMap(listOfTuples: _*)
   val immEmpty1 = immutable.HashMap.empty
   val mutEmpty = mutable.HashMap.empty
 
@@ -80,7 +82,7 @@ object MapFun extends App with MapHelper {
     case e: Exception => println(s"immMap(0) threw ${ e.getMessage }")
   }
 
-  val mutMap = mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea").withDefaultValue("eh")
+  val mutMap = mutable.HashMap(listOfTuples: _*).withDefaultValue("eh")
   println(s"mutMap(0) = ${ mutMap(0) }")
   println(s"""mutMap.getOrElse(0, "defaultValue") = ${ mutMap.getOrElse(0, "defaultValue") }""")
 
@@ -114,8 +116,8 @@ object MapFun extends App with MapHelper {
 
   showMap("""immMap.updated(1, "q")""", immMap.updated(1, "q"))
 
-  showMap("""mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )""", mutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" ))
-  showMap("""immutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" )""", immutable.HashMap( 1 -> "eh", 2 -> "bee", 3 -> "sea" ))
+  showMap("""mutable.HashMap(listOfTuples: _*)""", mutable.HashMap(listOfTuples: _*))
+  showMap("""immutable.HashMap(listOfTuples: _*)""", immutable.HashMap(listOfTuples: _*))
 }
 
 object SortFun extends App with MapHelper {
@@ -136,14 +138,25 @@ object SortFun extends App with MapHelper {
   println("""immutable.HashSet(1, 2, 3).to(immutable.SortedSet) = """ + hashSet.to(immutable.SortedSet))
   println("""immutable.HashSet(1, 2, 3).to(mutable.SortedSet) = """ + hashSet.to(mutable.SortedSet))
 
-  val tuples: List[(Int, String)] = List(3 -> "c", 2 -> "b", 1 -> "a")
-  showMap("""immutable.TreeMap(3 -> "c", 2 -> "b", 1 -> "a")""", immutable.TreeMap(tuples: _*))
-  showMap("""mutable.TreeMap(3 -> "c", 2 -> "b", 1 -> "a")""", mutable.TreeMap(tuples: _*))
+  showMap("""immutable.TreeMap(listOfTuples: _*)""", immutable.TreeMap(listOfTuples: _*))
+  showMap("""mutable.TreeMap(listOfTuples: _*)""", mutable.TreeMap(listOfTuples: _*))
 
   // I do not like relying on an interface's default implementation
-  showMap("""immutable.SortedMap(3 -> "c", 2 -> "b", 1 -> "a")""", immutable.SortedMap(tuples: _*))
-  showMap("""mutable.SortedMap(3 -> "c", 2 -> "b", 1 -> "a")""", mutable.SortedMap(tuples: _*))
+  showMap("""immutable.SortedMap(listOfTuples: _*)""", immutable.SortedMap(listOfTuples: _*))
+  showMap("""mutable.SortedMap(listOfTuples: _*)""", mutable.SortedMap(listOfTuples: _*))
 
-  val treeSeqMap: Map[Int, String] = immutable.TreeSeqMap(1 -> "One", -2 -> "Negative two", 3 -> "Three")
+  val treeSeqMap: Map[Int, String] = immutable.TreeSeqMap(listOfTuples: _*)
   showMap("immutable.TreeSeqMap", treeSeqMap)
+
+  val insertionOrdered: immutable.TreeSeqMap[Int, String] =
+    immutable.TreeSeqMap.newBuilder(immutable.TreeSeqMap.OrderBy.Insertion) // OrderBy.Insertion is default
+      .addAll(listOfTuples)
+      .result
+  val modificationOrdered: immutable.TreeSeqMap[Int, String] =
+    immutable.TreeSeqMap.newBuilder(immutable.TreeSeqMap.OrderBy.Modification)
+      .addAll(listOfTuples)
+      .result
+
+  showMap("""insertionOrdered.addOne(1 -> "eh")""", insertionOrdered + (1 -> "eh"))
+  showMap("""modificationOrdered.addOne(1 -> "eh")""", modificationOrdered + (1 -> "eh"))
 }
