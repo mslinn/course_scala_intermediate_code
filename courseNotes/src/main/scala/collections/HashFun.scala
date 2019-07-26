@@ -120,6 +120,18 @@ object MapFun extends App with MapHelper {
   showMap("""immutable.HashMap(listOfTuples: _*)""", immutable.HashMap(listOfTuples: _*))
 }
 
+object SeqMapFun extends App with MapHelper {
+  showMap("mutable.LinkedHashMap(listOfTuples: _*)", mutable.LinkedHashMap(listOfTuples: _*))
+  val mutLhm = mutable.LinkedHashMap.empty[Int, String]
+  showMap("""mutLhm += 13 -> "Buy a dog"""", mutLhm += 13 -> "Buy a dog")
+  showMap("""mutLhm += 31 -> "Buy a dog"""", mutLhm += 31 -> "Sell the cat")
+
+  val immTsm = immutable.TreeSeqMap(listOfTuples: _*)
+  showMap("immTsm", immTsm)
+  showMap("""immTsm.updated(13, "m")""", immTsm.updated(13, "m"))
+  showMap("""immTsm ++ Map(14 -> "n")""", immTsm ++ Map(14 -> "n"))
+}
+
 object SortFun extends App with MapHelper {
   val immTreeSet = immutable.TreeSet(3, 1, 2)
   val mutTreeSet = mutable.TreeSet(3, 1, 2)
