@@ -1,7 +1,6 @@
 package collections
 
 import scala.collection._
-import scala.collection.immutable.TreeSeqMap
 
 object SetFun extends App {
   val immSet: immutable.Set[Int] = immutable.Set(0, 2, 4, 6, 8, 10)

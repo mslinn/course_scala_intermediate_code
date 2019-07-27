@@ -16,10 +16,7 @@ scalacOptions in (Compile, doc) ++= baseDirectory.map {
     "-target:jvm-1.8",
     "-unchecked",
     "-Ywarn-adapted-args",
-//    "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
-//    "-Ywarn-unused",
-//    "-Ywarn-value-discard",
     "-Xlint"
   )
 }.value
