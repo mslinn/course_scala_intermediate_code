@@ -1,6 +1,7 @@
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.{Config, ConfigFactory}
+import multi.ActorExercise._
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
 
 object ActorSystemConfig {
@@ -20,8 +21,6 @@ class ActorTest extends TestKit(ActorSystem("test", ActorSystemConfig.config))  
   with WordSpecLike
   with ImplicitSender
   with BeforeAndAfterAll {
-
-  import multi.ActorExercise._
 
   val chunkerMsg1 = ChunkerMsg(10, 10, "Ain't this grand?")
   val workerMsg1 = WorkerMsg(10, 10)

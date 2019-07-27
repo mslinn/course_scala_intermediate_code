@@ -35,6 +35,7 @@ object SetFun extends App {
   println(s"mutSet ++ List(123) = ${ mutSet ++ List(123) }")
   println(s"immSet ++ List(123) = ${ immSet ++ List(123) }")
   println(s"immSet.removedAll(mutSet) = ${ immSet.removedAll(mutSet) }")
+  println(s"immSet removedAll mutSet = ${ immSet removedAll mutSet }")
 
   val immHashSet = immutable.HashSet(2, 5, 1)
   val mutHashSet = mutable.HashSet(2, 5, 1)
