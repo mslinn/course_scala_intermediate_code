@@ -60,6 +60,9 @@ object HasLeadingZero extends App {
   println(s"hasLeading0(List(0, 1, 2)) = " + hasLeading0(List(0, 1, 2)).toString)
   println(s"hasLeading0(List(1, 2, 3)) = " + hasLeading0(List(1, 2, 3)).toString)
 
+  // Method copyArrayToImmutableIndexedSeq in class LowPriorityImplicits2 is deprecated (since 2.13.0):
+  // Implicit conversions from Array to immutable.IndexedSeq are implemented by copying;
+  // Use the more efficient non-copying ArraySeq.unsafeWrapArray or an explicit toIndexedSeq call
   println(s"hasLeading0(Array(0, 1, 2)) = " + hasLeading0(Array(0, 1, 2)).toString)
   println(s"hasLeading0(Array(1, 2, 3)) = " + hasLeading0(Array(1, 2, 3)).toString)
 }

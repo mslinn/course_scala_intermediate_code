@@ -56,3 +56,5 @@ logLevel in compile := Level.Warn
 cancelable := true
 
 sublimeTransitive := true
+
+ThisBuild / turbo := true

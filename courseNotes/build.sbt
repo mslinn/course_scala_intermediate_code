@@ -59,7 +59,9 @@ libraryDependencies ++=
   }.value
 updateOptions := updateOptions.value.withCachedResolution(true)
 
-resolvers += "micronautics/scala on bintray" at "http://dl.bintray.com/micronautics/scala"
+resolvers += "micronautics/scala on bintray" at "https://dl.bintray.com/micronautics/scala"
+
+ThisBuild / turbo := true
 
 // set the initial commands when entering 'console' or 'consoleQuick', but not 'consoleProject'
 initialCommands in console := """import akka.actor._

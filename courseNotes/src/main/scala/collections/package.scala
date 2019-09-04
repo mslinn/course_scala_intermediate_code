@@ -1,16 +1,16 @@
 package collections {
   class ThingOrdered(val i: Int, val s: String) extends Ordered[ThingOrdered] {
-    def compare(that: ThingOrdered) = {
+    def compare(that: ThingOrdered): Int = {
       val primaryKey = this.i - that.i
       if (primaryKey != 0) primaryKey else this.s compare that.s
     }
 
-    override def equals(other: Any) = {
+    override def equals(other: Any): Boolean = {
       val that = other.asInstanceOf[ThingOrdered]
       this.i == that.i && this.s == that.s
     }
 
-    override def hashCode = super.hashCode
+    override def hashCode: Int = super.hashCode
 
     override def toString = s"ThingOrdered($i, $s)"
   }
