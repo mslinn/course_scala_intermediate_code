@@ -35,7 +35,7 @@ javacOptions ++= Seq(
 )
 
 resolvers ++= Seq(
-  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases"
+  "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases"
 )
 
 libraryDependencies ++= Seq(
