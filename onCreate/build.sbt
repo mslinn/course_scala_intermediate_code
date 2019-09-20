@@ -4,7 +4,7 @@ organization := "com.micronautics"
 
 name := "onCreate"
 
-scalaVersion := "2.12.9"
+scalaVersion := "2.12.10"
 //scalaVersion := "2.13.0"
 version := scalaVersion.value
 

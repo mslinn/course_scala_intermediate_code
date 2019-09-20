@@ -6,7 +6,8 @@ description := "Intermediate Scala Assignment"
 
 version := "0.1.0"
 
-scalaVersion := "2.12.9"
+//scalaVersion := "2.12.10"
+scalaVersion := "2.13.1"
 
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
   (bd: File) => Seq[String](
@@ -22,7 +23,7 @@ scalacOptions in (Compile, doc) ++= baseDirectory.map {
 }.value
 
 libraryDependencies ++= Seq(
-  "com.typesafe" %  "config" % "1.0.2"
+  "com.typesafe" %  "config" % "1.3.4"
 )
 
 logLevel := Level.Error
