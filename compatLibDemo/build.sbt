@@ -23,7 +23,7 @@ javacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scala-lang.modules" %% "scala-collection-compat" % "2.0.0",
+  "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.4",
   "org.scalatest"          %% "scalatest"               % "3.1.0-SNAP13" % Test withSources(),
   "junit"                  %  "junit"                   % "4.12"         % Test
 )
