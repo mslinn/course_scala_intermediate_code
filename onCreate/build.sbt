@@ -4,8 +4,8 @@ organization := "com.micronautics"
 
 name := "onCreate"
 
-scalaVersion := "2.12.10"
-//scalaVersion := "2.13.0"
+scalaVersion := "2.12.11"
+//scalaVersion := "2.13.2"
 version := scalaVersion.value
 
 scalacOptions ++= Seq(

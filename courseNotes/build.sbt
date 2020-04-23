@@ -2,8 +2,8 @@ organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
 
-//scalaVersion := "2.12.10"
-scalaVersion := "2.13.1"
+//scalaVersion := "2.12.11"
+scalaVersion := "2.13.2"
 
 version := scalaVersion.value
 

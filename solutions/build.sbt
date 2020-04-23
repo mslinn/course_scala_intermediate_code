@@ -4,8 +4,8 @@ name := "intermediate-scala-course-solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
-//scalaVersion := "2.12.10"
-scalaVersion := "2.13.1"
+//scalaVersion := "2.12.11"
+scalaVersion := "2.13.2"
 version := scalaVersion.value
 
 scalacOptions in (Compile, doc) ++= baseDirectory.map {

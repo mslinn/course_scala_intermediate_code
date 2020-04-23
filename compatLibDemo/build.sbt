@@ -114,8 +114,8 @@ scalacOptions in (Compile, doc) ++= baseDirectory.map {
   )
 }.value
 
-//scalaVersion := "2.13.1"  
-scalaVersion := "2.12.10"
+//scalaVersion := "2.13.2"
+scalaVersion := "2.12.11"
 //scalaVersion := "2.11.12"
 
 scmInfo := Some(
