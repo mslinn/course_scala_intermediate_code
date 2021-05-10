@@ -3,7 +3,8 @@ package solutions
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.{Config, ConfigFactory}
-import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.wordspec.AnyWordSpecLike
 
 object ActorSystemConfig {
   private val confStr =  """akka {
@@ -23,13 +24,13 @@ object ActorSystemConfig {
 }
 
 class MonkeyActorTest extends TestKit(ActorSystem("test", ActorSystemConfig.config)) // the order of these mixins is significant
-  with WordSpecLike
+  with AnyWordSpecLike
   with ImplicitSender
   with BeforeAndAfterAll {
 
   val targetString = "abc"
   val alphabet = "abcdef"
-  val startMsg = BookkeeperStart(targetString, alphabet, 10)
+  val startMsg: BookkeeperStart = BookkeeperStart(targetString, alphabet, 10)
 
   val monkeyActorRef: TestActorRef[Monkey] = TestActorRef(new Monkey(targetString.length, alphabet, _ => ""))
   val monkeyActor: Monkey = monkeyActorRef.underlyingActor

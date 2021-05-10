@@ -2,8 +2,8 @@ organization := "com.micronautics"
 name := "intermediate-scala-course"
 description := "Core Scala - Intermediate Scala Course Notes"
 
-//scalaVersion := "2.12.11"
-scalaVersion := "2.13.2"
+//scalaVersion := "2.12.13"
+scalaVersion := "2.13.5"
 
 version := scalaVersion.value
 
@@ -32,27 +32,27 @@ javacOptions ++= Seq(
 )
 
 libraryDependencies ++= {
-  val akkaV = "2.5.23"
+  val akkaV = "2.6.14"
   Seq(
   "com.typesafe.akka"      %% "akka-actor"                 % akkaV          withSources(),
-  "com.github.pureconfig"  %% "pureconfig"                 % "0.11.1"       withSources(),
-  "com.google.guava"       %  "guava"                      % "24.1-jre"     withSources(),
-  "com.micronautics"       %% "scalacourses-utils"         % "0.3.2"        withSources(),
-  "com.typesafe"           %  "config"                     % "1.3.4"        withSources(),
-  "org.scalactic"          %% "scalactic"                  % "3.0.8"        withSources(),
+  "com.github.pureconfig"  %% "pureconfig"                 % "0.15.0"       withSources(),
+  "com.google.guava"       %  "guava"                      % "30.1.1-jre"   withSources(),
+  //"com.micronautics"       %% "scalacourses-utils"         % "0.3.2"        withSources(),
+  "com.typesafe"           %  "config"                     % "1.4.1"        withSources(),
+  "org.scalactic"          %% "scalactic"                  % "3.2.8"        withSources(),
   "org.scala-lang"         %  "scala-reflect"              % scalaVersion.value,
   //
   "com.typesafe.akka"      %% "akka-testkit"               % akkaV          % Test withSources(),
-  "org.specs2"             %% "specs2-core"                % "4.5.1"        % Test withSources(),
-  "org.specs2"             %% "specs2-junit"               % "4.5.1"        % Test withSources(),
-  "org.scalatest"          %% "scalatest"                  % "3.0.8"        % Test withSources(),
+  "org.specs2"             %% "specs2-core"                % "4.11.0"        % Test withSources(),
+  "org.specs2"             %% "specs2-junit"               % "4.11.0"        % Test withSources(),
+  "org.scalatest"          %% "scalatest"                  % "3.2.8"        % Test withSources(),
   "junit"                  %  "junit"                      % "4.12"         % Test // Scala IDE requires this; IntelliJ IDEA does not
   )
 }
 libraryDependencies ++=
   scalaVersion {
     case sv if sv.startsWith("2.13") => List(
-      "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0" withSources()
+      "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.2" withSources()
     )
 
     case _ => Nil
@@ -85,4 +85,4 @@ logLevel := Level.Info
 logLevel in test := Level.Info // Level.Info is needed to see detailed output when running tests
 logLevel in compile := Level.Info
 
-version := "2.13_2"
+version := "2.13_3"

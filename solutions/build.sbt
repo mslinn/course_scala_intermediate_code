@@ -4,8 +4,8 @@ name := "intermediate-scala-course-solutions"
 
 description := "Intermediate Scala Course Solutions to Exercises"
 
-//scalaVersion := "2.12.11"
-scalaVersion := "2.13.2"
+//scalaVersion := "2.12.13"
+scalaVersion := "2.13.5"
 version := scalaVersion.value
 
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
@@ -37,10 +37,9 @@ javacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.xerial"        %  "sqlite-jdbc"   % "3.14.2.1"      withSources(),
+  "org.xerial"        %  "sqlite-jdbc"   % "3.34.0" withSources(),
   //
-  "org.scalatest"     %% "scalatest"     % "3.1.0-SNAP13"  % Test withSources(),
-  "junit"             %  "junit"         % "4.12"          % Test // Scala IDE requires this; IntelliJ IDEA does not
+  "org.scalatest"     %% "scalatest"     % "3.2.7"  % Test withSources()
 )
 
 initialCommands := """
@@ -50,6 +49,6 @@ logLevel := Level.Error
 
 // Only show warnings and errors on the screen for compilations.
 // This applies to both test:compile and compile and is Info by default
-//logLevel in compile := Level.Warn
+//Compile / logLevel := Level.Warn
 
 ThisBuild / turbo := true

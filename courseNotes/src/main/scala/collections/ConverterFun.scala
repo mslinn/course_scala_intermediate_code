@@ -2,7 +2,7 @@ package collections
 
 object ConverterFun extends App {
   import java.util.{List => JList, Map => JMap, Set => JSet}
-  import com.micronautics.utils._
+//  import com.micronautics.utils._
   import scala.collection._
   import scala.collection.parallel.CollectionConverters._
   import scala.jdk.CollectionConverters._
@@ -10,7 +10,8 @@ object ConverterFun extends App {
   println(s"""List(1, 1, 2, 2, 3, 3).toArray = ${ List(1, 1, 2, 2, 3, 3).toArray }""")
   println(s"""Vector(1, 1, 2, 2, 3, 3).to(LazyList) = ${ Vector(1, 1, 2, 2, 3, 3).to(LazyList) }""")
 
-  println(s"""readLines("build.sbt")=${ readLines("build.sbt") }""")
+  // bintray is dead, so com.micronautics.utils is gone
+  // println(s"""readLines("build.sbt")=${ readLines("build.sbt") }""")
 
   println(s"""List(1, 1, 2, 2, 3, 3).toSet = ${ List(1, 1, 2, 2, 3, 3).toSet }""")
   println(s"""List(1, 1, 2, 2, 3, 3).to[collection.parallel.ParSet] = ${ List(1, 1, 2, 2, 3, 3).par.toSet }""")

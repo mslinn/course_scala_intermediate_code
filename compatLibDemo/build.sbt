@@ -5,7 +5,7 @@ cancelable := true
 developers := List(
   Developer("mslinn",
             "Mike Slinn",
-            "mslinn@micronauticsresearch.com",
+            "mslinn@mslinn.com",
             url("https://github.com/mslinn")
   )
 )
@@ -23,24 +23,24 @@ javacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.4",
-  "org.scalatest"          %% "scalatest"               % "3.1.0-SNAP13" % Test withSources(),
-  "junit"                  %  "junit"                   % "4.12"         % Test
+  "org.scala-lang.modules" %% "scala-collection-compat" % "2.4.3",
+  "org.scalatest"          %% "scalatest"               % "3.2.7"  % Test withSources(),
+  "junit"                  %  "junit"                   % "4.12"   % Test
 )
 
 // If you want to apply a license, such as the Apache 2 license, uncomment the following:
 licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html"))
 
-logBuffered in Test := false
+Test / logBuffered := false
 
 logLevel := Level.Warn
 
 // Only show warnings and errors on the screen for compilations.
 // This applies to both test:compile and compile and is Info by default
-logLevel in compile := Level.Warn
+Compile / logLevel := Level.Warn
 
 // Level.INFO is needed to see detailed output when running tests
-logLevel in test := Level.Info
+Test / logLevel := Level.Info
 
 name := "compat-lib-demo" // TODO provide a short yet descriptive name
 
@@ -67,7 +67,6 @@ scalacOptions ++= Seq( // From https://tpolecat.github.io/2017/04/25/scalac-flag
   "-Xlint:inaccessible",               // Warn about inaccessible types in method signatures.
   "-Xlint:infer-any",                  // Warn when a type argument is inferred to be `Any`.
   "-Xlint:missing-interpolator",       // A string literal appears to be missing an interpolator id.
-  "-Xlint:nullary-override",           // Warn when non-nullary `def f()' overrides nullary `def f'.
   "-Xlint:nullary-unit",               // Warn when nullary methods return Unit.
   "-Xlint:option-implicit",            // Option.apply used implicit view.
   "-Xlint:package-object-classes",     // Class or object defined in package object.
@@ -105,7 +104,7 @@ scalacOptions ++=
   }.value
 
 // The REPL can’t cope with -Ywarn-unused:imports or -Xfatal-warnings so turn them off for the console
-scalacOptions in (Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
+Compile / console / scalacOptions --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
 
 scalacOptions in (Compile, doc) ++= baseDirectory.map {
   bd: File => Seq[String](
@@ -114,8 +113,8 @@ scalacOptions in (Compile, doc) ++= baseDirectory.map {
   )
 }.value
 
-//scalaVersion := "2.13.2"
-scalaVersion := "2.12.11"
+scalaVersion := "2.13.5"
+//scalaVersion := "2.12.13"
 //scalaVersion := "2.11.12"
 
 scmInfo := Some(
@@ -127,4 +126,4 @@ scmInfo := Some(
 
 ThisBuild / turbo := true
 
-version := "0.1.0"
+version := "0.1.1"

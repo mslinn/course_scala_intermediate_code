@@ -2,7 +2,8 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit}
 import com.typesafe.config.{Config, ConfigFactory}
 import multi.ActorExercise._
-import org.scalatest.{BeforeAndAfterAll, WordSpecLike}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.wordspec.AnyWordSpecLike
 
 object ActorSystemConfig {
   val configApplication: Config = ConfigFactory.load("application.conf")
@@ -18,21 +19,21 @@ object ActorSystemConfig {
 }
 
 class ActorTest extends TestKit(ActorSystem("test", ActorSystemConfig.config))  // the order of these mixins is significant
-  with WordSpecLike
+  with AnyWordSpecLike
   with ImplicitSender
   with BeforeAndAfterAll {
 
-  val chunkerMsg1 = ChunkerMsg(10, 10, "Ain't this grand?")
-  val workerMsg1 = WorkerMsg(10, 10)
-  val persistenceMsg = PersistenceMsg(10, "Bloop")
+  val chunkerMsg1: ChunkerMsg = ChunkerMsg(10, 10, "Ain't this grand?")
+  val workerMsg1: WorkerMsg = WorkerMsg(10, 10)
+  val persistenceMsg: PersistenceMsg = PersistenceMsg(10, "Bloop")
 
   val chunker1ActorRef: TestActorRef[Chunker] = TestActorRef[Chunker]("chunker1")
   val chunker1Actor: Chunker = chunker1ActorRef.underlyingActor
 
-  val worker1ActorRef: TestActorRef[Worker] = TestActorRef(Props[Worker], chunker1ActorRef, "worker1")
+  val worker1ActorRef: TestActorRef[Worker] = TestActorRef(Props[Worker](), chunker1ActorRef, "worker1")
   val worker1Actor: Worker = worker1ActorRef.underlyingActor
 
-  val persistenceActorRef: TestActorRef[Persistence] = TestActorRef(Props[Persistence], chunker1ActorRef, "persistence")
+  val persistenceActorRef: TestActorRef[Persistence] = TestActorRef(Props[Persistence](), chunker1ActorRef, "persistence")
   val persistenceActor: Persistence = persistenceActorRef.underlyingActor
 
   "ActorPaths" should {

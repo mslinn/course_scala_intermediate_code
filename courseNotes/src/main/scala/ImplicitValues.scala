@@ -117,7 +117,7 @@ object SLS7_1 extends App {
       println(sls71.bigBlarg.s)
       print("> ")
     } catch {
-      case _: Exception => sys.exit
+      case _: Exception => sys.exit()
     }
   }
 }
